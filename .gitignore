@@ -1,0 +1,47 @@
+# Environment & secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+# Node / JavaScript
+node_modules/
+dist/
+build/
+coverage/
+.next/
+.vite/
+# Operating systems / IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+# Local geospatial artifacts / generated data (keep small licensed fixtures only)
+data/raw/
+data/processed/
+outputs/
+runs/
+artifacts/
+*.gpkg
+*.mbtiles
+*.pmtiles
+*.pbf
+*.las
+*.laz
+*.tif
+*.tiff
+*.glb
+*.gltf
+# Model checkpoints
+*.pt
+*.pth
+*.ckpt
+*.safetensors
