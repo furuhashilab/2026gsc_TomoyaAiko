@@ -41,6 +41,8 @@ artifacts/
 *.tiff
 *.glb
 *.gltf
+# Exception: licence-checked vehicle model recorded in config/vehicle.json (Issue #9)
+!web/public/models/kenney-car-kit/*.glb
 # Model checkpoints
 *.pt
 *.pth
