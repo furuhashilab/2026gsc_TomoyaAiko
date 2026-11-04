@@ -57,6 +57,13 @@ For Circuit Mode, closure is checked on the graph, not by coordinate proximity. 
 - **Attribution:** terrain `PLATEAU | Mapterhorn | 国土地理院`, buildings `「3D都市モデル（Project PLATEAU）…」（国土交通省）`, GSI tiles, OSM (course panel).
 - **Verification:** building base vs terrain height on a deterministic grid sample (`cf-scene sample-buildings`, `web/tools/height-check.html`), recorded in `docs/evidence/issue-8/`. Re-run after any provider change (`cf-scene check`).
 
+## Vehicle animation (Issue #9)
+**Status:** implemented (D-0013). Visualisation of a route, not vehicle dynamics.
+- `config/vehicle.json`: model URI, provenance, licence (CC0 Kenney Car Kit `race.glb`, unmodified) and SHA-256 of every shipped file; dimensions, scale, forward axis, heading offset, ground offset; animation settings (heading/pitch window, terrain sample step, base display speed, playback multipliers); camera settings.
+- `web/src/vehicle/track.ts` (no CesiumJS): position by linear interpolation on the course polyline (stays on the centre line), chord heading over a window, terrain heights sampled every `terrain_sample_step_m` and interpolated, pitch from height differences; loops for circuits, stops for rallies. City-independent: only the course, scene and vehicle configs are inputs.
+- `web/src/vehicle/animation.ts`: model entity driven by the viewer clock; play / pause / reset / speed; chase, onboard-like (ahead of the nose; the model has no cockpit) and aerial cameras plus free camera. Without terrain the vehicle runs on the ellipsoid like the course line.
+- Checks: `web/tools/vehicle-check.html` (terrain-step cost/error, grounding, heading) recorded in `docs/evidence/issue-9/`.
+
 ## Visualization details
 Initial animation can sample positions along the route and orient a generic glTF/GLB vehicle model with a stable camera target. Interpolation speed is illustrative, not physically simulated. Support playback, pause, reset, speed adjustment, chase/onboard/aerial perspectives, and fallback when 3D data is unavailable.
 

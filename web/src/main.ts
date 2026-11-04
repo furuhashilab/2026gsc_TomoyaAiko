@@ -13,6 +13,7 @@ import {
   ImageryLayer,
   LabelStyle,
   Rectangle,
+  type TerrainProvider,
   UrlTemplateImageryProvider,
   VerticalOrigin,
   Viewer,
@@ -21,10 +22,13 @@ import {
 import "cesium/Build/Cesium/Widgets/widgets.css";
 import aoiConfig from "../../config/aoi.sapporo.json";
 import sceneConfig from "../../config/scene.sapporo.json";
+import vehicleConfig from "../../config/vehicle.json";
 import syntheticCourse from "../../contracts/examples/synthetic-loop.course.geojson?raw";
 import { parseAoi } from "./aoi";
 import { arrowSegments, bearingRad, type Course, parseCourse } from "./course";
 import { parseScene } from "./scene";
+import { type CameraMode, VehicleAnimation } from "./vehicle/animation";
+import { parseVehicleConfig } from "./vehicle/config";
 
 const aoi = parseAoi(aoiConfig);
 const scene = parseScene(sceneConfig);
@@ -67,6 +71,9 @@ viewer.creditDisplay.addStaticCredit(terrainCredit);
 
 const tilesets: Cesium3DTileset[] = [];
 let sceneDisabled = false;
+// Resolves with the PLATEAU terrain once it passed the checks, or null without terrain.
+let resolveTerrain: (t: TerrainProvider | null) => void = () => {};
+const terrainReady = new Promise<TerrainProvider | null>((r) => (resolveTerrain = r));
 
 // Fall back to map + course only: never leave buildings standing on a missing terrain.
 function disableScene(reason: string): void {
@@ -76,6 +83,8 @@ function disableScene(reason: string): void {
   viewer.terrainProvider = new EllipsoidTerrainProvider();
   viewer.scene.globe.depthTestAgainstTerrain = false;
   viewer.creditDisplay.removeStaticCredit(terrainCredit);
+  vehicle.useEllipsoidHeights();
+  resolveTerrain(null);
   setStatus("terrain", `地形：読み込み失敗（${reason}）`);
   setStatus("buildings", "建物：地形がないため非表示（地図とコースのみ表示）");
 }
@@ -106,6 +115,7 @@ async function loadScene(): Promise<void> {
     const version = await loadTerrain(terrainUrl);
     const note = version === scene.terrain.version ? "" : `／設定の版 ${scene.terrain.version} と異なるため再検証が必要`;
     setStatus("terrain", `地形：PLATEAU-Terrain（${version}${note}）`);
+    resolveTerrain(viewer.terrainProvider);
   } catch (e) {
     disableScene(e instanceof Error ? e.message : String(e));
     return;
@@ -192,7 +202,45 @@ function escapeHtml(s: string): string {
   return s.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
 }
 
+// Vehicle animation (Issue #9): visualises the route; not a physics simulation.
+const vehicleCfg = parseVehicleConfig(vehicleConfig);
+const vehicle = new VehicleAnimation(viewer, vehicleCfg);
+const vehicleInfo = document.getElementById("vehicleInfo") as HTMLDivElement;
+const speedSelect = document.getElementById("vehicleSpeed") as HTMLSelectElement;
+for (const m of vehicleCfg.multipliers) speedSelect.add(new Option(`${m}×`, String(m), m === 1, m === 1));
+
+async function loadVehicle(course: Course): Promise<void> {
+  vehicleInfo.textContent = "車両：準備中（地形の高さを取得しています）";
+  try {
+    await vehicle.load(course, await terrainReady);
+    vehicle.setMultiplier(Number(speedSelect.value));
+  } catch (e) {
+    vehicleInfo.textContent = `車両：準備に失敗（${e instanceof Error ? e.message : String(e)}）`;
+  }
+}
+
+function refreshVehicleInfo(): void {
+  const s = vehicle.current();
+  if (!s) return;
+  const pct = ((s.distance / vehicle.length) * 100).toFixed(0);
+  const base = (vehicleCfg.baseSpeedMps * 3.6).toFixed(0);
+  const source = vehicle.terrainInfo?.source === "terrain" ? "地形に追従" : "地形なし（楕円体上）";
+  vehicleInfo.textContent =
+    `${s.lap} 周目 / ${(s.distance / 1000).toFixed(2)} km（${pct}%） / ` +
+    `再生 ${speedSelect.value}×（基準の表示速度 ${base} km/h 相当） / ${source}`;
+}
+setInterval(refreshVehicleInfo, 250);
+
+document.getElementById("vehiclePlay")?.addEventListener("click", () => vehicle.play());
+document.getElementById("vehiclePause")?.addEventListener("click", () => vehicle.pause());
+document.getElementById("vehicleReset")?.addEventListener("click", () => vehicle.reset());
+speedSelect.addEventListener("change", () => vehicle.setMultiplier(Number(speedSelect.value)));
+document.getElementById("vehicleCamera")?.addEventListener("change", (ev) => {
+  vehicle.setCamera((ev.target as HTMLSelectElement).value as CameraMode);
+});
+
 function showCourse(course: Course, source: string, note = ""): void {
+  void loadVehicle(course);
   courseLayer.entities.removeAll();
   const positions = course.coordinates.map(([lon, lat]) => Cartesian3.fromDegrees(lon, lat));
   // Everything is draped on the terrain (not on building roofs).
@@ -305,4 +353,4 @@ void loadInitialCourse();
 void loadScene();
 
 // Dev builds only: expose the viewer for manual checks in the browser console.
-if (import.meta.env.DEV) (window as unknown as { __cf: unknown }).__cf = { viewer, scene, status };
+if (import.meta.env.DEV) (window as unknown as { __cf: unknown }).__cf = { viewer, scene, status, vehicle, vehicleCfg };

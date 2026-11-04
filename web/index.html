@@ -12,7 +12,10 @@
       }
       #banner { top: 8px; }
       #coursePanel { top: 44px; }
-      #sceneStatus { position: absolute; right: 8px; bottom: 36px; z-index: 1; padding: 4px 8px; white-space: pre;
+      #vehiclePanel { position: absolute; left: 8px; bottom: 36px; z-index: 1; padding: 6px 8px; max-width: calc(100% - 32px);
+        font: 13px/1.5 system-ui, sans-serif; color: #fff; background: rgba(0, 0, 0, 0.65); border-radius: 4px; }
+      #vehiclePanel small { color: #ccc; }
+      #sceneStatus { position: absolute; right: 8px; bottom: 130px; z-index: 1; padding: 4px 8px; white-space: pre;
         font: 12px/1.4 system-ui, sans-serif; color: #fff; background: rgba(0, 0, 0, 0.65); border-radius: 4px; max-width: calc(100% - 32px); overflow: hidden; text-overflow: ellipsis; }
       #coursePanel h2 { margin: 0 0 4px; font-size: 14px; }
       #coursePanel .ok { color: #8f8; }
@@ -29,6 +32,24 @@
       <label>コースファイルを開く <input id="courseFile" type="file" accept=".geojson,.json" /></label>
     </div>
     <div id="sceneStatus"></div>
+    <div id="vehiclePanel">
+      <div>
+        <button id="vehiclePlay" type="button">▶ 再生</button>
+        <button id="vehiclePause" type="button">⏸ 一時停止</button>
+        <button id="vehicleReset" type="button">⟲ 最初から</button>
+        <label>速度 <select id="vehicleSpeed"></select></label>
+        <label>視点
+          <select id="vehicleCamera">
+            <option value="free">自由操作</option>
+            <option value="chase">追走</option>
+            <option value="onboard">車載風（車両前方）</option>
+            <option value="aerial">空撮</option>
+          </select>
+        </label>
+      </div>
+      <div id="vehicleInfo">車両：コースの読み込み待ち</div>
+      <small>ルートを見せるためのアニメーションです。物理挙動や実際のレース速度を再現していません。</small>
+    </div>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

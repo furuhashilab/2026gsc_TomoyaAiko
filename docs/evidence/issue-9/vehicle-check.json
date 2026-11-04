@@ -1,0 +1,78 @@
+{
+ "checked_utc": "2026-11-04T09:00:32.547Z",
+ "tool": "web/tools/vehicle-check.html (npm run dev), src/tools/vehicle-check.ts",
+ "cesiumjs_version": "1.146.0",
+ "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Claude/4.4212.0 Chrome/152.0.7977.167 Safari/537.36",
+ "course": {
+  "url": "/courses/sapporo-demo.course.geojson",
+  "id": "sapporo-demo-circuit-001",
+  "length_m_file": 3368.984,
+  "length_m_track": 3369.099
+ },
+ "terrain": {
+  "url": "https://tile.plateauview.mlit.go.jp/terrain",
+  "config_version": "1.11265.0"
+ },
+ "settings": {
+  "terrain_sample_step_m": 2,
+  "heading_window_m": 8,
+  "pitch_window_m": 8,
+  "base_speed_kmh": 40,
+  "ground_offset_m": 0
+ },
+ "terrain_sampling": [
+  {
+   "step_m": 2,
+   "samples": 1685,
+   "ms": 121,
+   "terrain_requests": 9,
+   "max_abs_error_vs_2m": 0,
+   "mean_abs_error_vs_2m": 0
+  },
+  {
+   "step_m": 5,
+   "samples": 674,
+   "ms": 44,
+   "terrain_requests": 9,
+   "max_abs_error_vs_2m": 0.424,
+   "mean_abs_error_vs_2m": 0.004
+  },
+  {
+   "step_m": 10,
+   "samples": 337,
+   "ms": 21,
+   "terrain_requests": 9,
+   "max_abs_error_vs_2m": 1.548,
+   "mean_abs_error_vs_2m": 0.012
+  },
+  {
+   "step_m": 20,
+   "samples": 169,
+   "ms": 18,
+   "terrain_requests": 9,
+   "max_abs_error_vs_2m": 1.56,
+   "mean_abs_error_vs_2m": 0.027
+  }
+ ],
+ "terrain_sampling_note": "Later steps reuse tiles cached by the browser, so ms and requests are only comparable for the first (2 m) run.",
+ "grounding": {
+  "criterion": "provisional |vehicle height - terrain| <= 0.3 m",
+  "stats": {
+   "n": 300,
+   "mean": 0.001,
+   "min": -0.018,
+   "p10": 0,
+   "median": 0,
+   "p90": 0,
+   "max": 0.228,
+   "withinThreshold": 300,
+   "thresholdM": 0.3
+  }
+ },
+ "heading": {
+  "max_deviation_away_from_vertices_deg": 0,
+  "max_deviation_within_half_window_of_vertex_deg": 44.566,
+  "max_change_per_half_metre_deg": 7.241,
+  "reversals": 0
+ }
+}
