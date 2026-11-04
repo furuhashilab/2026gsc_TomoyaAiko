@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Height check (dev tool)</title>
+    <style>
+      body { margin: 0; font: 13px/1.5 system-ui, sans-serif; }
+      #cesiumContainer { position: absolute; width: 1px; height: 1px; overflow: hidden; }
+      main { padding: 12px 16px; max-width: 900px; }
+      pre { background: #f4f4f4; padding: 8px; overflow: auto; max-height: 60vh; }
+    </style>
+  </head>
+  <body>
+    <div id="cesiumContainer"></div>
+    <main>
+      <h1>建物底面と地形の高さ照合（開発用ツール）</h1>
+      <p>docs/evidence/issue-8/buildings-base.json の建物について、config/scene.sapporo.json の地形を CesiumJS で取得し、差（建物底面 − 地形）を集計します。±2 m は暫定の基準です。</p>
+      <p id="state">実行中…</p>
+      <button id="download" disabled>結果を JSON で保存</button>
+      <pre id="out"></pre>
+    </main>
+    <script type="module" src="/src/tools/height-check.ts"></script>
+  </body>
+</html>

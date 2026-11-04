@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import syntheticRaw from "../../contracts/examples/synthetic-loop.course.geojson?raw";
-import { arrowSegments, parseCourse } from "./course";
+import { arrowSegments, bearingRad, parseCourse } from "./course";
 
 const sample = JSON.parse(syntheticRaw);
 const clone = () => JSON.parse(syntheticRaw);
@@ -49,5 +49,12 @@ describe("arrowSegments", () => {
       [141.37, 43.06],
     ];
     expect(arrowSegments(line, 500).length).toBeGreaterThan(1);
+  });
+});
+
+describe("bearingRad", () => {
+  it("points north and east as expected", () => {
+    expect(bearingRad([141.35, 43.06], [141.35, 43.07])).toBeCloseTo(0, 6);
+    expect(bearingRad([141.35, 43.06], [141.36, 43.06])).toBeCloseTo(Math.PI / 2, 2);
   });
 });

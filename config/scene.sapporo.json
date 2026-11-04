@@ -1,0 +1,108 @@
+{
+  "schema": "circuitforge-scene",
+  "schema_version": "0.1.0",
+  "aoi_id": "sapporo-center",
+  "retrieved_utc": "2026-11-04T08:08:23+00:00",
+  "terrain": {
+    "provider": "PLATEAU-Terrain",
+    "format": "quantized-mesh-1.0",
+    "url": "https://tile.plateauview.mlit.go.jp/terrain",
+    "request_vertex_normals": true,
+    "height_reference": "ellipsoidal (orthometric + geoid height, per provider docs)",
+    "docs": "https://docs.plateauview.mlit.go.jp/datasets/terrain/",
+    "attribution": "PLATEAU | Mapterhorn | 国土地理院",
+    "service_status": "trial service; no guarantee of availability or content",
+    "licence": {
+      "status": "unconfirmed",
+      "note": "Provider docs require the attribution above but state no data licence; do not assume PDL1.0. Tracked in Issue #12."
+    },
+    "snapshot": {
+      "layer_json_sha256": "06c87b519cf3b4050eaf7d0fd23c637cb34f4ee96ffe137a6e1e9bcfb68c5398",
+      "version": "1.11265.0",
+      "maxzoom": 18,
+      "projection": "EPSG:4326",
+      "extensions": [
+        "metadata",
+        "octvertexnormals"
+      ],
+      "retrieved_utc": "2026-11-04T08:08:23+00:00"
+    }
+  },
+  "buildings": {
+    "provider": "PLATEAU",
+    "catalog": "https://api.plateauview.mlit.go.jp/datacatalog/plateau-datasets",
+    "city_code": "01100",
+    "dataset_year": 2020,
+    "spec": "4.1",
+    "attribution": "「3D都市モデル（Project PLATEAU）札幌市（2020年度）」（国土交通省）",
+    "service_status": "trial service; asset URLs may change",
+    "licence": {
+      "name": "公共データ利用規約 第1.0版 (PDL1.0)",
+      "cc_by_4_0_compatible": true,
+      "source": "https://www.mlit.go.jp/plateau/site-policy/",
+      "use": "display only (no modification or redistribution of the data)"
+    },
+    "tilesets": [
+      {
+        "id": "01101_bldg_lod2_no_texture",
+        "name": "建築物モデル（中央区）",
+        "ward": "中央区",
+        "ward_code": "01101",
+        "year": 2020,
+        "registration_year": 2024,
+        "spec": "4.1",
+        "lod": "2",
+        "texture": false,
+        "crs": "JGD2011",
+        "url": "https://assets.cms.plateau.reearth.io/assets/bc/2e9ddc-cfe2-42fc-a91f-3bb95f97ddad/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01101_chuo-ku_lod2_no_texture/tileset.json",
+        "tileset_json_sha256": "b54f2f009647b897698d22cb43cde79a9543922b8b111a95acb9a4ef11b235a8",
+        "tileset_version": null
+      },
+      {
+        "id": "01102_bldg_lod2_no_texture",
+        "name": "建築物モデル（北区）",
+        "ward": "北区",
+        "ward_code": "01102",
+        "year": 2020,
+        "registration_year": 2024,
+        "spec": "4.1",
+        "lod": "2",
+        "texture": false,
+        "crs": "JGD2011",
+        "url": "https://assets.cms.plateau.reearth.io/assets/a3/49edb5-4014-4e04-a668-7ceae68cd91b/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01102_kita-ku_lod2_no_texture/tileset.json",
+        "tileset_json_sha256": "9626db546b3bdebead5f244b2827b69dbc792643c2f3ff35e86222f0506c2006",
+        "tileset_version": null
+      },
+      {
+        "id": "01103_bldg_lod2_no_texture",
+        "name": "建築物モデル（東区）",
+        "ward": "東区",
+        "ward_code": "01103",
+        "year": 2020,
+        "registration_year": 2024,
+        "spec": "4.1",
+        "lod": "2",
+        "texture": false,
+        "crs": "JGD2011",
+        "url": "https://assets.cms.plateau.reearth.io/assets/76/337461-23ff-4818-8028-a607f19506bd/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01103_higashi-ku_lod2_no_texture/tileset.json",
+        "tileset_json_sha256": "df857d71c94ccf5e5ceb336888c63c1f28b410cc00d35ef18ef725767c252a00",
+        "tileset_version": null
+      },
+      {
+        "id": "01105_bldg_lod1",
+        "name": "建築物モデル（豊平区）",
+        "ward": "豊平区",
+        "ward_code": "01105",
+        "year": 2020,
+        "registration_year": 2024,
+        "spec": "4.1",
+        "lod": "1",
+        "texture": true,
+        "crs": "JGD2011",
+        "url": "https://assets.cms.plateau.reearth.io/assets/02/d7a24f-76db-4295-844e-c667831fea43/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01105_toyohira-ku_lod1/tileset.json",
+        "tileset_json_sha256": "11032637cf3f69b6b462c49729f27cb382fcc7b79ecad904fec1d93e3e199407",
+        "tileset_version": null
+      }
+    ]
+  }
+}

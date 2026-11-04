@@ -115,12 +115,14 @@ CircuitForge AI は、ユーザーが**好きな地域**と**理想のコース�
 
 ## セットアップ
 
-**現在あるのは、開発環境・道路データの下準備・手動コースの表示までです。**
+**現在あるのは、開発環境・道路データの下準備・手動コースの 3D 表示までです。**
 - Web：札幌の暫定 AOI を地図に表示する CesiumJS ビューア（[Issue #5](https://github.com/furuhashilab/2026gsc_TomoyaAiko/issues/5)）
 - Python：OSM の道路網を取得し、通行方向を考慮した道路グラフと GeoJSON を作るコマンド（[Issue #6](https://github.com/furuhashilab/2026gsc_TomoyaAiko/issues/6)）
 - コース形式（[contracts/](contracts/README.md)）と、手動でコースを作成・検証するコマンド。ビューアでのコース表示（[Issue #7](https://github.com/furuhashilab/2026gsc_TomoyaAiko/issues/7)）
 
-3D 都市（PLATEAU）・車両アニメーション・コースの自動生成はまだありません。
+- 3D 都市シーン：PLATEAU の建物と PLATEAU-Terrain の地形の上にコースを表示（[Issue #8](https://github.com/furuhashilab/2026gsc_TomoyaAiko/issues/8)）
+
+車両アニメーション・コースの自動生成はまだありません。
 
 ### 構成
 ```
@@ -202,6 +204,46 @@ uv run pytest
 - OSM の道路グラフを作るコマンド（`uv run cf-osm`）の使い方は [gis/README.md](gis/README.md) にあります。
 
 GitHub に push すると、同じチェックが CI（GitHub Actions）でも自動で実行されます。
+
+### 3D シーンのデータ更新と再検証（引き継ぎ用）
+ビューアの建物（PLATEAU 3D Tiles）と地形（PLATEAU-Terrain）は、どちらも**試験運用の配信サービス**から読み込んでいます。提供期間は保証されておらず、URL が同じでも内容が変わることがあります。
+
+**読み込む場所：** 配信 URL・データの年度と識別情報・出典・取得時点の SHA-256 は `config/scene.sapporo.json` に記録しています。コードに URL は書いていません。
+
+1. **変化の確認（定期的に、または表示がおかしいとき）**
+   ```bash
+   cd gis && uv run cf-scene check
+   ```
+   ```bash
+   uv run cf-scene check --tiles
+   ```
+   「no changes」なら、そのまま使えます。「changed: …」と出たら、次の手順に進みます。
+   - **`check` が比べるもの：** 地形の `layer.json` と、建物の各 `tileset.json` の SHA-256（設定ファイルに記録した値）。
+   - **`check --tiles` で追加で比べるもの：** 高さ照合に使った建物タイル（`docs/evidence/issue-8/buildings-base.json` の `tiles_sha256` に記録した 40 枚）を、キャッシュを使わずに取り直して比べます。
+   - **比べないもの（限界）：**
+     - 地形の個々のタイルは比べません。地形の変化は `layer.json` のバージョンで判断します。
+     - 照合に使っていない建物タイルも比べません。
+     - そのため「no changes」は、配信データ全体が同じであることの保証ではありません。表示の妥当性は、3. の高さ照合で確かめます。
+2. **設定ファイルを作り直す**
+   ```bash
+   uv run cf-scene build
+   ```
+   PLATEAU のカタログから、AOI に重なる区のタイルセットを選び直し、地形の `layer.json` を取得して、設定ファイルを上書きします。`git diff config/scene.sapporo.json` で変化を確認してください。
+3. **高さを照合し直す**
+   [docs/evidence/issue-8/README.md](docs/evidence/issue-8/README.md) の手順で照合し、`height-check.json` と記録を更新します。±2 m は暫定の基準です。
+   ```bash
+   uv sync --group verify
+   ```
+   ```bash
+   uv run cf-scene sample-buildings --refresh
+   ```
+   - `--refresh` を付けると、`data/raw/plateau-tiles/` のキャッシュを使わず、タイルを配信元から取り直します。付けないと、配信データが更新されていても古いキャッシュで計算してしまうので、**データ更新後の再検証では必ず付けてください**。
+   - 実行時に、前回の出力に記録したタイルの SHA-256 と比べ、変わったタイル（`changed`）、増えたタイル（`added`）、なくなったタイル（`removed`）を表示します。
+   - そのあと、`npm run dev` で `/tools/height-check.html` を開き、「結果を JSON で保存」を押して `docs/evidence/issue-8/height-check.json` を置き換えます。保存したファイルは、そのまま `uv run pytest` の整合性テストに通ります。
+4. **配信が終了した・URL が変わった場合**
+   新しい配信元の URL・形式・出典・利用条件を確認し、`config/scene.*.json` を書き換えます。地形は quantized-mesh 形式なら、コードを変えずに差し替えられます。利用条件は `docs/DATA_AND_LICENSES.md` と Issue #12 に記録してください。
+
+**地形がないと建物を表示しない理由：** 建物の高さは楕円体高なので、地形なしで表示すると約 50 m 浮いて見えます。地形の読み込みに失敗した場合、ビューアは建物を表示せず、地図とコースだけを表示します。
 
 ### バージョンと環境変数の管理
 - **固定するもの：**

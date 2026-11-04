@@ -1,24 +1,34 @@
 import {
   Cartesian2,
   Cartesian3,
+  Cesium3DTileset,
+  CesiumTerrainProvider,
+  ClassificationType,
   Color,
   Credit,
+  Cartographic,
   CustomDataSource,
+  EllipsoidTerrainProvider,
+  HeightReference,
   ImageryLayer,
   LabelStyle,
-  PolylineArrowMaterialProperty,
   Rectangle,
   UrlTemplateImageryProvider,
   VerticalOrigin,
   Viewer,
+  sampleTerrainMostDetailed,
 } from "cesium";
 import "cesium/Build/Cesium/Widgets/widgets.css";
 import aoiConfig from "../../config/aoi.sapporo.json";
+import sceneConfig from "../../config/scene.sapporo.json";
 import syntheticCourse from "../../contracts/examples/synthetic-loop.course.geojson?raw";
 import { parseAoi } from "./aoi";
-import { arrowSegments, type Course, parseCourse } from "./course";
+import { arrowSegments, bearingRad, type Course, parseCourse } from "./course";
+import { parseScene } from "./scene";
 
 const aoi = parseAoi(aoiConfig);
+const scene = parseScene(sceneConfig);
+const params = new URLSearchParams(location.search);
 // Generated locally by `uv run cf-course build --recipe ../contracts/examples/sapporo-demo.recipe.json ...`
 const DEFAULT_COURSE_URL = "courses/sapporo-demo.course.geojson";
 
@@ -43,6 +53,101 @@ const viewer = new Viewer("cesiumContainer", {
   navigationHelpButton: false,
 });
 
+// Terrain and buildings (Issue #8). Buildings are only shown on top of the PLATEAU
+// terrain: their heights are ellipsoidal, so without terrain they would float ~50 m.
+const statusBox = document.getElementById("sceneStatus") as HTMLDivElement;
+const status: Record<string, string> = { terrain: "地形：読み込み中…", buildings: "建物：地形の読み込み待ち" };
+function setStatus(key: string, text: string): void {
+  status[key] = text;
+  statusBox.textContent = Object.values(status).join("\n");
+}
+setStatus("terrain", status.terrain);
+const terrainCredit = new Credit(`地形：${scene.terrain.attribution}`, true);
+viewer.creditDisplay.addStaticCredit(terrainCredit);
+
+const tilesets: Cesium3DTileset[] = [];
+let sceneDisabled = false;
+
+// Fall back to map + course only: never leave buildings standing on a missing terrain.
+function disableScene(reason: string): void {
+  if (sceneDisabled) return;
+  sceneDisabled = true;
+  for (const t of tilesets.splice(0)) viewer.scene.primitives.remove(t);
+  viewer.terrainProvider = new EllipsoidTerrainProvider();
+  viewer.scene.globe.depthTestAgainstTerrain = false;
+  viewer.creditDisplay.removeStaticCredit(terrainCredit);
+  setStatus("terrain", `地形：読み込み失敗（${reason}）`);
+  setStatus("buildings", "建物：地形がないため非表示（地図とコースのみ表示）");
+}
+
+// CesiumJS treats a missing layer.json as a legacy heightmap server and keeps going, so
+// check the metadata and one sampled height before trusting the provider.
+async function loadTerrain(url: string): Promise<string> {
+  const res = await fetch(`${url}/layer.json`);
+  if (!res.ok) throw new Error(`layer.json HTTP ${res.status}`);
+  const layer = (await res.json()) as { format?: string; version?: string };
+  if (layer.format !== "quantized-mesh-1.0") throw new Error(`想定外の形式 ${layer.format}`);
+  const provider = await CesiumTerrainProvider.fromUrl(url, { requestVertexNormals: scene.terrain.requestVertexNormals });
+  const [probe] = await sampleTerrainMostDetailed(provider, [
+    Cartographic.fromDegrees((aoi.lonMin + aoi.lonMax) / 2, (aoi.latMin + aoi.latMax) / 2),
+  ]);
+  if (!Number.isFinite(probe.height)) throw new Error("地形の高さを取得できません");
+  provider.errorEvent.addEventListener((err: { message?: string }) => disableScene(`地形タイルの取得エラー：${err.message ?? ""}`));
+  viewer.terrainProvider = provider;
+  viewer.scene.globe.depthTestAgainstTerrain = true;
+  return String(layer.version);
+}
+
+async function loadScene(): Promise<void> {
+  // ?terrain=off or ?terrainUrl=... let the failure path be checked by hand.
+  const terrainUrl = params.get("terrain") === "off" ? null : (params.get("terrainUrl") ?? scene.terrain.url);
+  try {
+    if (!terrainUrl) throw new Error("無効化されています（?terrain=off）");
+    const version = await loadTerrain(terrainUrl);
+    const note = version === scene.terrain.version ? "" : `／設定の版 ${scene.terrain.version} と異なるため再検証が必要`;
+    setStatus("terrain", `地形：PLATEAU-Terrain（${version}${note}）`);
+  } catch (e) {
+    disableScene(e instanceof Error ? e.message : String(e));
+    return;
+  }
+  if (params.get("buildings") === "off") {
+    setStatus("buildings", "建物：無効化されています（?buildings=off）");
+    return;
+  }
+  viewer.creditDisplay.addStaticCredit(new Credit(`建物：${scene.buildings.attribution}`, true));
+  const total = scene.buildings.tilesets.length;
+  const pending = new Map<string, number>();
+  let ready = 0;
+  const failed: string[] = [];
+  const refresh = () => {
+    const tiles = [...pending.values()].reduce((a, b) => a + b, 0);
+    const parts = [`建物：${ready}/${total} タイルセット`, tiles > 0 ? `読み込み中 ${tiles} タイル` : "読み込み完了"];
+    if (failed.length) parts.push(`失敗 ${failed.join(", ")}`);
+    setStatus("buildings", parts.join(" / "));
+  };
+  await Promise.all(
+    scene.buildings.tilesets.map(async (t) => {
+      try {
+        const tileset = await Cesium3DTileset.fromUrl(t.url, { maximumScreenSpaceError: 16 });
+        tileset.loadProgress.addEventListener((requests: number, processing: number) => {
+          pending.set(t.id, requests + processing);
+          refresh();
+        });
+        tileset.tileFailed.addEventListener(() => {
+          if (!failed.includes(t.id)) failed.push(t.id);
+          refresh();
+        });
+        if (sceneDisabled) return;
+        tilesets.push(viewer.scene.primitives.add(tileset));
+        ready += 1;
+      } catch {
+        failed.push(t.id);
+      }
+      refresh();
+    }),
+  );
+}
+
 const ring = [
   aoi.lonMin, aoi.latMin,
   aoi.lonMax, aoi.latMin,
@@ -60,6 +165,25 @@ viewer.entities.add({
   },
 });
 
+// Upward-pointing arrow; billboards rotate it to the travel bearing.
+const ARROW_IMAGE = (() => {
+  const c = document.createElement("canvas");
+  c.width = c.height = 32;
+  const g = c.getContext("2d") as CanvasRenderingContext2D;
+  g.beginPath();
+  g.moveTo(16, 2);
+  g.lineTo(29, 28);
+  g.lineTo(16, 21);
+  g.lineTo(3, 28);
+  g.closePath();
+  g.fillStyle = "#ffd400";
+  g.strokeStyle = "#000";
+  g.lineWidth = 2;
+  g.fill();
+  g.stroke();
+  return c;
+})();
+
 const courseLayer = new CustomDataSource("course");
 viewer.dataSources.add(courseLayer);
 const info = document.getElementById("courseInfo") as HTMLDivElement;
@@ -71,26 +195,48 @@ function escapeHtml(s: string): string {
 function showCourse(course: Course, source: string, note = ""): void {
   courseLayer.entities.removeAll();
   const positions = course.coordinates.map(([lon, lat]) => Cartesian3.fromDegrees(lon, lat));
+  // Everything is draped on the terrain (not on building roofs).
   courseLayer.entities.add({
     name: course.name,
-    polyline: { positions, width: 6, material: Color.fromCssColorString("#ff7a00"), clampToGround: true },
+    polyline: {
+      positions,
+      width: 6,
+      material: Color.fromCssColorString("#ff7a00"),
+      clampToGround: true,
+      classificationType: ClassificationType.TERRAIN,
+    },
   });
-  // Direction arrows roughly every 250 m (ellipsoid terrain, so a small height is enough).
+  // Direction arrows roughly every 250 m: ground-clamped billboards rotated to the travel
+  // bearing (arrow materials are not drawn on ground-clamped polylines).
   for (const i of arrowSegments(course.coordinates, 250)) {
     const [a, b] = [course.coordinates[i], course.coordinates[i + 1]];
     courseLayer.entities.add({
-      polyline: {
-        positions: Cartesian3.fromDegreesArrayHeights([a[0], a[1], 2, b[0], b[1], 2]),
-        width: 18,
-        material: new PolylineArrowMaterialProperty(Color.fromCssColorString("#ffd400")),
+      position: Cartesian3.fromDegrees((a[0] + b[0]) / 2, (a[1] + b[1]) / 2),
+      billboard: {
+        image: ARROW_IMAGE,
+        width: 22,
+        height: 22,
+        rotation: -bearingRad(a, b),
+        alignedAxis: Cartesian3.UNIT_Z,
+        heightReference: HeightReference.CLAMP_TO_GROUND,
+        disableDepthTestDistance: Number.POSITIVE_INFINITY,
       },
     });
   }
   const [lon0, lat0] = course.coordinates[0];
   courseLayer.entities.add({
-    position: Cartesian3.fromDegrees(lon0, lat0, 2),
-    point: { pixelSize: 12, color: Color.WHITE, outlineColor: Color.BLACK, outlineWidth: 2 },
+    position: Cartesian3.fromDegrees(lon0, lat0),
+    point: {
+      pixelSize: 12,
+      color: Color.WHITE,
+      outlineColor: Color.BLACK,
+      outlineWidth: 2,
+      heightReference: HeightReference.CLAMP_TO_GROUND,
+      disableDepthTestDistance: Number.POSITIVE_INFINITY,
+    },
     label: {
+      heightReference: HeightReference.CLAMP_TO_GROUND,
+      disableDepthTestDistance: Number.POSITIVE_INFINITY,
       text: course.mode === "circuit" ? "START / FINISH" : "START",
       font: "bold 14px system-ui",
       style: LabelStyle.FILL_AND_OUTLINE,
@@ -128,7 +274,7 @@ function showError(message: string): void {
 }
 
 async function loadInitialCourse(): Promise<void> {
-  const url = new URLSearchParams(location.search).get("course") ?? DEFAULT_COURSE_URL;
+  const url = params.get("course") ?? DEFAULT_COURSE_URL;
   try {
     const res = await fetch(url);
     // The dev server answers unknown paths with index.html, so check the content type too.
@@ -156,3 +302,7 @@ document.getElementById("courseFile")?.addEventListener("change", async (ev) => 
 });
 
 void loadInitialCourse();
+void loadScene();
+
+// Dev builds only: expose the viewer for manual checks in the browser console.
+if (import.meta.env.DEV) (window as unknown as { __cf: unknown }).__cf = { viewer, scene, status };

@@ -48,6 +48,15 @@ Actual folders and package choices are decided in Issue #5; these names are conc
 
 For Circuit Mode, closure is checked on the graph, not by coordinate proximity. Don't smooth corners in a way that invents roads.
 
+## 3D scene (Issue #8)
+**Status:** implemented (D-0012). Sources are described in `config/scene.<aoi>.json` (written by `uv run cf-scene build`), not in code: terrain URL/format/attribution/licence status and a `layer.json` snapshot (SHA-256, version, retrieval time); building tilesets with PLATEAU dataset ids, year, spec, `tileset.json` SHA-256 and attribution.
+
+- **Terrain:** PLATEAU-Terrain quantized-mesh via `CesiumTerrainProvider.fromUrl` (no Cesium ion). Heights are ellipsoidal, matching the ellipsoidal heights of PLATEAU 3D Tiles geometry. The viewer checks `layer.json` (format) and one sampled height before using it, because CesiumJS otherwise treats a missing `layer.json` as a legacy heightmap server.
+- **Buildings:** per ward the PLATEAU `bldg_lod2_no_texture` tileset (falls back to LOD1 per building), else `bldg_lod1`. Buildings are shown **only on top of the PLATEAU terrain**; if terrain fails (at start or later via tile errors) they are removed and the viewer keeps the map and course only, so buildings never float ~50 m above an ellipsoid.
+- **Course:** draped on terrain (`clampToGround`, `classificationType: TERRAIN`); direction arrows are ground-clamped billboards rotated to the travel bearing; START/FINISH is ground-clamped.
+- **Attribution:** terrain `PLATEAU | Mapterhorn | 国土地理院`, buildings `「3D都市モデル（Project PLATEAU）…」（国土交通省）`, GSI tiles, OSM (course panel).
+- **Verification:** building base vs terrain height on a deterministic grid sample (`cf-scene sample-buildings`, `web/tools/height-check.html`), recorded in `docs/evidence/issue-8/`. Re-run after any provider change (`cf-scene check`).
+
 ## Visualization details
 Initial animation can sample positions along the route and orient a generic glTF/GLB vehicle model with a stable camera target. Interpolation speed is illustrative, not physically simulated. Support playback, pause, reset, speed adjustment, chase/onboard/aerial perspectives, and fallback when 3D data is unavailable.
 
