@@ -8,7 +8,7 @@ All features below are **planned** unless a merged PR and reproducible demonstra
 | Gate | Work | Status |
 |---|---|---|
 | A | #4 research scope / AOI (provisional), #12 rights | #4 open (provisional design merged), #12 open (OSM publication & terrain licence unresolved) |
-| B | #5 dev env, #6 OSM graph, #7 course format, #8 3D city scene, #9 vehicle animation | #5–#8 merged; **#9 in review (PR #25)** |
+| B | #5 dev env, #6 OSM graph, #7 course format, #8 3D city scene, #9 vehicle animation | #5–#8 merged; **#9 in review (PR #25, includes a course minimap and an outlined course line)** |
 | C | **#10 automatic circuit generation** | **next — top priority** |
 | D | #11 preferences, features and evaluation | after #10 (design can start in parallel) |
 
@@ -21,7 +21,7 @@ Research value comes from Gates C and D; presentation work must not delay them.
 4. **In parallel, small:** #12 decisions that unblock work (OSM-derived course publication under ODbL, terrain licence) and, once decided, #32 (PR preview URLs).
 5. **#27 — course annotations** (sectors, start/finish, corners, straights, elevation) as the shared data for display and video, defined together with #11 features. Minimal version only until Gate D.
 6. **After Gate C/D results exist:** #26 (scene readability), then #28 (sector / broadcast-style UI).
-7. **Future (presentation):** #29 course introduction video, #30 video export, #31 fictional race-event graphics (tyres, starting grid). Recorded only.
+7. **Future (presentation):** #29 course introduction video, #30 video export, #31 fictional race-event graphics (tyres, starting grid), #34 category profiles (formula / endurance / rally / GT / oval). Recorded only.
 
 Conditional research: #13 distillation, only if rights, data and time allow (see D-0009).
 
@@ -34,7 +34,7 @@ Conditional research: #13 distillation, only if rights, data and time allow (see
 | 3 | Download a bounded OSM graph and export GeoJSON | [#6](https://github.com/furuhashilab/2026gsc_TomoyaAiko/issues/6) (done) |
 | 3 | Route contract and valid manual route fixture | [#7](https://github.com/furuhashilab/2026gsc_TomoyaAiko/issues/7) (done) |
 | 4 | CesiumJS city/terrain + optional PLATEAU overlay | [#8](https://github.com/furuhashilab/2026gsc_TomoyaAiko/issues/8) (done) |
-| 5 | Generic 3D car follows route with camera controls | [#9](https://github.com/furuhashilab/2026gsc_TomoyaAiko/issues/9) (in review) |
+| 5 | Generic 3D car follows route with camera controls; 2D course minimap in sync with the car | [#9](https://github.com/furuhashilab/2026gsc_TomoyaAiko/issues/9) (in review) |
 
 **P0 demo definition:** Open a known, credited route in a 3D scene and follow a moving generic car across the course; no AI generation required.
 
@@ -61,10 +61,12 @@ Conditional research: #13 distillation, only if rights, data and time allow (see
 | Course introduction video (opening, layout draw, sectors, key straights/corners, start/finish; original music and graphics only) | [#29](https://github.com/furuhashilab/2026gsc_TomoyaAiko/issues/29) | #27 |
 | Video file export (MP4/WebM): recording, audio, CORS, burned-in attribution | [#30](https://github.com/furuhashilab/2026gsc_TomoyaAiko/issues/30) | #29 |
 | Fictional race-event graphics: tyre compounds, starting grid (multi-vehicle) | [#31](https://github.com/furuhashilab/2026gsc_TomoyaAiko/issues/31) | multiple vehicles, #27, #30 |
+| Motorsport category profiles (design only): shared GIS data layer, per-category settings layer (formula / endurance / rally / gt / oval), UI and video layer | [#34](https://github.com/furuhashilab/2026gsc_TomoyaAiko/issues/34) | #27, #10, #11 |
 
 **Principles for these items**
 - They communicate GIS generation and evaluation results; they are not cosmetic F1 imitations. All numbers shown (length, corners, straights, sectors, elevation, start/finish, vehicle position and display time) come from the course data (#27), so screen and video use one source.
 - No official F1/FIA/team/driver names, logos, music, broadcast graphics or tyre data. Fictional events are labelled as fictional; display time is labelled as non-physical; no standings are shown before a real ranking method exists.
+- Values are labelled as measured, computed, virtual setting or display-only (#27). No "fastest" colouring without comparison data. Rally uses stages and splits, never the 3-sector lap display (#34).
 - Minimise external and commercial dependencies; record provenance, licence and SHA-256 of every asset, and the update procedure, so lab members can maintain the work after handover.
 
 ## Future (not thesis MVP commitments)
