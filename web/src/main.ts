@@ -149,6 +149,8 @@ async function loadScene(): Promise<void> {
 let buildingsEnabled = false;
 const buildingLoads = new LatestOnly();
 const pending = new Map<string, number>();
+// tileset.json requests in flight per id (a superseded request may overlap a newer one)
+const fetching = new Map<string, number>();
 const failed = new Set<string>();
 
 function refreshBuildingStatus(): void {
@@ -156,9 +158,16 @@ function refreshBuildingStatus(): void {
   const ready = wanted.filter((t) => tilesets.has(t.id)).length;
   const tiles = wanted.reduce((a, t) => a + (pending.get(t.id) ?? 0), 0);
   const style = basemaps.buildings.find((b) => b.id === buildingStyle)?.name ?? buildingStyle;
-  const parts = [`建物：${style} ${ready}/${wanted.length} タイルセット`, tiles > 0 ? `読み込み中 ${tiles} タイル` : "読み込み完了"];
   const bad = wanted.filter((t) => failed.has(t.id)).map((t) => t.id);
-  if (bad.length) parts.push(`失敗 ${bad.join(", ")}`);
+  // "complete" only when every wanted tileset is in the scene and no tile is pending
+  // a freshly added tileset reports no pending tiles until its first update, so also wait for tilesLoaded
+  const loading = tiles > 0 || wanted.some((t) => tilesets.get(t.id)?.tilesLoaded === false);
+  const busy = wanted.some((t) => (fetching.get(t.id) ?? 0) > 0) ? "タイルセットを取得中" : loading ? (tiles > 0 ? `読み込み中 ${tiles} タイル` : "読み込み中") : null;
+  const parts = [`建物：${style} ${ready}/${wanted.length} タイルセット`, busy ?? (bad.length ? "一部未表示" : "読み込み完了")];
+  if (bad.length) {
+    parts.push(`失敗 ${bad.join(", ")}`);
+    if (buildingStyle === "textured") parts.push("「建物」でテクスチャなしに戻せます");
+  }
   setStatus("buildings", parts.join(" / "));
 }
 
@@ -183,8 +192,10 @@ async function showBuildings(style: BuildingStyle): Promise<void> {
       .filter((t) => !tilesets.has(t.id))
       .map(async (t) => {
         failed.delete(t.id);
+        fetching.set(t.id, (fetching.get(t.id) ?? 0) + 1);
+        refreshBuildingStatus();
         try {
-          const tileset = await Cesium3DTileset.fromUrl(t.url, { maximumScreenSpaceError: 16 });
+          const tileset = await Cesium3DTileset.fromUrl(t.url, { maximumScreenSpaceError: 16 }).finally(() => fetching.set(t.id, (fetching.get(t.id) ?? 1) - 1));
           // a newer style was picked, or the terrain failed, while this one was loading
           if (sceneDisabled || !buildingLoads.isCurrent(generation) || tilesets.has(t.id)) {
             tileset.destroy();
@@ -194,6 +205,7 @@ async function showBuildings(style: BuildingStyle): Promise<void> {
             pending.set(t.id, requests + processing);
             refreshBuildingStatus();
           });
+          tileset.allTilesLoaded.addEventListener(refreshBuildingStatus);
           tileset.tileFailed.addEventListener(() => {
             failed.add(t.id);
             refreshBuildingStatus();

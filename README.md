@@ -171,6 +171,11 @@ npm run dev
 - `npm ci` は `package-lock.json` に書かれたとおりのバージョンをインストールします（初回は数分かかります）。
 - ブラウザで <http://localhost:5173> を開くと、背景地図の上に、札幌中心部の AOI が赤い枠で表示されます。右下に、表示しているデータの出典が出ます。
 - 背景（地理院標準地図・シームレス空中写真・背景なし）と建物（テクスチャなし・中央区 LOD2 テクスチャ付き）は、画面下の操作パネルで切り替えられます。選択肢と出典は `config/basemaps.json` で管理しています。URL でも指定できます（例：`?basemap=gsi-std&buildingStyle=untextured`）。
+- **動作が重い PC（内蔵 GPU やメモリの少ない研究室の PC など）では、建物を「テクスチャなし」にしてください。** 既定のテクスチャ付き建物は、テクスチャなしと比べて約 1 GB 多くメモリを使います（測定値は `docs/evidence/issue-26/README.md`）。方法は次の 3 つです。
+  - 画面下の操作パネルの「建物」で「PLATEAU 建物（テクスチャなし）」を選ぶ（その場だけ）。
+  - URL に `?buildingStyle=untextured` を付けて開く（例：<http://localhost:5173/?buildingStyle=untextured>）。最初からテクスチャ付きを読み込まないので、いちばん軽くなります。
+  - いつもテクスチャなしにする場合は、`config/basemaps.json` の `"default_buildings": "textured"` を `"untextured"` に変える（研究室の PC ごとの変更はコミットしないでください）。
+  - テクスチャ付きの読み込みに失敗した場合も、画面右下に「失敗」と表示されるので、同じ方法でテクスチャなしに戻せます。
 - コースも表示されます。札幌のデモコース（`web/public/courses/sapporo-demo.course.geojson`）がなければ、合成サンプルが表示されます。札幌のデモコースを作る手順は [contracts/README.md](contracts/README.md) にあります。画面左上のボタンから、手元のコースファイルも開けます。
 - 止めるときはターミナルで `Ctrl + C` を押します。
 - Cesium ion のアカウントやトークンは不要です。
