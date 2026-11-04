@@ -19,6 +19,7 @@ from pathlib import Path
 
 from .aoi import DEFAULT_AOI_PATH, REPO_ROOT, load_aoi
 from .plateau import (
+    DEFAULT_TEXTURED_WARDS,
     build_scene_config,
     check_scene_config,
     check_tiles,
@@ -37,6 +38,11 @@ def main(argv: list[str] | None = None) -> None:
     sub = p.add_subparsers(dest="command", required=True)
     b = sub.add_parser("build")
     b.add_argument("--city-code", default="01100", help="PLATEAU city code (01100 = Sapporo)")
+    b.add_argument(
+        "--textured-wards",
+        default=",".join(DEFAULT_TEXTURED_WARDS),
+        help="comma-separated ward codes that also get a textured LOD2 option (empty: none)",
+    )
     c = sub.add_parser("check")
     c.add_argument("--tiles", action="store_true", help="also re-download recorded building tiles")
     c.add_argument("--sample", type=Path, default=DEFAULT_SAMPLE)
@@ -51,9 +57,11 @@ def main(argv: list[str] | None = None) -> None:
     aoi = load_aoi(args.aoi)
 
     if args.command == "build":
-        cfg = build_scene_config(aoi, args.city_code)
+        wards = [w for w in args.textured_wards.split(",") if w]
+        cfg = build_scene_config(aoi, args.city_code, textured_wards=wards)
         args.scene.write_text(json.dumps(cfg, ensure_ascii=False, indent=2) + "\n")
-        print(f"wrote {args.scene}: {len(cfg['buildings']['tilesets'])} building tilesets, "
+        print(f"wrote {args.scene}: {len(cfg['buildings']['tilesets'])} building tilesets "
+              f"({len(cfg['buildings']['textured_tilesets'])} textured options), "
               f"terrain version {cfg['terrain']['snapshot']['version']}")  # fmt: skip
         return
     cfg = json.loads(args.scene.read_text())

@@ -169,7 +169,8 @@ npm ci
 npm run dev
 ```
 - `npm ci` は `package-lock.json` に書かれたとおりのバージョンをインストールします（初回は数分かかります）。
-- ブラウザで <http://localhost:5173> を開くと、地理院タイルの地図の上に、札幌中心部の AOI が赤い枠で表示されます。右下に「地理院タイル」の出典が出ます。
+- ブラウザで <http://localhost:5173> を開くと、背景地図の上に、札幌中心部の AOI が赤い枠で表示されます。右下に、表示しているデータの出典が出ます。
+- 背景（地理院標準地図・シームレス空中写真・背景なし）と建物（テクスチャなし・中央区 LOD2 テクスチャ付き）は、画面下の操作パネルで切り替えられます。選択肢と出典は `config/basemaps.json` で管理しています。URL でも指定できます（例：`?basemap=gsi-std&buildingStyle=untextured`）。
 - コースも表示されます。札幌のデモコース（`web/public/courses/sapporo-demo.course.geojson`）がなければ、合成サンプルが表示されます。札幌のデモコースを作る手順は [contracts/README.md](contracts/README.md) にあります。画面左上のボタンから、手元のコースファイルも開けます。
 - 止めるときはターミナルで `Ctrl + C` を押します。
 - Cesium ion のアカウントやトークンは不要です。

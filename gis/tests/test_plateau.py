@@ -10,6 +10,7 @@ from circuitforge_gis.aoi import REPO_ROOT, load_aoi
 from circuitforge_gis.plateau import (
     TERRAIN_ATTRIBUTION,
     batch_table,
+    choose_textured,
     choose_tilesets,
     compare_tile_hashes,
     region_intersects,
@@ -33,6 +34,35 @@ def test_choose_tilesets_prefers_lod2_without_texture():
     ]
     chosen = choose_tilesets(datasets, "01100", {"01101", "01105"})
     assert [d["id"] for d in chosen] == ["01101_bldg_lod2_no_texture", "01105_bldg_lod1"]
+
+
+def test_choose_textured_replaces_only_chosen_wards():
+    datasets = [
+        {"id": "01101_bldg_lod2", "city_code": "01100"},
+        {"id": "01101_bldg_lod2_no_texture", "city_code": "01100"},
+        {"id": "01102_bldg_lod2", "city_code": "01100"},
+        {"id": "01105_bldg_lod1", "city_code": "01100"},
+    ]
+    chosen = [
+        {"id": "01101_bldg_lod2_no_texture", "ward_code": "01101"},
+        {"id": "01105_bldg_lod1", "ward_code": "01105"},
+    ]
+    # 01102 has a textured tileset but no chosen tileset; 01105 has no textured LOD2
+    pairs = choose_textured(datasets, "01100", chosen, ["01101", "01102", "01105"])
+    assert [(d["id"], r) for d, r in pairs] == [("01101_bldg_lod2", "01101_bldg_lod2_no_texture")]
+
+
+def test_committed_textured_tilesets_replace_one_tileset_each():
+    b = json.loads(SCENE.read_text())["buildings"]
+    ids = {t["id"] for t in b["tilesets"]}
+    replaced = [t["replaces"] for t in b["textured_tilesets"]]
+    assert replaced and set(replaced) <= ids and len(set(replaced)) == len(replaced)
+    for t in b["textured_tilesets"]:
+        assert t["texture"] is True and t["lod"] == "2"
+        assert t["url"].startswith("https://") and SHA256.match(t["tileset_json_sha256"])
+        # same ward and dataset year as the tileset it replaces (one attribution covers both)
+        old = next(o for o in b["tilesets"] if o["id"] == t["replaces"])
+        assert (t["ward_code"], t["year"]) == (old["ward_code"], old["year"])
 
 
 def test_region_intersects():

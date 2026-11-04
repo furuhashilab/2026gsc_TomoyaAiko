@@ -31,6 +31,10 @@ USER_AGENT = "CircuitForgeAI-research/0.1 (furuhashilab/2026gsc_TomoyaAiko)"
 # Per ward: LOD2 without texture where it exists (it falls back to LOD1 per building),
 # otherwise LOD1.
 PREFERRED_SUFFIXES = ("bldg_lod2_no_texture", "bldg_lod1")
+# Optional textured LOD2 tilesets (Issue #26), each replacing the untextured tileset of the
+# same ward so a building is never drawn twice. Only Chuo-ku for now.
+TEXTURED_SUFFIX = "bldg_lod2"
+DEFAULT_TEXTURED_WARDS = ("01101",)
 CATALOG_FIELDS = (
     "id",
     "name",
@@ -77,7 +81,35 @@ def choose_tilesets(datasets: list[dict], city_code: str, wards: set[str]) -> li
     return chosen
 
 
-def build_scene_config(aoi: Aoi, city_code: str, terrain_url: str = TERRAIN_URL) -> dict:
+def choose_textured(datasets: list[dict], city_code: str, chosen: list[dict], wards) -> list[dict]:
+    """Textured LOD2 tileset for each ward in ``wards`` that already has a chosen tileset,
+    as ``(dataset, id of the untextured tileset it replaces)`` pairs."""
+    by_id = {d["id"]: d for d in datasets if d.get("city_code") == city_code}
+    by_ward = {d["ward_code"]: d for d in chosen}
+    pairs = []
+    for ward in sorted(wards):
+        d = by_id.get(f"{ward}_{TEXTURED_SUFFIX}")
+        if d and ward in by_ward:
+            pairs.append((d, by_ward[ward]["id"]))
+    return pairs
+
+
+def _tileset_entry(d: dict) -> dict:
+    body = fetch(d["url"])
+    return {
+        **{k: d.get(k) for k in CATALOG_FIELDS},
+        "url": d["url"],
+        "tileset_json_sha256": sha256(body),
+        "tileset_version": json.loads(body).get("asset", {}).get("tilesetVersion"),
+    }
+
+
+def build_scene_config(
+    aoi: Aoi,
+    city_code: str,
+    terrain_url: str = TERRAIN_URL,
+    textured_wards=DEFAULT_TEXTURED_WARDS,
+) -> dict:
     datasets = json.loads(fetch(CATALOG_URL))["datasets"]
     candidates = {
         d["ward_code"]: d
@@ -91,17 +123,12 @@ def build_scene_config(aoi: Aoi, city_code: str, terrain_url: str = TERRAIN_URL)
         root = json.loads(fetch(d["url"]))["root"]
         if region_intersects(root["boundingVolume"]["region"], aoi):
             wards.add(ward)
-    tilesets = []
-    for d in choose_tilesets(datasets, city_code, wards):
-        body = fetch(d["url"])
-        tilesets.append(
-            {
-                **{k: d.get(k) for k in CATALOG_FIELDS},
-                "url": d["url"],
-                "tileset_json_sha256": sha256(body),
-                "tileset_version": json.loads(body).get("asset", {}).get("tilesetVersion"),
-            }
-        )
+    chosen = choose_tilesets(datasets, city_code, wards)
+    tilesets = [_tileset_entry(d) for d in chosen]
+    textured = [
+        {**_tileset_entry(d), "replaces": replaces}
+        for d, replaces in choose_textured(datasets, city_code, chosen, textured_wards)
+    ]
     layer_body = fetch(f"{terrain_url}/layer.json")
     layer = json.loads(layer_body)
     city = tilesets[0] if tilesets else {}
@@ -149,6 +176,8 @@ def build_scene_config(aoi: Aoi, city_code: str, terrain_url: str = TERRAIN_URL)
                 "use": "display only (no modification or redistribution of the data)",
             },
             "tilesets": tilesets,
+            # Viewer option "textured": each entry replaces the tileset named in "replaces".
+            "textured_tilesets": textured,
         },
     }
 
@@ -169,7 +198,7 @@ def check_scene_config(cfg: dict) -> list[str]:
     if sha256(layer_body) != snap["layer_json_sha256"]:
         version = json.loads(layer_body).get("version")
         changes.append(f"terrain layer.json changed (version {snap['version']} -> {version})")
-    for t in cfg["buildings"]["tilesets"]:
+    for t in cfg["buildings"]["tilesets"] + cfg["buildings"].get("textured_tilesets", []):
         try:
             body = fetch(t["url"])
         except OSError as exc:
