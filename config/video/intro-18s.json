@@ -1,0 +1,39 @@
+{
+  "id": "intro-18s",
+  "width": 1920,
+  "height": 1080,
+  "fps": 30,
+  "durationS": 18,
+  "codecs": ["vp9", "vp8"],
+  "bitrate": 12000000,
+  "scenes": [
+    {
+      "id": "opening",
+      "start": 0,
+      "end": 4,
+      "camera": { "from": { "heading": -60, "pitch": -6, "rangeK": 30 }, "to": { "heading": -20, "pitch": -45, "rangeK": 6 } }
+    },
+    {
+      "id": "draw-course",
+      "start": 4,
+      "end": 10,
+      "camera": { "from": { "heading": -20, "pitch": -45, "rangeK": 6 }, "to": { "heading": 70, "pitch": -60, "rangeK": 3.2 } },
+      "draw": [0, 1],
+      "overlays": ["startFinish"]
+    },
+    {
+      "id": "course-info",
+      "start": 10,
+      "end": 15,
+      "camera": { "from": { "heading": 70, "pitch": -60, "rangeK": 3.2 }, "to": { "heading": 110, "pitch": -40, "rangeK": 3.6 } },
+      "overlays": ["title", "stats"]
+    },
+    {
+      "id": "overview-credits",
+      "start": 15,
+      "end": 18,
+      "camera": { "from": { "heading": 110, "pitch": -40, "rangeK": 3.6 }, "to": { "heading": 140, "pitch": -89, "rangeK": 4.5 } },
+      "overlays": ["credits"]
+    }
+  ]
+}

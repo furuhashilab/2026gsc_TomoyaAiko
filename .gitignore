@@ -28,6 +28,7 @@ Thumbs.db
 data/raw/
 data/processed/
 outputs/
+web/out/
 runs/
 artifacts/
 *.gpkg

@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Video export PoC (dev tool)</title>
+    <style>
+      body { margin: 0; font: 13px/1.5 system-ui, sans-serif; }
+      /* the WebGL canvas renders at the full video size but stays out of the layout */
+      #cesiumContainer { position: absolute; left: -100000px; top: 0; overflow: hidden; }
+      main { padding: 12px 16px; max-width: 1000px; }
+      #preview { width: 640px; max-width: 100%; aspect-ratio: 16 / 9; background: #222; display: block; }
+      pre { background: #f4f4f4; padding: 8px; overflow: auto; max-height: 40vh; }
+      .error { color: #b00020; font-weight: bold; }
+    </style>
+  </head>
+  <body>
+    <div id="cesiumContainer"></div>
+    <main>
+      <h1>コース紹介映像の書き出し（PoC・開発用ツール）</h1>
+      <p>1 フレームずつ描画して WebM（WebCodecs・Mediabunny）に書き出します。実時間の録画ではありません。外部の地図・建物・地形は使いません。</p>
+      <p>
+        <label>映像の構成 <select id="timeline"></select></label>
+        <label>コース <select id="course"><option value="synthetic">合成サンプル（OSM 由来ではない）</option></select></label>
+        <button id="run">書き出す</button>
+      </p>
+      <p id="state">待機中</p>
+      <canvas id="preview" width="640" height="360"></canvas>
+      <p>
+        <a id="download" hidden>WebM を保存</a>
+        <a id="downloadRecord" hidden>記録（JSON）を保存</a>
+      </p>
+      <pre id="result"></pre>
+    </main>
+    <script type="module" src="/src/tools/video-export.ts"></script>
+  </body>
+</html>
