@@ -1,0 +1,39 @@
+{
+ "id": "sapporo-demo-circuit-001",
+ "mode": "circuit",
+ "length_m": 3368.984,
+ "segments": 111,
+ "osm_snapshot": {
+  "attic_date": "2026-11-03T16:25:05Z",
+  "element_sha256": "c2eed5dd2b6d397afc9d66b466183a4f23b52b0461484ef6e3b2cbada8a6f213",
+  "profile": "mvp-drive"
+ },
+ "aoi": {
+  "id": "sapporo-center",
+  "bbox": [
+   141.335,
+   43.05,
+   141.365,
+   43.072
+  ],
+  "length_crs": "EPSG:6680"
+ },
+ "via_snap_distance_m": [
+  0.26,
+  0.51,
+  0.54,
+  0.14,
+  0.29
+ ],
+ "segments_sha256": "f65d9ef2d732a861e201b167e0ad2e9ef3cef8bf9eb4b3cf4e79b1dd86ec9125",
+ "validation": {
+  "status": "valid",
+  "errors": [],
+  "warnings": [
+   "W_DEFAULT_TWO_WAY_MAJOR",
+   "W_NO_ELEVATION",
+   "W_TURN_RESTRICTIONS_NOT_EVALUATED"
+  ]
+ },
+ "note": "Summary only (no OSM geometry). Regenerate the course with contracts/examples/sapporo-demo.recipe.json; segments_sha256 must match."
+}

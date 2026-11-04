@@ -6,15 +6,26 @@
     <title>CircuitForge AI viewer (dev)</title>
     <style>
       html, body, #cesiumContainer { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; }
-      #banner {
-        position: absolute; top: 8px; left: 8px; z-index: 1; padding: 4px 8px;
-        font: 13px/1.4 system-ui, sans-serif; color: #fff; background: rgba(0, 0, 0, 0.6); border-radius: 4px;
+      #banner, #coursePanel {
+        position: absolute; left: 8px; z-index: 1; padding: 6px 8px; max-width: min(420px, calc(100% - 32px));
+        font: 13px/1.45 system-ui, sans-serif; color: #fff; background: rgba(0, 0, 0, 0.65); border-radius: 4px;
       }
+      #banner { top: 8px; }
+      #coursePanel { top: 44px; }
+      #coursePanel h2 { margin: 0 0 4px; font-size: 14px; }
+      #coursePanel .ok { color: #8f8; }
+      #coursePanel .ng { color: #f88; }
+      #coursePanel ul { margin: 2px 0 4px; padding-left: 18px; }
+      #coursePanel small { color: #ccc; }
     </style>
   </head>
   <body>
     <div id="cesiumContainer"></div>
     <div id="banner">CircuitForge AI — 開発用ビューア（架空ルートの可視化用。公道走行の提案ではありません）</div>
+    <div id="coursePanel">
+      <div id="courseInfo">コースを読み込み中…</div>
+      <label>コースファイルを開く <input id="courseFile" type="file" accept=".geojson,.json" /></label>
+    </div>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
