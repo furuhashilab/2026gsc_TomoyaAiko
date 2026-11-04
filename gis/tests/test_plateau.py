@@ -11,8 +11,11 @@ from circuitforge_gis.plateau import (
     TERRAIN_ATTRIBUTION,
     batch_table,
     choose_tilesets,
+    compare_tile_hashes,
     region_intersects,
     sample_one_per_cell,
+    tile_key,
+    tile_url,
 )
 
 SCENE = REPO_ROOT / "config" / "scene.sapporo.json"
@@ -103,3 +106,38 @@ def test_height_check_evidence_is_consistent():
         check["terrain"]["live_version"]
         == json.loads(SCENE.read_text())["terrain"]["snapshot"]["version"]
     )
+
+
+def test_compare_tile_hashes():
+    recorded = {"a/1.b3dm": "x", "a/2.b3dm": "y", "b/1.b3dm": "z"}
+    current = {"a/1.b3dm": "x", "a/2.b3dm": "CHANGED", "c/1.b3dm": "w"}
+    assert compare_tile_hashes(recorded, current) == {
+        "changed": ["a/2.b3dm"],
+        "added": ["c/1.b3dm"],
+        "removed": ["b/1.b3dm"],
+    }
+    assert compare_tile_hashes(recorded, dict(recorded)) == {
+        "changed": [],
+        "added": [],
+        "removed": [],
+    }
+
+
+def test_recorded_tile_keys_resolve_to_configured_tileset_urls():
+    cfg = json.loads(SCENE.read_text())
+    sample = json.loads((EVIDENCE / "buildings-base.json").read_text())
+    assert sample["tiles_downloaded_fresh"] is True
+    for key, digest in sample["tiles_sha256"].items():
+        tileset_id, uri = key.split("/", 1)
+        assert tile_key(tileset_id, uri) == key and SHA256.match(digest)
+        url = tile_url(cfg, key)
+        assert url.startswith("https://") and url.endswith("/" + uri)
+
+
+def test_height_check_tool_writes_the_evidence_layout():
+    # The browser tool must produce the same columns the evidence file (and this test) uses.
+    source = (REPO_ROOT / "web" / "src" / "tools" / "height-check.ts").read_text()
+    fields = re.search(r"const ROW_FIELDS = (\[[^\]]*\])", source).group(1)
+    check = json.loads((EVIDENCE / "height-check.json").read_text())
+    assert json.loads(fields) == check["row_fields"]
+    assert {"row_fields", "rows", "stats", "buildings_sample", "terrain", "tool"} <= check.keys()

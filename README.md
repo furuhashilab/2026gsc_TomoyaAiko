@@ -214,14 +214,32 @@ GitHub に push すると、同じチェックが CI（GitHub Actions）でも�
    ```bash
    cd gis && uv run cf-scene check
    ```
+   ```bash
+   uv run cf-scene check --tiles
+   ```
    「no changes」なら、そのまま使えます。「changed: …」と出たら、次の手順に進みます。
+   - **`check` が比べるもの：** 地形の `layer.json` と、建物の各 `tileset.json` の SHA-256（設定ファイルに記録した値）。
+   - **`check --tiles` で追加で比べるもの：** 高さ照合に使った建物タイル（`docs/evidence/issue-8/buildings-base.json` の `tiles_sha256` に記録した 40 枚）を、キャッシュを使わずに取り直して比べます。
+   - **比べないもの（限界）：**
+     - 地形の個々のタイルは比べません。地形の変化は `layer.json` のバージョンで判断します。
+     - 照合に使っていない建物タイルも比べません。
+     - そのため「no changes」は、配信データ全体が同じであることの保証ではありません。表示の妥当性は、3. の高さ照合で確かめます。
 2. **設定ファイルを作り直す**
    ```bash
    uv run cf-scene build
    ```
    PLATEAU のカタログから、AOI に重なる区のタイルセットを選び直し、地形の `layer.json` を取得して、設定ファイルを上書きします。`git diff config/scene.sapporo.json` で変化を確認してください。
 3. **高さを照合し直す**
-   [docs/evidence/issue-8/README.md](docs/evidence/issue-8/README.md) の手順（`uv sync --group verify` → `uv run cf-scene sample-buildings` → `/tools/height-check.html`）で照合し、`height-check.json` と記録を更新します。±2 m は暫定の基準です。
+   [docs/evidence/issue-8/README.md](docs/evidence/issue-8/README.md) の手順で照合し、`height-check.json` と記録を更新します。±2 m は暫定の基準です。
+   ```bash
+   uv sync --group verify
+   ```
+   ```bash
+   uv run cf-scene sample-buildings --refresh
+   ```
+   - `--refresh` を付けると、`data/raw/plateau-tiles/` のキャッシュを使わず、タイルを配信元から取り直します。付けないと、配信データが更新されていても古いキャッシュで計算してしまうので、**データ更新後の再検証では必ず付けてください**。
+   - 実行時に、前回の出力に記録したタイルの SHA-256 と比べ、変わったタイル（`changed`）、増えたタイル（`added`）、なくなったタイル（`removed`）を表示します。
+   - そのあと、`npm run dev` で `/tools/height-check.html` を開き、「結果を JSON で保存」を押して `docs/evidence/issue-8/height-check.json` を置き換えます。保存したファイルは、そのまま `uv run pytest` の整合性テストに通ります。
 4. **配信が終了した・URL が変わった場合**
    新しい配信元の URL・形式・出典・利用条件を確認し、`config/scene.*.json` を書き換えます。地形は quantized-mesh 形式なら、コードを変えずに差し替えられます。利用条件は `docs/DATA_AND_LICENSES.md` と Issue #12 に記録してください。
 

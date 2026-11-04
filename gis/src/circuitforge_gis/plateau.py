@@ -303,18 +303,56 @@ def _leaf_tiles(tileset: dict, aoi: Aoi) -> list[str]:
     return sorted(uris)
 
 
-def sample_buildings(cfg: dict, aoi: Aoi, cache_dir: Path, cell_m: float = 300.0) -> dict:
-    """Building-base heights for a deterministic grid sample of the configured tilesets."""
+def tile_key(tileset_id: str, uri: str) -> str:
+    """Key used in ``tiles_sha256``: '<tileset id>/<tile uri>'."""
+    return f"{tileset_id}/{uri}"
+
+
+def tile_url(cfg: dict, key: str) -> str:
+    tileset_id, uri = key.split("/", 1)
+    t = next(t for t in cfg["buildings"]["tilesets"] if t["id"] == tileset_id)
+    return f"{t['url'].rsplit('/', 1)[0]}/{uri}"
+
+
+def compare_tile_hashes(recorded: dict[str, str], current: dict[str, str]) -> dict[str, list[str]]:
+    """Which tiles changed, appeared or disappeared relative to a recorded tiles_sha256."""
+    return {
+        "changed": sorted(k for k in recorded.keys() & current.keys() if recorded[k] != current[k]),
+        "added": sorted(current.keys() - recorded.keys()),
+        "removed": sorted(recorded.keys() - current.keys()),
+    }
+
+
+def check_tiles(cfg: dict, recorded: dict[str, str]) -> dict[str, list[str]]:
+    """Re-download every recorded building tile (no cache) and compare its SHA-256."""
+    current = {}
+    for key in recorded:
+        try:
+            current[key] = sha256(fetch(tile_url(cfg, key)))
+        except OSError:
+            pass  # reported as removed
+    return compare_tile_hashes(recorded, current)
+
+
+def sample_buildings(
+    cfg: dict, aoi: Aoi, cache_dir: Path, cell_m: float = 300.0, refresh: bool = False
+) -> dict:
+    """Building-base heights for a deterministic grid sample of the configured tilesets.
+
+    Tiles are cached in ``cache_dir``; ``refresh=True`` downloads them again so that a
+    provider update is not hidden by the cache. The SHA-256 of every tile used is
+    returned in ``tiles_sha256`` for comparison with an earlier run.
+    """
     cache_dir.mkdir(parents=True, exist_ok=True)
     found, tiles_used = [], {}
     for t in cfg["buildings"]["tilesets"]:
         base = t["url"].rsplit("/", 1)[0]
         for uri in _leaf_tiles(json.loads(fetch(t["url"])), aoi):
             path = cache_dir / f"{t['id']}__{uri.replace('/', '_')}"
-            if not path.exists():
+            if refresh or not path.exists():
                 path.write_bytes(fetch(f"{base}/{uri}"))
             data = path.read_bytes()
-            tiles_used[str(path.name)] = sha256(data)
+            tiles_used[tile_key(t["id"], uri)] = sha256(data)
             n, cols = batch_table(data)
             for i in range(n):
                 found.append(
@@ -348,6 +386,7 @@ def sample_buildings(cfg: dict, aoi: Aoi, cache_dir: Path, cell_m: float = 300.0
         ],
         "tiles_sha256": dict(sorted(tiles_used.items())),
         "sampled_utc": now_utc(),
+        "tiles_downloaded_fresh": refresh,
         "attribution": cfg["buildings"]["attribution"],
         "buildings": [{k: v for k, v in b.items() if not k.startswith("_")} for b in chosen],
     }

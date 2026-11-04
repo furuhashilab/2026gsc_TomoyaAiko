@@ -39,8 +39,9 @@ uv run cf-course validate my.course.geojson
 ## 3D シーンの設定（Issue #8）
 ```bash
 uv run cf-scene build             # config/scene.sapporo.json を作成（PLATEAU のカタログと地形の layer.json から）
-uv run cf-scene check             # 設定ファイルに記録した SHA-256 と、配信中のデータを比べる
-uv sync --group verify && uv run cf-scene sample-buildings   # 高さ照合用の建物の抽出（DracoPy が必要）
+uv run cf-scene check             # layer.json と各 tileset.json を、記録した SHA-256 と比べる
+uv run cf-scene check --tiles     # さらに、照合に使った建物タイル（40 枚）も取り直して比べる
+uv sync --group verify && uv run cf-scene sample-buildings --refresh   # 高さ照合用の建物の抽出（DracoPy が必要。--refresh でキャッシュを使わない）
 ```
 `plateau.py` が本体です。手順と結果は [docs/evidence/issue-8/README.md](../docs/evidence/issue-8/README.md) にあります。
 

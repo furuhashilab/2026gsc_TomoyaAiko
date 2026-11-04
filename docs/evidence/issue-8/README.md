@@ -21,9 +21,10 @@
 **手順（第三者も同じ方法で再確認できる）**
 ```bash
 cd gis && uv sync --group verify               # DracoPy（Draco 圧縮の 3D Tiles を読むため）
-uv run cf-scene sample-buildings                # → docs/evidence/issue-8/buildings-base.json
+uv run cf-scene sample-buildings --refresh      # → docs/evidence/issue-8/buildings-base.json（タイルを配信元から取り直す）
 cd ../web && npm run dev                        # ブラウザで http://localhost:5173/tools/height-check.html を開く
 # 「結果を JSON で保存」を押し、docs/evidence/issue-8/height-check.json として保存する
+# 保存したファイルは、そのまま gis のテスト（test_height_check_evidence_is_consistent など）に通る
 ```
 
 **建物の抽出方法**
@@ -38,7 +39,9 @@ cd ../web && npm run dev                        # ブラウザで http://localho
 - **差：** 「建物の底面 − 地形の高さ」。
 
 **今回の実行条件**
-- 実行日時：2026-11-04T08:15:14Z。建物の抽出は 08:08:54Z。
+- 実行日時：2026-11-04T08:27:15Z。建物の抽出は 08:26:52Z で、`--refresh` によりタイル 40 枚を配信元から取り直した。
+  - 最初の実行（08:15Z）と結果は同じだった。タイルの SHA-256 も建物の抽出結果も一致していた。
+  - 保存した `height-check.json` は、ツールがダウンロードする文字列と SHA-256 が一致することを確認した（`8f2f1ab4…`）。
 - CesiumJS 1.146.0。ブラウザは Chromium 152（アプリ内ブラウザ）。
 - 地形：`layer.json` のバージョン 1.11265.0（SHA-256 `06c87b51…`。設定ファイルの記録と一致）。
 - 建物：PLATEAU 札幌市 2020年度、仕様書 4.1、2024年登録。各タイルセットとタイルの SHA-256 は、設定ファイルと `buildings-base.json` に記録している。
@@ -77,7 +80,9 @@ cd ../web && npm run dev                        # ブラウザで http://localho
 ## 4. データ更新時の再検証
 配信サービスは試験運用なので、URL を保存していても内容が変わる可能性がある。次の手順で確認する。
 1. `uv run cf-scene check`：設定ファイルに記録した `layer.json` と各 `tileset.json` の SHA-256 を、配信中のものと比べる。
+   - `--tiles` を付けると、`buildings-base.json` に記録した 40 枚の建物タイルも、キャッシュなしで取り直して比べる。
+   - **限界：** 地形の個々のタイルと、照合に使っていない建物タイルは比べない。そのため「no changes」は、配信データ全体が同じであることの保証ではない。
 2. 変化があれば、`uv run cf-scene build` で設定ファイルを作り直す。
-3. 2. 節の手順で高さを照合し直し、この記録を更新する。
+3. `uv run cf-scene sample-buildings --refresh`（キャッシュを使わない）で建物を抽出し直す。前回の出力のタイルの SHA-256 と比べた結果（`changed`・`added`・`removed`）が表示される。そのあと 2. 節の手順で高さを照合し直し、この記録を更新する。
 
 手順の詳細は README の「3D シーンのデータ更新と再検証」に書いた。

@@ -5,7 +5,7 @@ import { Cartographic, CesiumTerrainProvider, sampleTerrainMostDetailed } from "
 import cesiumPackage from "cesium/package.json";
 import sceneConfig from "../../../config/scene.sapporo.json";
 import samplesRaw from "../../../docs/evidence/issue-8/buildings-base.json?raw";
-import { heightStats, parseScene } from "../scene";
+import { type HeightStats, heightStats, parseScene } from "../scene";
 
 interface Sample {
   gml_id: string;
@@ -15,6 +15,18 @@ interface Sample {
   zmin_attr: number;
   lod: number;
   tileset: string;
+}
+
+const ROW_FIELDS = ["gml_id", "lon", "lat", "lod", "base_ellipsoidal_m", "terrain_m", "diff_m", "implied_geoid_m"];
+
+function round3(v: number): number {
+  return Number(v.toFixed(3));
+}
+
+function roundStats(s: HeightStats): Record<string, number | null> {
+  return Object.fromEntries(
+    Object.entries(s).map(([k, v]) => [k, Number.isFinite(v) ? round3(v) : null]),
+  );
 }
 
 async function sha256Hex(data: ArrayBuffer | string): Promise<string> {
@@ -31,18 +43,23 @@ async function run(): Promise<unknown> {
   const provider = await CesiumTerrainProvider.fromUrl(scene.terrain.url, { requestVertexNormals: scene.terrain.requestVertexNormals });
   const points = samples.buildings.map((b) => Cartographic.fromDegrees(b.lon, b.lat));
   await sampleTerrainMostDetailed(provider, points);
-  const rows = samples.buildings.map((b, i) => ({
-    gml_id: b.gml_id,
-    lon: b.lon,
-    lat: b.lat,
-    lod: b.lod,
-    base_ellipsoidal_m: b.base_ellipsoidal_m,
-    terrain_m: Number(points[i].height.toFixed(3)),
-    diff_m: Number((b.base_ellipsoidal_m - points[i].height).toFixed(3)),
-    implied_geoid_m: Number((points[i].height - b.zmin_attr).toFixed(3)),
-  }));
+  // Same layout as docs/evidence/issue-8/height-check.json: column names in row_fields,
+  // one array per building (checked by gis/tests/test_plateau.py).
+  const rows = samples.buildings.map((b, i) => [
+    b.gml_id,
+    b.lon,
+    b.lat,
+    b.lod,
+    b.base_ellipsoidal_m,
+    round3(points[i].height),
+    round3(b.base_ellipsoidal_m - points[i].height),
+    round3(points[i].height - b.zmin_attr),
+  ]);
+  const diffs = rows.map((r) => r[6] as number);
+  const geoid = rows.map((r) => r[7] as number);
   return {
     checked_utc: new Date().toISOString(),
+    tool: "web/tools/height-check.html (npm run dev), src/tools/height-check.ts",
     criterion: "provisional: |building base - terrain| <= 2 m; not a claim that every building matches",
     comparison: "diff = lowest vertex height of the building geometry (ellipsoidal) - terrain height sampled at the building centroid with sampleTerrainMostDetailed",
     cesiumjs_version: cesiumPackage.version,
@@ -59,8 +76,9 @@ async function run(): Promise<unknown> {
       sampled_utc: samples.sampled_utc,
       method: samples.method,
     },
-    stats: heightStats(rows.map((r) => r.diff_m)),
-    implied_geoid_stats: heightStats(rows.map((r) => r.implied_geoid_m), Number.POSITIVE_INFINITY),
+    stats: roundStats(heightStats(diffs)),
+    implied_geoid_stats: roundStats(heightStats(geoid, Number.POSITIVE_INFINITY)),
+    row_fields: ROW_FIELDS,
     rows,
   };
 }
@@ -74,7 +92,8 @@ run()
     out.textContent = text;
     const s = (result as { stats: { n: number; withinThreshold: number; median: number } }).stats;
     state.textContent = `完了：${s.withinThreshold}/${s.n} 棟が ±2 m 以内（中央値 ${s.median.toFixed(2)} m）`;
-    (window as unknown as { __heightCheck: unknown }).__heightCheck = result;
+    // Exactly the text the download button saves (for scripted checks).
+    Object.assign(window, { __heightCheck: result, __heightCheckText: text });
     button.disabled = false;
     button.onclick = () => {
       const a = document.createElement("a");
