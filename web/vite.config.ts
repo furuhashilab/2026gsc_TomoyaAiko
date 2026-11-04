@@ -26,6 +26,6 @@ export default defineConfig({
   },
   server: {
     // Allow importing the shared AOI config and course samples (paths relative to web/).
-    fs: { allow: [".", "../config", "../contracts"] },
+    fs: { allow: [".", "../config", "../contracts", "../docs/evidence"] },
   },
 });

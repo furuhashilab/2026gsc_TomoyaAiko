@@ -15,11 +15,16 @@ dependencies = [
 [project.scripts]
 cf-osm = "circuitforge_gis.cli:main"
 cf-course = "circuitforge_gis.course_cli:main"
+cf-scene = "circuitforge_gis.scene_cli:main"
 
 [dependency-groups]
 dev = [
     "pytest==9.1.1",
     "ruff==0.17.1",
+]
+# Only for re-running the Issue #8 height check (decodes Draco 3D Tiles): uv sync --group verify
+verify = [
+    "DracoPy==2.2.0",
 ]
 
 [tool.uv]

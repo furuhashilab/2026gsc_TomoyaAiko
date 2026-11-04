@@ -1,0 +1,960 @@
+{
+ "method": {
+  "selection": "one building per 300 m grid cell (EPSG:6680, origin at the AOI south-west corner); per cell the smallest gml_id with centroid (_x, _y) in the AOI",
+  "base_height": "lowest vertex of the building's 3D Tiles geometry, ECEF -> ellipsoidal height (EPSG:4978 -> EPSG:4979)",
+  "zmin_attr": "batch table _zmin (orthometric, from CityGML) for reference"
+ },
+ "aoi": {
+  "id": "sapporo-center",
+  "bbox": [
+   141.335,
+   43.05,
+   141.365,
+   43.072
+  ]
+ },
+ "tilesets": [
+  {
+   "id": "01101_bldg_lod2_no_texture",
+   "tileset_json_sha256": "b54f2f009647b897698d22cb43cde79a9543922b8b111a95acb9a4ef11b235a8"
+  },
+  {
+   "id": "01102_bldg_lod2_no_texture",
+   "tileset_json_sha256": "9626db546b3bdebead5f244b2827b69dbc792643c2f3ff35e86222f0506c2006"
+  },
+  {
+   "id": "01103_bldg_lod2_no_texture",
+   "tileset_json_sha256": "df857d71c94ccf5e5ceb336888c63c1f28b410cc00d35ef18ef725767c252a00"
+  },
+  {
+   "id": "01105_bldg_lod1",
+   "tileset_json_sha256": "11032637cf3f69b6b462c49729f27cb382fcc7b79ecad904fec1d93e3e199407"
+  }
+ ],
+ "tiles_sha256": {
+  "01101_bldg_lod2_no_texture__data_data12.b3dm": "676033343feff3f6ba4a92f6327d0f7b9b7bdc5a76f42e0d03d963b08041c064",
+  "01101_bldg_lod2_no_texture__data_data13.b3dm": "a5156b5fda7ef599b049c39900c33d22afa394279974f2f6db88d3c57f450e80",
+  "01101_bldg_lod2_no_texture__data_data15.b3dm": "0fcf20b952406a53b670c25c4c07b7123ba80221a5ffe86ad0767331646b489a",
+  "01101_bldg_lod2_no_texture__data_data17.b3dm": "9e2b80b7f7fb9fafd790c49b35899e4695e2a4be24fe47b98e4b26002c0b836a",
+  "01101_bldg_lod2_no_texture__data_data24.b3dm": "e0e4604cc8ad499592dca489d787c737e9695dae0a9420c2afde8ed1887e4adc",
+  "01101_bldg_lod2_no_texture__data_data25.b3dm": "8aeba882428da7743a3920c214e69ef471d27da09a0f33a7424b452c82043e18",
+  "01101_bldg_lod2_no_texture__data_data26.b3dm": "576c219c55cb6961269aa3726ea2e7426fd06459f88aae52cbcfd5d5a661b600",
+  "01101_bldg_lod2_no_texture__data_data27.b3dm": "eebcc79c3d1aeb78168abcdad4c831cae635b1dd28a74a75321833f26273dc14",
+  "01101_bldg_lod2_no_texture__data_data29.b3dm": "9fb8cedecfcd2466aa79e7a9f6e237bce8e778564dff8c5e98882cf89d449377",
+  "01101_bldg_lod2_no_texture__data_data3.b3dm": "8a2f846e9456784edd33a41c1aedf2cc4812cd8aeae17da8bd4070c635791133",
+  "01101_bldg_lod2_no_texture__data_data30.b3dm": "2d7428156863c5480a08caf22c1ff1fb0ceff4ec4a51f252b0f6fd20f579f240",
+  "01101_bldg_lod2_no_texture__data_data31.b3dm": "814e383fd5c0e07de9a5f1c1bbcd8e4c34e0bb50aa33d6597e91d75a80c03cb5",
+  "01101_bldg_lod2_no_texture__data_data34.b3dm": "ad85d492bcf42d4c6a476d7aafed1b15a4d5641317492377ce9baf8f9470e62f",
+  "01101_bldg_lod2_no_texture__data_data35.b3dm": "1a2d88b564abd3472256d29d53a5a1c4e24578d4df6c31dda42e053a61044bdc",
+  "01101_bldg_lod2_no_texture__data_data36.b3dm": "a3fa1dfaa64a35c8fb33ee65dc15d6d996c3d24bbd80aadbe8bae991749c43f0",
+  "01101_bldg_lod2_no_texture__data_data37.b3dm": "97dc218c58ec77de3b6b38fb3a4f8318a406abcffe5aaf452d2de044749de21b",
+  "01101_bldg_lod2_no_texture__data_data39.b3dm": "c3e310ef6120c1230452bc3aad64c277f74205ffd80a91f0729f319f037fc2e7",
+  "01101_bldg_lod2_no_texture__data_data4.b3dm": "f4985476c9ad32dd20b22b4a33008ed536a460c1d6094a0fd8a9b09a8af8281a",
+  "01101_bldg_lod2_no_texture__data_data41.b3dm": "653c0da094b17c38d7c2d0208d71fd57ad473fc6974b01d7972f3367f7ca0f3b",
+  "01101_bldg_lod2_no_texture__data_data44.b3dm": "d9bb7ad3c98c362e7ed6f9a0fa00da7b789e94c00a4efcedc7627060d150259d",
+  "01101_bldg_lod2_no_texture__data_data45.b3dm": "c9090f9b549bc33f4f8b132388bf65331bdbd2699e6e65f21243b8eabbde0bc5",
+  "01101_bldg_lod2_no_texture__data_data46.b3dm": "5a4cc1ab01ba5fe50aa5965653ec344a7038917fa9d42613beea365b1ac2da4d",
+  "01101_bldg_lod2_no_texture__data_data47.b3dm": "3bf5bd8b632a250f66ada1b7f39d8fae232747e9c9dee36c7bbb70cadc6f1bf5",
+  "01101_bldg_lod2_no_texture__data_data49.b3dm": "033f22c00d8f31064158d8bf7b7400d013b230fc2abacba0b7b66dba0f0b8639",
+  "01101_bldg_lod2_no_texture__data_data51.b3dm": "1883345d6e4ec225193fcf23807c4ed5d2215d0992550c7ef51968cc6344555b",
+  "01102_bldg_lod2_no_texture__data_data350.b3dm": "b85ca47d6682654ec15350a70f8ec31feff36fdbf937580cfc093b6fbd2f569b",
+  "01102_bldg_lod2_no_texture__data_data351.b3dm": "f2c072b1eaf6957541a0e5af774754f08fcd1019fadc95b0295556faed1deaef",
+  "01102_bldg_lod2_no_texture__data_data518.b3dm": "562c67d2b236bc829470e6507c0668b1f07a16874360a11beae00a9ef588b3a4",
+  "01102_bldg_lod2_no_texture__data_data519.b3dm": "d0f66861c8aca313d757345165e8556caa6ade5be06ded94ef6678ca3d41d61a",
+  "01102_bldg_lod2_no_texture__data_data520.b3dm": "feab4042b0dfe059bedfdc172f3c73c39af26338581576fe4137725838629f7b",
+  "01102_bldg_lod2_no_texture__data_data521.b3dm": "f6917d50347bfa25144356c6057daed67dbc972a838df9b2c41a23c46363e1c5",
+  "01102_bldg_lod2_no_texture__data_data523.b3dm": "82e5311a9a2fba1862c66bcb7e6e19635bef63a003a7c1ff8d89e228e54b6443",
+  "01102_bldg_lod2_no_texture__data_data524.b3dm": "6a95960d57afcd8c63529771350ca4859838d0fca85890fa17b751586910bd5d",
+  "01103_bldg_lod2_no_texture__data_data235.b3dm": "8a9b1453b4595aba865b6fc1aeb0a0a4d07a8be4946b5bda78a5179a505da48e",
+  "01103_bldg_lod2_no_texture__data_data236.b3dm": "448debb430d5e4b6dc3fd03cb99d3882cd644a3e827d1a8d35f7e857032d3b67",
+  "01103_bldg_lod2_no_texture__data_data239.b3dm": "5c9aced548682296f0f4fbe69cfaae074012ba7ced6771294e6b1fcc9a4aa44b",
+  "01105_bldg_lod1__data_data72.b3dm": "cbba691b72f3848d85d85c98fd25405179be27148c066d5679c17b1df796a157",
+  "01105_bldg_lod1__data_data74.b3dm": "8d753f4b6fc12f45a597549afec8452f6f699168a284efb59b36593852bc2401",
+  "01105_bldg_lod1__data_data76.b3dm": "eef2545fd1a2e0383440101166aeaf8a4a24a1ebedc49b841d0b911fe10c39a7",
+  "01105_bldg_lod1__data_data77.b3dm": "3ccde8ed94639c096ca066769369ed60e92d000489b2ce1ec933636fa9b89a2c"
+ },
+ "sampled_utc": "2026-11-04T08:08:54+00:00",
+ "attribution": "「3D都市モデル（Project PLATEAU）札幌市（2020年度）」（国土交通省）",
+ "buildings": [
+  {
+   "gml_id": "bldg_014f5cb1-30d9-410c-81c6-fc09d4e1e984",
+   "lon": 141.3366669733275,
+   "lat": 43.05114322376656,
+   "zmin_attr": 22.311,
+   "lod": 1,
+   "tileset": "01101_bldg_lod2_no_texture",
+   "tile": "data/data47.b3dm",
+   "base_ellipsoidal_m": 54.247
+  },
+  {
+   "gml_id": "bldg_001aa7ec-9fa5-464b-9a92-7c87ade6c1c1",
+   "lon": 141.33841234180343,
+   "lat": 43.05308001673582,
+   "zmin_attr": 21.63,
+   "lod": 1,
+   "tileset": "01101_bldg_lod2_no_texture",
+   "tile": "data/data47.b3dm",
+   "base_ellipsoidal_m": 53.607
+  },
+  {
+   "gml_id": "bldg_01b095d7-d059-4350-a18c-91fe5db6fcc8",
+   "lon": 141.3364043162936,
+   "lat": 43.05759157135478,
+   "zmin_attr": 18.649,
+   "lod": 1,
+   "tileset": "01101_bldg_lod2_no_texture",
+   "tile": "data/data45.b3dm",
+   "base_ellipsoidal_m": 50.622
+  },
+  {
+   "gml_id": "bldg_04b42210-78d3-40c3-a595-f37fe45897f2",
+   "lon": 141.33668318521893,
+   "lat": 43.05943455636308,
+   "zmin_attr": 16.927,
+   "lod": 1,
+   "tileset": "01101_bldg_lod2_no_texture",
+   "tile": "data/data37.b3dm",
+   "base_ellipsoidal_m": 48.607
+  },
+  {
+   "gml_id": "bldg_00c8a465-c588-4fdc-811d-2337418eb39a",
+   "lon": 141.33556575144007,
+   "lat": 43.0633310545674,
+   "zmin_attr": 15.2,
+   "lod": 1,
+   "tileset": "01101_bldg_lod2_no_texture",
+   "tile": "data/data39.b3dm",
+   "base_ellipsoidal_m": 47.186
+  },
+  {
+   "gml_id": "bldg_0700560e-c258-411a-88db-ae4f33ce4c6a",
+   "lon": 141.33601306942865,
+   "lat": 43.0649996066771,
+   "zmin_attr": 14.823,
+   "lod": 1,
+   "tileset": "01101_bldg_lod2_no_texture",
+   "tile": "data/data35.b3dm",
+   "base_ellipsoidal_m": 46.766
+  },
+  {
+   "gml_id": "bldg_001010b4-ce8e-4f6f-a8da-a6e870cd966a",
+   "lon": 141.33698831105175,
+   "lat": 43.06709515192068,
+   "zmin_attr": 14.114,
+   "lod": 1,
+   "tileset": "01101_bldg_lod2_no_texture",
+   "tile": "data/data13.b3dm",
+   "base_ellipsoidal_m": 45.879
+  },
+  {
+   "gml_id": "bldg_08f27ddc-9580-40cf-82da-244fd9890932",
+   "lon": 141.33657589353214,
+   "lat": 43.06984072688937,
+   "zmin_attr": 13.261,
+   "lod": 1,
+   "tileset": "01102_bldg_lod2_no_texture",
+   "tile": "data/data524.b3dm",
+   "base_ellipsoidal_m": 45.04
+  },
+  {
+   "gml_id": "bldg_86248392-d15d-4b70-9cc9-a016bb59bf52",
+   "lon": 141.33966675521026,
+   "lat": 43.05003117995321,
+   "zmin_attr": 23.917,
+   "lod": 1,
+   "tileset": "01101_bldg_lod2_no_texture",
+   "tile": "data/data47.b3dm",
+   "base_ellipsoidal_m": 55.824
+  },
+  {
+   "gml_id": "bldg_00273f94-618f-474a-8ecd-e9b6f6463c40",
+   "lon": 141.34077755138765,
+   "lat": 43.05255005782462,
+   "zmin_attr": 22.567,
+   "lod": 1,
+   "tileset": "01101_bldg_lod2_no_texture",
+   "tile": "data/data47.b3dm",
+   "base_ellipsoidal_m": 54.515
+  },
+  {
+   "gml_id": "bldg_034e44f6-7fa3-46a2-8445-6a78ac168fd0",
+   "lon": 141.34028000800953,
+   "lat": 43.05305819476749,
+   "zmin_attr": 21.929,
+   "lod": 1,
+   "tileset": "01101_bldg_lod2_no_texture",
+   "tile": "data/data47.b3dm",
+   "base_ellipsoidal_m": 54.021
+  },
+  {
+   "gml_id": "bldg_0223eeb2-0eac-4632-8513-d37e0d732352",
+   "lon": 141.3388274682784,
+   "lat": 43.05735960539191,
+   "zmin_attr": 19.483,
+   "lod": 1,
+   "tileset": "01101_bldg_lod2_no_texture",
+   "tile": "data/data45.b3dm",
+   "base_ellipsoidal_m": 51.465
+  },
+  {
+   "gml_id": "bldg_01687e12-1894-4798-9f01-feaef68e5da8",
+   "lon": 141.33891911144661,
+   "lat": 43.059660940198306,
+   "zmin_attr": 18.032,
+   "lod": 1,
+   "tileset": "01101_bldg_lod2_no_texture",
+   "tile": "data/data37.b3dm",
+   "base_ellipsoidal_m": 49.774
+  },
+  {
+   "gml_id": "bldg_0147498a-acaf-4cfb-a124-b9ee71fcd1af",
+   "lon": 141.33975235501637,
+   "lat": 43.063211426870055,
+   "zmin_attr": 15.824,
+   "lod": 1,
+   "tileset": "01101_bldg_lod2_no_texture",
+   "tile": "data/data35.b3dm",
+   "base_ellipsoidal_m": 47.807
+  },
+  {
+   "gml_id": "bldg_08f3a947-2346-4ba0-a637-cf3db45548bb",
+   "lon": 141.33928139672503,
+   "lat": 43.064946994446395,
+   "zmin_attr": 15.283,
+   "lod": 1,
+   "tileset": "01101_bldg_lod2_no_texture",
+   "tile": "data/data35.b3dm",
+   "base_ellipsoidal_m": 47.132
+  },
+  {
+   "gml_id": "bldg_002dba87-d5b7-4ba5-a7eb-a74472d4277c",
+   "lon": 141.33854049608237,
+   "lat": 43.06734520331145,
+   "zmin_attr": 13.898,
+   "lod": 1,
+   "tileset": "01101_bldg_lod2_no_texture",
+   "tile": "data/data13.b3dm",
+   "base_ellipsoidal_m": 45.657
+  },
+  {
+   "gml_id": "bldg_0163285f-cd6e-416d-8787-88d2de305ab2",
+   "lon": 141.33924953701552,
+   "lat": 43.07042975884865,
+   "zmin_attr": 14.284,
+   "lod": 1,
+   "tileset": "01102_bldg_lod2_no_texture",
+   "tile": "data/data524.b3dm",
+   "base_ellipsoidal_m": 46.13
+  },
+  {
+   "gml_id": "bldg_0bc159b4-060b-405f-8612-fee84250f4c7",
+   "lon": 141.3403914175262,
+   "lat": 43.07196169924963,
+   "zmin_attr": 13.895,
+   "lod": 1,
+   "tileset": "01102_bldg_lod2_no_texture",
+   "tile": "data/data519.b3dm",
+   "base_ellipsoidal_m": 45.672
+  },
+  {
+   "gml_id": "bldg_4f398a28-c23c-47c5-b20d-3d0cdc06a522",
+   "lon": 141.34602761009978,
+   "lat": 43.050017059881874,
+   "zmin_attr": 25.286,
+   "lod": 1,
+   "tileset": "01101_bldg_lod2_no_texture",
+   "tile": "data/data46.b3dm",
+   "base_ellipsoidal_m": 57.14
+  },
+  {
+   "gml_id": "bldg_001b5f00-0305-4408-b9df-e0196fe350f3",
+   "lon": 141.3429687453306,
+   "lat": 43.0503940384054,
+   "zmin_attr": 24.263,
+   "lod": 1,
+   "tileset": "01101_bldg_lod2_no_texture",
+   "tile": "data/data47.b3dm",
+   "base_ellipsoidal_m": 56.212
+  },
+  {
+   "gml_id": "bldg_0146246e-317a-455b-ba70-4104f2fd68ae",
+   "lon": 141.34440702542264,
+   "lat": 43.054141637255825,
+   "zmin_attr": 21.22,
+   "lod": 1,
+   "tileset": "01101_bldg_lod2_no_texture",
+   "tile": "data/data45.b3dm",
+   "base_ellipsoidal_m": 53.252
+  },
+  {
+   "gml_id": "bldg_0437c0a1-025b-4dd0-b33a-8c1c53d6a7b5",
+   "lon": 141.3429369346991,
+   "lat": 43.05603390600493,
+   "zmin_attr": 20.343,
+   "lod": 1,
+   "tileset": "01101_bldg_lod2_no_texture",
+   "tile": "data/data45.b3dm",
+   "base_ellipsoidal_m": 52.355
+  },
+  {
+   "gml_id": "bldg_00eaf0ab-ffc3-43f8-afa9-e74f0641d5ec",
+   "lon": 141.34543919998728,
+   "lat": 43.05834047323309,
+   "zmin_attr": 20.123,
+   "lod": 1,
+   "tileset": "01101_bldg_lod2_no_texture",
+   "tile": "data/data36.b3dm",
+   "base_ellipsoidal_m": 52.007
+  },
+  {
+   "gml_id": "bldg_04fc95f3-74c4-4102-adf7-921de187cbc0",
+   "lon": 141.34570116209488,
+   "lat": 43.0615577588094,
+   "zmin_attr": 18.769,
+   "lod": 1,
+   "tileset": "01101_bldg_lod2_no_texture",
+   "tile": "data/data36.b3dm",
+   "base_ellipsoidal_m": 50.709
+  },
+  {
+   "gml_id": "bldg_00018b79-76be-4764-be8f-302d0a652d4f",
+   "lon": 141.34503620562793,
+   "lat": 43.065140152744455,
+   "zmin_attr": 17.26,
+   "lod": 1,
+   "tileset": "01101_bldg_lod2_no_texture",
+   "tile": "data/data34.b3dm",
+   "base_ellipsoidal_m": 49.288
+  },
+  {
+   "gml_id": "bldg_009b09ba-8474-438b-a536-95d68f1d2e48",
+   "lon": 141.3440410119556,
+   "lat": 43.06674438817351,
+   "zmin_attr": 17.08878435,
+   "lod": 2,
+   "tileset": "01101_bldg_lod2_no_texture",
+   "tile": "data/data13.b3dm",
+   "base_ellipsoidal_m": 48.871
+  },
+  {
+   "gml_id": "bldg_083ba08f-dd9d-4c9b-ac37-f6bc63c6c7e1",
+   "lon": 141.34489885494523,
+   "lat": 43.069040022961104,
+   "zmin_attr": 14.95794059,
+   "lod": 2,
+   "tileset": "01102_bldg_lod2_no_texture",
+   "tile": "data/data521.b3dm",
+   "base_ellipsoidal_m": 46.815
+  },
+  {
+   "gml_id": "bldg_5c26d9e7-0f64-4e73-a311-39b24eecc5f0",
+   "lon": 141.34443623949707,
+   "lat": 43.07189197014337,
+   "zmin_attr": 13.044,
+   "lod": 1,
+   "tileset": "01102_bldg_lod2_no_texture",
+   "tile": "data/data519.b3dm",
+   "base_ellipsoidal_m": 44.989
+  },
+  {
+   "gml_id": "bldg_20f94dce-d8a4-4ff6-9639-d2b532f1921f",
+   "lon": 141.34624530294553,
+   "lat": 43.05005892736006,
+   "zmin_attr": 25.446,
+   "lod": 1,
+   "tileset": "01101_bldg_lod2_no_texture",
+   "tile": "data/data46.b3dm",
+   "base_ellipsoidal_m": 57.511
+  },
+  {
+   "gml_id": "bldg_011d90ca-b8bd-458a-b575-3e366890dda0",
+   "lon": 141.34754465692512,
+   "lat": 43.05107198510722,
+   "zmin_attr": 24.509,
+   "lod": 1,
+   "tileset": "01101_bldg_lod2_no_texture",
+   "tile": "data/data46.b3dm",
+   "base_ellipsoidal_m": 56.333
+  },
+  {
+   "gml_id": "bldg_023e2d85-1a90-48ae-89e1-388c10b2cf63",
+   "lon": 141.34646858163836,
+   "lat": 43.05532258247378,
+   "zmin_attr": 21.573,
+   "lod": 1,
+   "tileset": "01101_bldg_lod2_no_texture",
+   "tile": "data/data44.b3dm",
+   "base_ellipsoidal_m": 53.713
+  },
+  {
+   "gml_id": "bldg_010d14b5-5421-4e67-9567-2cbf8bff33e2",
+   "lon": 141.3488203716509,
+   "lat": 43.05686572107025,
+   "zmin_attr": 21.607,
+   "lod": 2,
+   "tileset": "01101_bldg_lod2_no_texture",
+   "tile": "data/data44.b3dm",
+   "base_ellipsoidal_m": 53.732
+  },
+  {
+   "gml_id": "bldg_00cbc59f-0b2c-49e7-9392-c701defe456a",
+   "lon": 141.34687308658613,
+   "lat": 43.058537305808414,
+   "zmin_attr": 20.127,
+   "lod": 1,
+   "tileset": "01101_bldg_lod2_no_texture",
+   "tile": "data/data36.b3dm",
+   "base_ellipsoidal_m": 52.046
+  },
+  {
+   "gml_id": "bldg_0386a46c-fbc6-40b7-b8d6-97842d6b99e7",
+   "lon": 141.3461516556194,
+   "lat": 43.06318009570741,
+   "zmin_attr": 18.089,
+   "lod": 1,
+   "tileset": "01101_bldg_lod2_no_texture",
+   "tile": "data/data34.b3dm",
+   "base_ellipsoidal_m": 50.047
+  },
+  {
+   "gml_id": "bldg_01760614-54a8-4052-a62a-e8051b7ed395",
+   "lon": 141.34943072139492,
+   "lat": 43.06588588974509,
+   "zmin_attr": 17.57852471,
+   "lod": 2,
+   "tileset": "01101_bldg_lod2_no_texture",
+   "tile": "data/data34.b3dm",
+   "base_ellipsoidal_m": 49.509
+  },
+  {
+   "gml_id": "bldg_0969d30a-1264-4313-a39f-087282d611a2",
+   "lon": 141.3467537233533,
+   "lat": 43.066642189391885,
+   "zmin_attr": 17.00635908,
+   "lod": 2,
+   "tileset": "01101_bldg_lod2_no_texture",
+   "tile": "data/data34.b3dm",
+   "base_ellipsoidal_m": 49.025
+  },
+  {
+   "gml_id": "bldg_0235cb1d-3e77-4036-964d-63ca47befcb1",
+   "lon": 141.3492839438685,
+   "lat": 43.07046541854247,
+   "zmin_attr": 16.03147166,
+   "lod": 2,
+   "tileset": "01102_bldg_lod2_no_texture",
+   "tile": "data/data520.b3dm",
+   "base_ellipsoidal_m": 47.958
+  },
+  {
+   "gml_id": "bldg_2cd46e81-f9fa-4d41-84f0-2c93fd4f53ee",
+   "lon": 141.34654101686112,
+   "lat": 43.071800440987985,
+   "zmin_attr": 15.475,
+   "lod": 1,
+   "tileset": "01102_bldg_lod2_no_texture",
+   "tile": "data/data518.b3dm",
+   "base_ellipsoidal_m": 47.204
+  },
+  {
+   "gml_id": "bldg_5c4b5239-a268-4d18-bb1b-e89f73fa0e19",
+   "lon": 141.3528016765124,
+   "lat": 43.050126227609525,
+   "zmin_attr": 27.005,
+   "lod": 1,
+   "tileset": "01101_bldg_lod2_no_texture",
+   "tile": "data/data46.b3dm",
+   "base_ellipsoidal_m": 58.811
+  },
+  {
+   "gml_id": "bldg_0047bc53-1c02-4ead-900b-81dd1e94a782",
+   "lon": 141.34997154200417,
+   "lat": 43.0525317687859,
+   "zmin_attr": 24.785,
+   "lod": 1,
+   "tileset": "01101_bldg_lod2_no_texture",
+   "tile": "data/data46.b3dm",
+   "base_ellipsoidal_m": 56.665
+  },
+  {
+   "gml_id": "bldg_031ffa57-28ce-4771-8a93-b7bfb124c8c4",
+   "lon": 141.35017701715088,
+   "lat": 43.054457522199726,
+   "zmin_attr": 23.768,
+   "lod": 1,
+   "tileset": "01101_bldg_lod2_no_texture",
+   "tile": "data/data44.b3dm",
+   "base_ellipsoidal_m": 55.68
+  },
+  {
+   "gml_id": "bldg_00ed62db-3c62-4c24-8933-a1b5fa81a36f",
+   "lon": 141.35265768443392,
+   "lat": 43.05764071511988,
+   "zmin_attr": 22.086,
+   "lod": 2,
+   "tileset": "01101_bldg_lod2_no_texture",
+   "tile": "data/data44.b3dm",
+   "base_ellipsoidal_m": 54.13
+  },
+  {
+   "gml_id": "bldg_07d20abe-7a8a-4517-9737-b1bb79c01017",
+   "lon": 141.35241747953472,
+   "lat": 43.06033830922346,
+   "zmin_attr": 20.40310037,
+   "lod": 2,
+   "tileset": "01101_bldg_lod2_no_texture",
+   "tile": "data/data36.b3dm",
+   "base_ellipsoidal_m": 52.197
+  },
+  {
+   "gml_id": "bldg_0362e90e-396e-4dd2-a961-76cf5513d8c4",
+   "lon": 141.35148457931257,
+   "lat": 43.06232023318678,
+   "zmin_attr": 19.18860725,
+   "lod": 2,
+   "tileset": "01101_bldg_lod2_no_texture",
+   "tile": "data/data34.b3dm",
+   "base_ellipsoidal_m": 51.068
+  },
+  {
+   "gml_id": "bldg_03f7f41d-13c4-4abd-a93f-dc621d1dd3ee",
+   "lon": 141.35121751898208,
+   "lat": 43.06616432080451,
+   "zmin_attr": 17.3677894,
+   "lod": 2,
+   "tileset": "01101_bldg_lod2_no_texture",
+   "tile": "data/data34.b3dm",
+   "base_ellipsoidal_m": 49.307
+  },
+  {
+   "gml_id": "bldg_02efaeb4-a2f6-4c1b-a510-e7d159613c9d",
+   "lon": 141.35078850275482,
+   "lat": 43.067739998153314,
+   "zmin_attr": 17.93007092,
+   "lod": 2,
+   "tileset": "01101_bldg_lod2_no_texture",
+   "tile": "data/data12.b3dm",
+   "base_ellipsoidal_m": 49.796
+  },
+  {
+   "gml_id": "bldg_001de162-3c41-440a-bcab-c9b566fb78c5",
+   "lon": 141.3521723543281,
+   "lat": 43.07003380581807,
+   "zmin_attr": 16.0420613,
+   "lod": 2,
+   "tileset": "01102_bldg_lod2_no_texture",
+   "tile": "data/data351.b3dm",
+   "base_ellipsoidal_m": 48.023
+  },
+  {
+   "gml_id": "bldg_26c21d59-e0ed-4a8d-b764-7f7023687fde",
+   "lon": 141.35060536538995,
+   "lat": 43.07188557347149,
+   "zmin_attr": 15.4367145,
+   "lod": 2,
+   "tileset": "01102_bldg_lod2_no_texture",
+   "tile": "data/data518.b3dm",
+   "base_ellipsoidal_m": 47.044
+  },
+  {
+   "gml_id": "bldg_006e31b4-2c1a-4d6f-bb9d-d35d3c79fbde",
+   "lon": 141.35656493804333,
+   "lat": 43.05000587264229,
+   "zmin_attr": 25.979,
+   "lod": 1,
+   "tileset": "01101_bldg_lod2_no_texture",
+   "tile": "data/data31.b3dm",
+   "base_ellipsoidal_m": 57.824
+  },
+  {
+   "gml_id": "bldg_0068d8ff-c7a2-47ae-be85-183cb4ec9e20",
+   "lon": 141.35685124348953,
+   "lat": 43.05034403935319,
+   "zmin_attr": 25.839,
+   "lod": 1,
+   "tileset": "01101_bldg_lod2_no_texture",
+   "tile": "data/data31.b3dm",
+   "base_ellipsoidal_m": 57.643
+  },
+  {
+   "gml_id": "bldg_0002646b-828a-4d04-86b7-1e8ef97634e3",
+   "lon": 141.35442750198783,
+   "lat": 43.0551701909466,
+   "zmin_attr": 24.099,
+   "lod": 1,
+   "tileset": "01101_bldg_lod2_no_texture",
+   "tile": "data/data30.b3dm",
+   "base_ellipsoidal_m": 55.755
+  },
+  {
+   "gml_id": "bldg_002c8f46-a5c3-4813-910e-bc3a6cafb4d5",
+   "lon": 141.35351715809713,
+   "lat": 43.05660596249085,
+   "zmin_attr": 22.91719589,
+   "lod": 2,
+   "tileset": "01101_bldg_lod2_no_texture",
+   "tile": "data/data30.b3dm",
+   "base_ellipsoidal_m": 54.715
+  },
+  {
+   "gml_id": "bldg_0065c9f8-7030-4af8-9e71-0c86a6e60ce4",
+   "lon": 141.35485661636739,
+   "lat": 43.06017606313948,
+   "zmin_attr": 20.96264859,
+   "lod": 2,
+   "tileset": "01101_bldg_lod2_no_texture",
+   "tile": "data/data27.b3dm",
+   "base_ellipsoidal_m": 52.64
+  },
+  {
+   "gml_id": "bldg_05cc5147-c68a-4775-9b3a-8f538e8037d2",
+   "lon": 141.35438178624605,
+   "lat": 43.061980176023425,
+   "zmin_attr": 19.764893,
+   "lod": 2,
+   "tileset": "01101_bldg_lod2_no_texture",
+   "tile": "data/data27.b3dm",
+   "base_ellipsoidal_m": 51.461
+  },
+  {
+   "gml_id": "bldg_06f912b3-abe5-4312-9562-51f23cd81ddf",
+   "lon": 141.35330735061729,
+   "lat": 43.0638470315826,
+   "zmin_attr": 18.91785067,
+   "lod": 2,
+   "tileset": "01101_bldg_lod2_no_texture",
+   "tile": "data/data34.b3dm",
+   "base_ellipsoidal_m": 50.731
+  },
+  {
+   "gml_id": "bldg_0478f574-0cf6-47ac-ac2b-d4b31bc1638a",
+   "lon": 141.35626997301472,
+   "lat": 43.06829709352283,
+   "zmin_attr": 17.01229428,
+   "lod": 2,
+   "tileset": "01101_bldg_lod2_no_texture",
+   "tile": "data/data4.b3dm",
+   "base_ellipsoidal_m": 48.855
+  },
+  {
+   "gml_id": "bldg_00442c2f-bcc8-4c2c-8ce5-c4aa25a61e64",
+   "lon": 141.35332485948157,
+   "lat": 43.07088448945225,
+   "zmin_attr": 15.82927533,
+   "lod": 2,
+   "tileset": "01102_bldg_lod2_no_texture",
+   "tile": "data/data351.b3dm",
+   "base_ellipsoidal_m": 47.849
+  },
+  {
+   "gml_id": "bldg_4fbd2c00-6bf2-4457-aa75-23a8d7a6e8d0",
+   "lon": 141.35656763024247,
+   "lat": 43.07190819496847,
+   "zmin_attr": 15.743,
+   "lod": 1,
+   "tileset": "01103_bldg_lod2_no_texture",
+   "tile": "data/data239.b3dm",
+   "base_ellipsoidal_m": 47.48
+  },
+  {
+   "gml_id": "bldg_15e66f1d-30b0-47c9-9cd1-4d9e13ce0355",
+   "lon": 141.35728185675947,
+   "lat": 43.050026636348186,
+   "zmin_attr": 26.163,
+   "lod": 1,
+   "tileset": "01101_bldg_lod2_no_texture",
+   "tile": "data/data31.b3dm",
+   "base_ellipsoidal_m": 57.909
+  },
+  {
+   "gml_id": "bldg_0168c63c-f5dd-4615-9789-78d20a5f662e",
+   "lon": 141.3589013442703,
+   "lat": 43.05087426062626,
+   "zmin_attr": 25.039,
+   "lod": 1,
+   "tileset": "01101_bldg_lod2_no_texture",
+   "tile": "data/data31.b3dm",
+   "base_ellipsoidal_m": 56.922
+  },
+  {
+   "gml_id": "bldg_01448833-eaa0-476f-bbcc-5b47554ae415",
+   "lon": 141.36017479671278,
+   "lat": 43.05361054969754,
+   "zmin_attr": 23.273,
+   "lod": 1,
+   "tileset": "01101_bldg_lod2_no_texture",
+   "tile": "data/data30.b3dm",
+   "base_ellipsoidal_m": 55.034
+  },
+  {
+   "gml_id": "bldg_009ae6e7-0bc7-407c-8eb4-8ea76f0cbee9",
+   "lon": 141.36034222864703,
+   "lat": 43.05723154703464,
+   "zmin_attr": 22.384,
+   "lod": 1,
+   "tileset": "01101_bldg_lod2_no_texture",
+   "tile": "data/data30.b3dm",
+   "base_ellipsoidal_m": 54.026
+  },
+  {
+   "gml_id": "bldg_02d70f0a-7c59-4434-a7b6-300fcf9211a7",
+   "lon": 141.35705030261414,
+   "lat": 43.059228193260296,
+   "zmin_attr": 21.0251013,
+   "lod": 2,
+   "tileset": "01101_bldg_lod2_no_texture",
+   "tile": "data/data27.b3dm",
+   "base_ellipsoidal_m": 52.781
+  },
+  {
+   "gml_id": "bldg_0016eaf6-a164-4821-978b-3b1cb844fc58",
+   "lon": 141.35894357438832,
+   "lat": 43.0627682944539,
+   "zmin_attr": 18.77014135,
+   "lod": 2,
+   "tileset": "01101_bldg_lod2_no_texture",
+   "tile": "data/data25.b3dm",
+   "base_ellipsoidal_m": 50.459
+  },
+  {
+   "gml_id": "bldg_0131154f-81e3-4f0b-a88d-a52e453d2763",
+   "lon": 141.3598980272601,
+   "lat": 43.064759408185296,
+   "zmin_attr": 17.6517541,
+   "lod": 2,
+   "tileset": "01101_bldg_lod2_no_texture",
+   "tile": "data/data25.b3dm",
+   "base_ellipsoidal_m": 49.346
+  },
+  {
+   "gml_id": "bldg_01c0ab78-2d18-4fd7-98c5-9fee7712d79f",
+   "lon": 141.35962530441748,
+   "lat": 43.06648825529883,
+   "zmin_attr": 16.02213783,
+   "lod": 2,
+   "tileset": "01101_bldg_lod2_no_texture",
+   "tile": "data/data25.b3dm",
+   "base_ellipsoidal_m": 47.699
+  },
+  {
+   "gml_id": "bldg_00522abe-b5d8-4cf8-9c80-ec12c4f5771e",
+   "lon": 141.3588103956231,
+   "lat": 43.070505461438046,
+   "zmin_attr": 15.52,
+   "lod": 1,
+   "tileset": "01103_bldg_lod2_no_texture",
+   "tile": "data/data236.b3dm",
+   "base_ellipsoidal_m": 47.214
+  },
+  {
+   "gml_id": "bldg_0e8c2f4d-1fad-44ec-8668-7571157b3566",
+   "lon": 141.3591358427334,
+   "lat": 43.07196160984964,
+   "zmin_attr": 15.353,
+   "lod": 1,
+   "tileset": "01103_bldg_lod2_no_texture",
+   "tile": "data/data236.b3dm",
+   "base_ellipsoidal_m": 47.122
+  },
+  {
+   "gml_id": "bldg_1caa8611-99f3-433b-bdda-11fd246a1292",
+   "lon": 141.36292196645996,
+   "lat": 43.05005249185773,
+   "zmin_attr": 26.044,
+   "lod": 1,
+   "tileset": "01105_bldg_lod1",
+   "tile": "data/data77.b3dm",
+   "base_ellipsoidal_m": 58.093
+  },
+  {
+   "gml_id": "bldg_0012e4ba-40b3-4af0-8195-3d58041d62a2",
+   "lon": 141.36409623401266,
+   "lat": 43.051033022494394,
+   "zmin_attr": 24.641,
+   "lod": 1,
+   "tileset": "01105_bldg_lod1",
+   "tile": "data/data72.b3dm",
+   "base_ellipsoidal_m": 56.453
+  },
+  {
+   "gml_id": "bldg_02686f4d-0f35-49a4-89fb-e3381c02b139",
+   "lon": 141.36147078281044,
+   "lat": 43.05499169449217,
+   "zmin_attr": 22.899,
+   "lod": 1,
+   "tileset": "01101_bldg_lod2_no_texture",
+   "tile": "data/data30.b3dm",
+   "base_ellipsoidal_m": 54.646
+  },
+  {
+   "gml_id": "bldg_00dda067-a3f9-4f32-a74e-7b572b769a63",
+   "lon": 141.3642750072537,
+   "lat": 43.05802595742747,
+   "zmin_attr": 20.244,
+   "lod": 1,
+   "tileset": "01101_bldg_lod2_no_texture",
+   "tile": "data/data26.b3dm",
+   "base_ellipsoidal_m": 52.134
+  },
+  {
+   "gml_id": "bldg_017e515c-d10f-4c8a-9d56-fca64913f1f6",
+   "lon": 141.36076657140646,
+   "lat": 43.05906994810485,
+   "zmin_attr": 21.305,
+   "lod": 1,
+   "tileset": "01101_bldg_lod2_no_texture",
+   "tile": "data/data27.b3dm",
+   "base_ellipsoidal_m": 52.963
+  },
+  {
+   "gml_id": "bldg_03612345-81c1-49d0-ba00-cec784f3accb",
+   "lon": 141.36414781759544,
+   "lat": 43.062689093504474,
+   "zmin_attr": 18.598,
+   "lod": 1,
+   "tileset": "01101_bldg_lod2_no_texture",
+   "tile": "data/data24.b3dm",
+   "base_ellipsoidal_m": 50.292
+  },
+  {
+   "gml_id": "bldg_0520f14c-f005-49fe-ab4d-ef512bc082e4",
+   "lon": 141.36081490153381,
+   "lat": 43.06474098996296,
+   "zmin_attr": 16.86476702,
+   "lod": 2,
+   "tileset": "01101_bldg_lod2_no_texture",
+   "tile": "data/data25.b3dm",
+   "base_ellipsoidal_m": 48.589
+  },
+  {
+   "gml_id": "bldg_00a00256-e16b-41f4-9489-80b869ac9070",
+   "lon": 141.3639306515597,
+   "lat": 43.06904953882254,
+   "zmin_attr": 15.65968103,
+   "lod": 2,
+   "tileset": "01103_bldg_lod2_no_texture",
+   "tile": "data/data236.b3dm",
+   "base_ellipsoidal_m": 47.401
+  },
+  {
+   "gml_id": "bldg_016bd922-4fce-452a-9eae-f03402b65a28",
+   "lon": 141.3608758185813,
+   "lat": 43.07014007323553,
+   "zmin_attr": 15.60825983,
+   "lod": 2,
+   "tileset": "01103_bldg_lod2_no_texture",
+   "tile": "data/data236.b3dm",
+   "base_ellipsoidal_m": 47.445
+  },
+  {
+   "gml_id": "bldg_093f32f8-2686-4b00-8ba5-70d3ad94005e",
+   "lon": 141.36258292150802,
+   "lat": 43.07182708227408,
+   "zmin_attr": 15.215,
+   "lod": 1,
+   "tileset": "01103_bldg_lod2_no_texture",
+   "tile": "data/data236.b3dm",
+   "base_ellipsoidal_m": 46.865
+  },
+  {
+   "gml_id": "bldg_1b9716d5-3251-4f0e-abcc-cab8d20312f5",
+   "lon": 141.36463818923855,
+   "lat": 43.05007306691853,
+   "zmin_attr": 25.766,
+   "lod": 1,
+   "tileset": "01105_bldg_lod1",
+   "tile": "data/data74.b3dm",
+   "base_ellipsoidal_m": 57.342
+  },
+  {
+   "gml_id": "bldg_14bb3d48-a4a0-4f1f-ba59-4d88c91c1e4b",
+   "lon": 141.36481734826287,
+   "lat": 43.05121616777329,
+   "zmin_attr": 25.059,
+   "lod": 1,
+   "tileset": "01105_bldg_lod1",
+   "tile": "data/data72.b3dm",
+   "base_ellipsoidal_m": 56.823
+  },
+  {
+   "gml_id": "bldg_068d5c3d-edd6-4322-88e5-467bb94e1627",
+   "lon": 141.36461630271785,
+   "lat": 43.05342156764762,
+   "zmin_attr": 24.451,
+   "lod": 1,
+   "tileset": "01105_bldg_lod1",
+   "tile": "data/data72.b3dm",
+   "base_ellipsoidal_m": 56.31
+  },
+  {
+   "gml_id": "bldg_0d94f817-548d-4f72-8590-a15b6d2b8be9",
+   "lon": 141.3647859709126,
+   "lat": 43.058197534928475,
+   "zmin_attr": 19.911,
+   "lod": 1,
+   "tileset": "01101_bldg_lod2_no_texture",
+   "tile": "data/data26.b3dm",
+   "base_ellipsoidal_m": 51.841
+  },
+  {
+   "gml_id": "bldg_00292ef4-e69d-479d-9052-545b19608289",
+   "lon": 141.364811361127,
+   "lat": 43.05867856098712,
+   "zmin_attr": 19.293,
+   "lod": 1,
+   "tileset": "01101_bldg_lod2_no_texture",
+   "tile": "data/data26.b3dm",
+   "base_ellipsoidal_m": 51.162
+  },
+  {
+   "gml_id": "bldg_0c17b830-3b17-433d-b7ce-dba20dc585d6",
+   "lon": 141.36473329295623,
+   "lat": 43.06238885663442,
+   "zmin_attr": 17.609,
+   "lod": 1,
+   "tileset": "01101_bldg_lod2_no_texture",
+   "tile": "data/data24.b3dm",
+   "base_ellipsoidal_m": 49.361
+  },
+  {
+   "gml_id": "bldg_031a96cf-1d01-4ac2-8232-3f9fabcc3946",
+   "lon": 141.3649031214779,
+   "lat": 43.06483074177797,
+   "zmin_attr": 17.434,
+   "lod": 1,
+   "tileset": "01101_bldg_lod2_no_texture",
+   "tile": "data/data24.b3dm",
+   "base_ellipsoidal_m": 49.168
+  },
+  {
+   "gml_id": "bldg_3dd7fa7e-2db0-4996-b1b5-3d9467b74230",
+   "lon": 141.36440826270007,
+   "lat": 43.06718366826306,
+   "zmin_attr": 16.41446555,
+   "lod": 2,
+   "tileset": "01101_bldg_lod2_no_texture",
+   "tile": "data/data3.b3dm",
+   "base_ellipsoidal_m": 48.177
+  },
+  {
+   "gml_id": "bldg_008233a8-e95d-4af2-b7d7-43152d7273ff",
+   "lon": 141.36444308915395,
+   "lat": 43.07106451329075,
+   "zmin_attr": 13.917,
+   "lod": 1,
+   "tileset": "01103_bldg_lod2_no_texture",
+   "tile": "data/data236.b3dm",
+   "base_ellipsoidal_m": 45.775
+  },
+  {
+   "gml_id": "bldg_532d3a40-2306-4b50-ad42-0e0a79f8edef",
+   "lon": 141.36436607658703,
+   "lat": 43.0719145803284,
+   "zmin_attr": 13.319,
+   "lod": 1,
+   "tileset": "01103_bldg_lod2_no_texture",
+   "tile": "data/data236.b3dm",
+   "base_ellipsoidal_m": 45.034
+  }
+ ]
+}

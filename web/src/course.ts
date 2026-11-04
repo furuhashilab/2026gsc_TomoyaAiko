@@ -100,3 +100,11 @@ export function arrowSegments(coordinates: [number, number][], spacingM: number)
   }
   return out;
 }
+
+/** Initial bearing (radians clockwise from north) from a to b, for orienting arrows. */
+export function bearingRad([lon1, lat1]: [number, number], [lon2, lat2]: [number, number]): number {
+  const r = Math.PI / 180;
+  const y = Math.sin((lon2 - lon1) * r) * Math.cos(lat2 * r);
+  const x = Math.cos(lat1 * r) * Math.sin(lat2 * r) - Math.sin(lat1 * r) * Math.cos(lat2 * r) * Math.cos((lon2 - lon1) * r);
+  return Math.atan2(y, x);
+}

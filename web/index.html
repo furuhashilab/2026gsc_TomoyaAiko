@@ -12,6 +12,8 @@
       }
       #banner { top: 8px; }
       #coursePanel { top: 44px; }
+      #sceneStatus { position: absolute; right: 8px; bottom: 36px; z-index: 1; padding: 4px 8px; white-space: pre;
+        font: 12px/1.4 system-ui, sans-serif; color: #fff; background: rgba(0, 0, 0, 0.65); border-radius: 4px; max-width: calc(100% - 32px); overflow: hidden; text-overflow: ellipsis; }
       #coursePanel h2 { margin: 0 0 4px; font-size: 14px; }
       #coursePanel .ok { color: #8f8; }
       #coursePanel .ng { color: #f88; }
@@ -26,6 +28,7 @@
       <div id="courseInfo">コースを読み込み中…</div>
       <label>コースファイルを開く <input id="courseFile" type="file" accept=".geojson,.json" /></label>
     </div>
+    <div id="sceneStatus"></div>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

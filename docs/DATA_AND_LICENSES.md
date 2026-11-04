@@ -13,6 +13,13 @@
 | Teacher-model output | Research dataset for future distillation | Provider's current terms governing output reuse/model training, institutional guidelines, dataset rights |
 | User input / location | User-specified AOI/preferences | Avoid unnecessary personal data, limit logging, and do not publish private locations |
 
+## 3D scene sources (Issue #8): buildings and terrain are licensed differently
+| Source | Terms (as confirmed 2026-11-04) | Attribution shown | Status |
+|---|---|---|---|
+| PLATEAU building 3D Tiles (札幌市 2020年度, `assets.cms.plateau.reearth.io`) | 公共データ利用規約 第1.0版 (PDL1.0); PLATEAU site policy states compatibility with CC BY 4.0; copyright belongs to each municipality; processed outputs must say they were processed. Delivery is a trial service. | 「3D都市モデル（Project PLATEAU）札幌市（2020年度）」（国土交通省） | Confirmed from https://www.mlit.go.jp/plateau/site-policy/ . Used for display; the committed height sample (`docs/evidence/issue-8/buildings-base.json`) is labelled as processed. |
+| PLATEAU-Terrain (`tile.plateauview.mlit.go.jp/terrain`) | Provider docs (https://docs.plateauview.mlit.go.jp/datasets/terrain/) require the attribution and describe a trial service with no guarantee; **no data licence is stated**. Mapterhorn and GSI are named as sources. | PLATEAU \| Mapterhorn \| 国土地理院 | **Unconfirmed** — do not assume PDL1.0 or any other licence. Only streamed for display; no terrain data is stored or redistributed. Open question recorded in #12. |
+| GSI tiles (地理院タイル) | GSI terms, attribution required | 地理院タイル | Used since #5 |
+
 ## OSM-derived data in this repository (Issue #6)
 - Raw Overpass responses and processed graphs/GeoJSON stay under `data/raw/` and `data/processed/` (gitignored); they are reproducible from the pinned query and attic date recorded in `docs/evidence/issue-6/manifest.json`.
 - Exported GeoJSON carries `"attribution": "© OpenStreetMap contributors (ODbL 1.0)"`; any UI showing it must display OSM attribution.
