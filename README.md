@@ -2,7 +2,7 @@
 
 **Generate imaginary motorsport routes from real geospatial data, then experience them in 3D.**
 
-> Research-stage project at [Furuhashi Lab](https://github.com/furuhashilab). **Status: concept / planning (2026-11-03).** No working route generator, AI model, or 3D driving demo is claimed yet.
+> Research-stage project at [Furuhashi Lab](https://github.com/furuhashilab). **Status: early development (2026-11-04).** Only a development-environment skeleton exists (a CesiumJS viewer showing the AOI, and a Python package with tests). No working route generator, AI model, or 3D driving demo is claimed yet.
 
 > **青山学院大学 地球社会共生学部・古橋研究室 / 2026年度ゼミ論**  
 > **研究担当：愛甲智也（[@mapbytomoya](https://github.com/mapbytomoya)）**  
@@ -115,7 +115,98 @@ CircuitForge AI は、ユーザーが**好きな地域**と**理想のコース�
 
 ## セットアップ
 
-**現在はドキュメント整備段階です。実行可能なアプリ・インストール手順はまだありません。** 開発環境の構築は [Issue #5](https://github.com/furuhashilab/2026gsc_TomoyaAiko/issues/5) で管理します。実行手順が決まり次第追記します。
+**現在あるのは開発環境の骨組みだけです**（[Issue #5](https://github.com/furuhashilab/2026gsc_TomoyaAiko/issues/5)）。
+- Web：札幌の暫定 AOI を地図に表示する CesiumJS ビューア
+- Python：共有 AOI 設定を読み込んでテストするパッケージ
+
+ルートの表示・3D 都市・車両・コース生成はまだありません。
+
+### 構成
+```
+config/aoi.sapporo.json   Web と Python が共有する AOI（WGS84、lon/lat の順）
+web/                      Vite + TypeScript + CesiumJS のビューア
+gis/                      Python 3.12 の GIS 処理（uv で管理。OSM の処理は Issue #6 から）
+.github/workflows/ci.yml  lint・型チェック・テスト・ビルドの CI
+```
+
+### 1. 必要なツールを入れる（Mac、初回のみ）
+次のコマンドは **ターミナル**（アプリケーション → ユーティリティ → ターミナル）で 1 行ずつ実行します。
+
+1. **Homebrew**（Mac 用のパッケージ管理）。`brew --version` でバージョンが出れば入っています。入っていなければ、[公式サイト](https://brew.sh/ja/)のインストール用コマンドを実行します。インストール時に **Mac のログインパスワード**を聞かれ、Xcode Command Line Tools の導入を求められることがあります。
+2. **Node.js 24**（Web 用）。[nvm](https://github.com/nvm-sh/nvm) を使う場合：
+   ```bash
+   nvm install 24
+   ```
+   リポジトリ直下の `.nvmrc` に 24 と書いてあるので、`nvm use` でも切り替えられます。`node --version` が v22 以上ならそのままでも動きます。
+3. **uv**（Python 用。Python 本体とライブラリを、プロジェクトごとに分けて管理する）：
+   ```bash
+   brew install uv
+   ```
+   パスワードは不要です。Mac にもともと入っている Python 3.9 には触れません。Python 3.12 は次の手順で uv が自動で用意します。
+
+### 2. リポジトリを取得する
+```bash
+git clone https://github.com/furuhashilab/2026gsc_TomoyaAiko.git
+```
+```bash
+cd 2026gsc_TomoyaAiko
+```
+
+### 3. Web ビューアを起動する
+```bash
+cd web
+```
+```bash
+npm ci
+```
+```bash
+npm run dev
+```
+- `npm ci` は `package-lock.json` に書かれたとおりのバージョンをインストールします（初回は数分かかります）。
+- ブラウザで <http://localhost:5173> を開くと、地理院タイルの地図の上に、札幌中心部の AOI が赤い枠で表示されます。右下に「地理院タイル」の出典が出ます。
+- 止めるときはターミナルで `Ctrl + C` を押します。
+- Cesium ion のアカウントやトークンは不要です。
+
+### 4. テストを実行する
+**Web**（`web/` で実行）
+```bash
+npm run lint
+```
+```bash
+npm run typecheck
+```
+```bash
+npm test
+```
+```bash
+npm run build
+```
+それぞれ、コードのチェック（ESLint）、型チェック（TypeScript）、単体テスト（Vitest）、本番用のビルドです。ビルド結果を確認したい場合は、`npm run preview` を実行して <http://localhost:4173> を開きます。
+
+**Python**（`gis/` で実行）
+```bash
+uv sync
+```
+```bash
+uv run ruff check
+```
+```bash
+uv run pytest
+```
+- `uv sync` は、初回に Python 3.12 と開発用ライブラリを `gis/.venv` にインストールします。2 回目以降は `uv.lock` と同じ状態にそろえるだけです。
+- 4 件のテスト（AOI 設定の読み込みと、lat/lon の取り違えなどの検出）が `passed` になれば成功です。
+
+GitHub に push すると、同じチェックが CI（GitHub Actions）でも自動で実行されます。
+
+### バージョンと環境変数の管理
+- **固定するもの：**
+  - Web の依存パッケージは `package.json` で正確なバージョンに固定し、`package-lock.json` をコミットしています。
+  - Python は `pyproject.toml` で開発ツールのバージョンを固定し、`uv.lock` をコミットしています。
+  - 原則として、公開から 2 週間以上たったバージョンを選んでいます。
+- **Cesium の内部パッケージ：** `package.json` の `overrides` で、`@cesium/engine` などを cesium 1.146.0 と同時期に出た版に固定しています。cesium 1.146.0 はこれらを `^` 付きで指定していて、1.147 用の新しい版が入るとビルドが壊れるためです。cesium を上げるときは、この固定も合わせて見直してください。
+- **TypeScript：** 6.0 系を使っています。7.0 系は、lint に使う typescript-eslint がまだ対応していないためです。
+- **環境変数：** 秘密情報はコミットしません（`.env` と `.env.*` は `.gitignore` 済み）。必要な変数の例は `.env.example` にあります。現時点で必須の変数はありません。
+- **既知の注意点：** `npm audit` で、開発用ツール（ESLint）が使う minimatch に深刻度 moderate の指摘が出ます。開発時に自分のコードを lint するときだけ使われ、アプリ本体には含まれません。修正版（11 系）は公開から日が浅く、ESLint も未対応のため、ESLint 側の更新を待ちます（`npm audit --omit=dev` では 0 件）。
 
 ## データ・ライセンス
 

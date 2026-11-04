@@ -18,4 +18,4 @@ This repository is an **early-stage university GIS research prototype**. Develop
 - No copyrighted game assets, unauthorized 3D vehicle models, credentials, massive map exports, unlicensed teacher datasets, or sensitive participant data.
 
 ## Current status
-No runnable app has been committed. Development tools, exact dependency versions, test commands and CI will be established in [Issue #5](https://github.com/furuhashilab/2026gsc_TomoyaAiko/issues/5).
+Only a development-environment skeleton exists ([Issue #5](https://github.com/furuhashilab/2026gsc_TomoyaAiko/issues/5)): `web/` (Vite + TypeScript + CesiumJS) and `gis/` (Python 3.12 via uv). Setup, run and test commands are in the [README](README.md#セットアップ); CI runs the same checks on every PR.
