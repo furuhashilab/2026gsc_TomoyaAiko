@@ -1,0 +1,406 @@
+{
+ "version": 0.6,
+ "generator": "hand-made fixture for tests",
+ "osm3s": {
+  "timestamp_osm_base": "fixture"
+ },
+ "elements": [
+  {
+   "type": "node",
+   "id": 1,
+   "lat": 43.0605,
+   "lon": 141.3505
+  },
+  {
+   "type": "node",
+   "id": 2,
+   "lat": 43.0605,
+   "lon": 141.3515
+  },
+  {
+   "type": "node",
+   "id": 3,
+   "lat": 43.0605,
+   "lon": 141.3525
+  },
+  {
+   "type": "node",
+   "id": 4,
+   "lat": 43.0615,
+   "lon": 141.3505
+  },
+  {
+   "type": "node",
+   "id": 5,
+   "lat": 43.0615,
+   "lon": 141.3515
+  },
+  {
+   "type": "node",
+   "id": 6,
+   "lat": 43.0615,
+   "lon": 141.3525
+  },
+  {
+   "type": "node",
+   "id": 7,
+   "lat": 43.0615,
+   "lon": 141.3535
+  },
+  {
+   "type": "node",
+   "id": 8,
+   "lat": 43.0615,
+   "lon": 141.355
+  },
+  {
+   "type": "node",
+   "id": 9,
+   "lat": 43.0615,
+   "lon": 141.356
+  },
+  {
+   "type": "node",
+   "id": 10,
+   "lat": 43.0625,
+   "lon": 141.3505
+  },
+  {
+   "type": "node",
+   "id": 11,
+   "lat": 43.0627,
+   "lon": 141.351
+  },
+  {
+   "type": "node",
+   "id": 12,
+   "lat": 43.0626,
+   "lon": 141.3514
+  },
+  {
+   "type": "node",
+   "id": 13,
+   "lat": 43.0622,
+   "lon": 141.3516
+  },
+  {
+   "type": "node",
+   "id": 20,
+   "lat": 43.0603,
+   "lon": 141.353
+  },
+  {
+   "type": "node",
+   "id": 21,
+   "lat": 43.0605,
+   "lon": 141.3532
+  },
+  {
+   "type": "node",
+   "id": 22,
+   "lat": 43.0607,
+   "lon": 141.353
+  },
+  {
+   "type": "node",
+   "id": 23,
+   "lat": 43.0605,
+   "lon": 141.3528
+  },
+  {
+   "type": "node",
+   "id": 30,
+   "lat": 43.0625,
+   "lon": 141.3497
+  },
+  {
+   "type": "node",
+   "id": 31,
+   "lat": 43.0635,
+   "lon": 141.3505
+  },
+  {
+   "type": "node",
+   "id": 40,
+   "lat": 43.0625,
+   "lon": 141.3525
+  },
+  {
+   "type": "node",
+   "id": 41,
+   "lat": 43.0625,
+   "lon": 141.3535
+  },
+  {
+   "type": "node",
+   "id": 42,
+   "lat": 43.061,
+   "lon": 141.352
+  },
+  {
+   "type": "node",
+   "id": 47,
+   "lat": 43.0628,
+   "lon": 141.3538
+  },
+  {
+   "type": "node",
+   "id": 48,
+   "lat": 43.0622,
+   "lon": 141.3538
+  },
+  {
+   "type": "node",
+   "id": 49,
+   "lat": 43.0602,
+   "lon": 141.3502
+  },
+  {
+   "type": "node",
+   "id": 50,
+   "lat": 43.0608,
+   "lon": 141.3502
+  },
+  {
+   "type": "node",
+   "id": 51,
+   "lat": 43.0602,
+   "lon": 141.3508
+  },
+  {
+   "type": "node",
+   "id": 52,
+   "lat": 43.0608,
+   "lon": 141.3508
+  },
+  {
+   "type": "node",
+   "id": 53,
+   "lat": 43.0609,
+   "lon": 141.3538
+  },
+  {
+   "type": "node",
+   "id": 54,
+   "lat": 43.0603,
+   "lon": 141.3538
+  },
+  {
+   "type": "way",
+   "id": 101,
+   "nodes": [
+    1,
+    2,
+    3
+   ],
+   "tags": {
+    "highway": "residential",
+    "name": "two-way default"
+   }
+  },
+  {
+   "type": "way",
+   "id": 102,
+   "nodes": [
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+   ],
+   "tags": {
+    "highway": "tertiary",
+    "oneway": "yes",
+    "name": "oneway crossing boundary"
+   }
+  },
+  {
+   "type": "way",
+   "id": 103,
+   "nodes": [
+    1,
+    4
+   ],
+   "tags": {
+    "highway": "residential",
+    "oneway": "-1"
+   }
+  },
+  {
+   "type": "way",
+   "id": 104,
+   "nodes": [
+    2,
+    5
+   ],
+   "tags": {
+    "highway": "residential",
+    "oneway": "reversible"
+   }
+  },
+  {
+   "type": "way",
+   "id": 105,
+   "nodes": [
+    3,
+    6
+   ],
+   "tags": {
+    "highway": "residential",
+    "oneway": "yes;no"
+   }
+  },
+  {
+   "type": "way",
+   "id": 106,
+   "nodes": [
+    4,
+    10,
+    11,
+    12,
+    13,
+    5
+   ],
+   "tags": {
+    "highway": "tertiary",
+    "oneway": "no",
+    "name": "curve"
+   }
+  },
+  {
+   "type": "way",
+   "id": 107,
+   "nodes": [
+    20,
+    21,
+    22,
+    23,
+    20
+   ],
+   "tags": {
+    "highway": "tertiary",
+    "junction": "roundabout"
+   }
+  },
+  {
+   "type": "way",
+   "id": 108,
+   "nodes": [
+    3,
+    23
+   ],
+   "tags": {
+    "highway": "residential"
+   }
+  },
+  {
+   "type": "way",
+   "id": 109,
+   "nodes": [
+    6,
+    40
+   ],
+   "tags": {
+    "highway": "motorway"
+   }
+  },
+  {
+   "type": "way",
+   "id": 110,
+   "nodes": [
+    30,
+    31
+   ],
+   "tags": {
+    "highway": "unclassified",
+    "name": "cuts AOI corner"
+   }
+  },
+  {
+   "type": "way",
+   "id": 111,
+   "nodes": [
+    7,
+    41
+   ],
+   "tags": {
+    "highway": "motorway_link"
+   }
+  },
+  {
+   "type": "way",
+   "id": 112,
+   "nodes": [
+    5,
+    42
+   ],
+   "tags": {
+    "highway": "residential",
+    "access": "private"
+   }
+  },
+  {
+   "type": "way",
+   "id": 113,
+   "nodes": [
+    42,
+    6
+   ],
+   "tags": {
+    "highway": "residential",
+    "access": "no",
+    "motorcar": "yes"
+   }
+  },
+  {
+   "type": "way",
+   "id": 114,
+   "nodes": [
+    47,
+    48
+   ],
+   "tags": {
+    "highway": "residential",
+    "access": "yes",
+    "motor_vehicle": "no"
+   }
+  },
+  {
+   "type": "way",
+   "id": 115,
+   "nodes": [
+    49,
+    50
+   ],
+   "tags": {
+    "highway": "unclassified",
+    "access:conditional": "no @ (Mo-Fr 07:00-09:00)"
+   }
+  },
+  {
+   "type": "way",
+   "id": 116,
+   "nodes": [
+    51,
+    52
+   ],
+   "tags": {
+    "highway": "residential",
+    "oneway:conditional": "yes @ (07:00-09:00)"
+   }
+  },
+  {
+   "type": "way",
+   "id": 117,
+   "nodes": [
+    53,
+    54
+   ],
+   "tags": {
+    "highway": "residential",
+    "oneway:bicycle": "no"
+   }
+  }
+ ]
+}

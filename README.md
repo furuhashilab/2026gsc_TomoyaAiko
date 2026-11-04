@@ -115,9 +115,9 @@ CircuitForge AI は、ユーザーが**好きな地域**と**理想のコース�
 
 ## セットアップ
 
-**現在あるのは開発環境の骨組みだけです**（[Issue #5](https://github.com/furuhashilab/2026gsc_TomoyaAiko/issues/5)）。
-- Web：札幌の暫定 AOI を地図に表示する CesiumJS ビューア
-- Python：共有 AOI 設定を読み込んでテストするパッケージ
+**現在あるのは、開発環境と道路データの下準備だけです。**
+- Web：札幌の暫定 AOI を地図に表示する CesiumJS ビューア（[Issue #5](https://github.com/furuhashilab/2026gsc_TomoyaAiko/issues/5)）
+- Python：OSM の道路網を取得し、通行方向を考慮した道路グラフと GeoJSON を作るコマンド（[Issue #6](https://github.com/furuhashilab/2026gsc_TomoyaAiko/issues/6)）
 
 ルートの表示・3D 都市・車両・コース生成はまだありません。
 
@@ -125,7 +125,7 @@ CircuitForge AI は、ユーザーが**好きな地域**と**理想のコース�
 ```
 config/aoi.sapporo.json   Web と Python が共有する AOI（WGS84、lon/lat の順）
 web/                      Vite + TypeScript + CesiumJS のビューア
-gis/                      Python 3.12 の GIS 処理（uv で管理。OSM の処理は Issue #6 から）
+gis/                      Python 3.12 の GIS 処理（uv で管理）。OSM の道路グラフ化（Issue #6）
 .github/workflows/ci.yml  lint・型チェック・テスト・ビルドの CI
 ```
 
@@ -196,7 +196,8 @@ uv run ruff check
 uv run pytest
 ```
 - `uv sync` は、初回に Python 3.12 と開発用ライブラリを `gis/.venv` にインストールします。2 回目以降は `uv.lock` と同じ状態にそろえるだけです。
-- 4 件のテスト（AOI 設定の読み込みと、lat/lon の取り違えなどの検出）が `passed` になれば成功です。
+- すべてのテストが `passed` になれば成功です（AOI 設定、通行方向・アクセス制限の判定、道路グラフの簡略化など。インターネット接続は不要です）。
+- OSM の道路グラフを作るコマンド（`uv run cf-osm`）の使い方は [gis/README.md](gis/README.md) にあります。
 
 GitHub に push すると、同じチェックが CI（GitHub Actions）でも自動で実行されます。
 

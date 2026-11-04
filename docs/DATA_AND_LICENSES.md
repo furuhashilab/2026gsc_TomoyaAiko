@@ -13,6 +13,12 @@
 | Teacher-model output | Research dataset for future distillation | Provider's current terms governing output reuse/model training, institutional guidelines, dataset rights |
 | User input / location | User-specified AOI/preferences | Avoid unnecessary personal data, limit logging, and do not publish private locations |
 
+## OSM-derived data in this repository (Issue #6)
+- Raw Overpass responses and processed graphs/GeoJSON stay under `data/raw/` and `data/processed/` (gitignored); they are reproducible from the pinned query and attic date recorded in `docs/evidence/issue-6/manifest.json`.
+- Exported GeoJSON carries `"attribution": "© OpenStreetMap contributors (ODbL 1.0)"`; any UI showing it must display OSM attribution.
+- Processed outputs are a derivative database under ODbL. If they are ever published or redistributed, the ODbL share-alike and attribution obligations must be reviewed first (#12).
+- Committed OSM-derived content is limited to small summaries (counts, hashes) and a hand-made test fixture that contains no OSM data.
+
 ## Practical requirements
 1. Add visible, appropriate OSM and PLATEAU attribution in the running UI.
 2. Never commit API keys, account credentials, large downloaded datasets, third-party 3D models without redistribution permission, or private participant records.

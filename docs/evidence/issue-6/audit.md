@@ -1,0 +1,79 @@
+# OSM road graph audit
+
+## provenance
+- **attic_date**: 2026-11-03T16:25:05Z
+- **element_sha256**: c2eed5dd2b6d397afc9d66b466183a4f23b52b0461484ef6e3b2cbada8a6f213
+- **element_counts**: {'node': 4502, 'way': 630}
+
+## ways
+- **ways**: 630
+- **by_highway**: {'tertiary': 306, 'residential': 189, 'trunk': 62, 'unclassified': 31, 'primary': 25, 'secondary': 14, 'tertiary_link': 2, 'trunk_link': 1}
+- **missing_share**: {'oneway': 0.6222, 'maxspeed': 0.8619, 'lanes': 0.4698, 'width': 0.9984, 'surface': 0.4365, 'name': 0.5857, 'access': 0.9968, 'motor_vehicle': 1.0, 'motorcar': 1.0, 'vehicle': 1.0}
+- **malformed**: {}
+- **multivalued**: {}
+- **direction**: {'forward (oneway=yes)': 235, 'both (no oneway tag (OSM default: two-way))': 392, 'both (oneway=no)': 3}
+- **two_way_by_osm_default_by_highway**: {'tertiary': 183, 'residential': 155, 'unclassified': 25, 'trunk': 17, 'secondary': 7, 'primary': 5}
+- **access**: {'untagged (no access tags (OSM default for the highway class))': 628, 'restricted (access=no)': 2}
+- **review_keys**: {}
+- **routable_ways**: 628
+
+## aoi_clipping
+- **nodes_inside**: 3112
+- **nodes_outside_kept**: 108
+- **edges_crossing**: 198
+- **dropped_segments_cutting_aoi**: 0
+- **dropped_segments_cutting_aoi_way_ids**: []
+
+## components
+- **wcc_count**: 4
+- **wcc_largest_nodes**: 3195
+- **scc_routable_count_nontrivial**: 6
+- **scc_largest_nodes**: 3086
+
+## graph_unsimplified
+- **nodes**: 3220
+- **edges**: 6017
+- **edges_by_direction**: {'both': 4486, 'forward': 1531}
+- **edges_by_access**: {'untagged': 5997, 'restricted': 20}
+- **edges_routable**: 5997
+- **self_loops**: 0
+- **dead_end_no_exit_inside_aoi**: 0
+- **dead_end_no_entry_inside_aoi**: 0
+- **cul_de_sac_nodes_inside_aoi**: 16
+- **length_m_total**: 199699.4
+- **length_m_routable**: 199356.2
+- **length_m_largest_routable_scc**: 193101.0
+- **largest_scc_share_of_routable_length**: 0.9686
+- **length_epsg6680_vs_grs80_geodesic_max_rel_diff**: 3.6e-05
+- **length_epsg6680_vs_spherical_great_circle_max_rel_diff**: 0.002653
+
+## graph_simplified
+- **nodes**: 995
+- **edges**: 2517
+- **edges_by_direction**: {'both': 1936, 'forward': 581}
+- **edges_by_access**: {'untagged': 2514, 'restricted': 3}
+- **edges_routable**: 2514
+- **self_loops**: 0
+- **dead_end_no_exit_inside_aoi**: 0
+- **dead_end_no_entry_inside_aoi**: 0
+- **cul_de_sac_nodes_inside_aoi**: 16
+- **length_m_total**: 199699.4
+- **length_m_routable**: 199356.2
+- **length_m_largest_routable_scc**: 193101.0
+- **largest_scc_share_of_routable_length**: 0.9686
+- **length_epsg6680_vs_grs80_geodesic_max_rel_diff**: 3.6e-05
+- **length_epsg6680_vs_spherical_great_circle_max_rel_diff**: 0.002653
+
+## simplification_check
+- **raw_nodes**: 3220
+- **raw_edges**: 6017
+- **simplified_nodes**: 995
+- **simplified_edges**: 2517
+- **raw_edges_covered**: 6017
+- **total_length_m_raw**: 199699.4369200428
+- **total_length_m_simplified**: 199699.4369200428
+- **wcc_count_raw**: 4
+- **wcc_count_simplified**: 4
+- **scc_nontrivial_raw**: 6
+- **scc_nontrivial_simplified**: 6
+- **problems**: []

@@ -1,0 +1,41 @@
+{
+ "source": "OpenStreetMap via Overpass API",
+ "attribution": "© OpenStreetMap contributors (ODbL 1.0)",
+ "endpoint": "https://overpass-api.de/api/interpreter",
+ "attic_date": "2026-11-03T16:25:05Z",
+ "aoi": {
+  "id": "sapporo-center",
+  "bbox_lon_lat": [
+   141.335,
+   43.05,
+   141.365,
+   43.072
+  ]
+ },
+ "profile": {
+  "name": "mvp-drive",
+  "highways": [
+   "motorway",
+   "trunk",
+   "primary",
+   "secondary",
+   "tertiary",
+   "unclassified",
+   "residential",
+   "living_street",
+   "motorway_link",
+   "trunk_link",
+   "primary_link",
+   "secondary_link",
+   "tertiary_link"
+  ]
+ },
+ "query": "[out:json][timeout:60][date:\"2026-11-03T16:25:05Z\"];\nway[\"highway\"~\"^(motorway|trunk|primary|secondary|tertiary|unclassified|residential|living_street|motorway_link|trunk_link|primary_link|secondary_link|tertiary_link)$\"](43.050,141.335,43.072,141.365);\n(._;>;);\nout body;\n",
+ "element_counts": {
+  "node": 4502,
+  "way": 630
+ },
+ "element_sha256": "c2eed5dd2b6d397afc9d66b466183a4f23b52b0461484ef6e3b2cbada8a6f213",
+ "overpass_timestamp_osm_base": "2026-11-04T06:48:41Z",
+ "processed_utc": "2026-11-04T06:50:45+00:00"
+}
