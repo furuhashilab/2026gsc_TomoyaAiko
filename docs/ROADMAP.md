@@ -8,20 +8,21 @@ All features below are **planned** unless a merged PR and reproducible demonstra
 | Gate | Work | Status |
 |---|---|---|
 | A | #4 research scope / AOI (provisional), #12 rights | #4 open (provisional design merged), #12 open (OSM publication & terrain licence unresolved) |
-| B | #5 dev env, #6 OSM graph, #7 course format, #8 3D city scene, #9 vehicle animation | #5–#8 merged; **#9 in review (PR #25, includes a course minimap and an outlined course line)** |
-| C | **#10 automatic circuit generation** | **next — top priority** |
+| B | #5 dev env, #6 OSM graph, #7 course format, #8 3D city scene, #9 vehicle animation | **complete** — #5–#9 merged (#9 via PR #25, with a course minimap and an outlined course line) |
+| C | **#10 automatic circuit generation** | **top priority after the small #26 step below** |
 | D | #11 preferences, features and evaluation | after #10 (design can start in parallel) |
 
 ## Realistic order from here
 Research value comes from Gates C and D; presentation work must not delay them.
 
-1. **Finish #9** (PR #25 review and merge). Gate B is then complete.
-2. **#10 — automatic circuit generation (top priority).** Deterministic, seeded candidate generation on the Issue #6 graph, reusing the Issue #7 validator (one-ways, routability, inside-AOI edges only, closure, U-turns) and the notes recorded on #10. Baseline runtime and failure cases are part of the result.
-3. **#11 — preferences, features and evaluation.** Feature definitions (length, straights, corners with the provisional thresholds of RESEARCH_DESIGN §5.2.1) and the rule-based baseline; human-evaluation design.
-4. **In parallel, small:** #12 decisions that unblock work (OSM-derived course publication under ODbL, terrain licence) and, once decided, #32 (PR preview URLs).
-5. **#27 — course annotations** (sectors, start/finish, corners, straights, elevation) as the shared data for display and video, defined together with #11 features. Minimal version only until Gate D.
-6. **After Gate C/D results exist:** #26 (scene readability), then #28 (sector / broadcast-style UI).
-7. **Future (presentation):** #29 course introduction video, #30 video export, #31 fictional race-event graphics (tyres, starting grid), #34 category profiles (formula / endurance / rally / GT / oval). Recorded only.
+1. ~~Finish #9~~ — done (PR #25 merged). Gate B is complete.
+2. **#26, first part only — base-map switching and textured PLATEAU buildings.** The chase and onboard views are hard to read (white roads, grey box buildings), which hinders reviewing generated courses. One small PR: a config-driven base-map choice (GSI standard map / seamless aerial photo / none) with matching attribution, and a choice between the untextured buildings and the Chuo-ku LOD2 textured tileset. No kerbs, barriers, fences or fictional asphalt bands, and no external tiles in video export (that waits for #12). The rest of #26 stays at step 7.
+3. **#10 — automatic circuit generation (top priority).** Deterministic, seeded candidate generation on the Issue #6 graph, reusing the Issue #7 validator (one-ways, routability, inside-AOI edges only, closure, U-turns) and the notes recorded on #10. Baseline runtime and failure cases are part of the result.
+4. **#11 — preferences, features and evaluation.** Feature definitions (length, straights, corners with the provisional thresholds of RESEARCH_DESIGN §5.2.1) and the rule-based baseline; human-evaluation design.
+5. **In parallel, small:** #12 decisions that unblock work (OSM-derived course publication under ODbL, terrain licence) and, once decided, #32 (PR preview URLs).
+6. **#27 — course annotations** (sectors, start/finish, corners, straights, elevation) as the shared data for display and video, defined together with #11 features. Minimal version only until Gate D.
+7. **After Gate C/D results exist:** the rest of #26 (building styling, course visibility, panel UX; any motorsport-style road dressing only via #34 profiles), then #28 (sector / broadcast-style UI).
+8. **Future (presentation):** #29 course introduction video, #30 video export, #31 fictional race-event graphics (tyres, starting grid), #34 category profiles (formula / endurance / rally / GT / oval). Recorded only.
 
 Conditional research: #13 distillation, only if rights, data and time allow (see D-0009).
 
@@ -52,7 +53,7 @@ Conditional research: #13 distillation, only if rights, data and time allow (see
 |---|---|---|---|
 | Course annotations: sectors, start/finish, corners, straights, elevation, display time — reusable by UI and video | [#27](https://github.com/furuhashilab/2026gsc_TomoyaAiko/issues/27) | P2 | #10, #11 |
 | PR preview URLs (GitHub Pages); OSM-derived courses only after #12 decides | [#32](https://github.com/furuhashilab/2026gsc_TomoyaAiko/issues/32) | P2 | #12 |
-| 3D scene readability: base-map switching (low-label / aerial), building styling, course visibility, panel UX | [#26](https://github.com/furuhashilab/2026gsc_TomoyaAiko/issues/26) | P2 | licence checks |
+| 3D scene readability: base-map switching and textured buildings **(done first, before #10 — see order step 2)**; then building styling, course visibility, panel UX | [#26](https://github.com/furuhashilab/2026gsc_TomoyaAiko/issues/26) | P1 for the first part, P2 for the rest | licence checks |
 | Sector display and broadcast-style UI while driving (display time, no fake standings) | [#28](https://github.com/furuhashilab/2026gsc_TomoyaAiko/issues/28) | P3 | #27 |
 
 ## Future — broadcast-style presentation (recorded, not scheduled)
