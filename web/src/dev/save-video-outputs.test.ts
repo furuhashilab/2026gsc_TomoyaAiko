@@ -53,6 +53,12 @@ function post(name: string, headers: Record<string, string | undefined>, body: B
 
 const files = () => readdirSync(dir);
 
+/** Waits (up to 2 s) until the directory holds exactly `expected`; slow CI machines need the margin. */
+async function settledFiles(expected: string[]): Promise<string[]> {
+  for (let i = 0; i < 40 && JSON.stringify(files().sort()) !== JSON.stringify(expected); i++) await new Promise((r) => setTimeout(r, 50));
+  return files().sort();
+}
+
 describe("normal write", () => {
   it("stores a WebM and a JSON record with the right types", async () => {
     const webm = Buffer.from([0x1a, 0x45, 0xdf, 0xa3, 1, 2, 3]);
@@ -126,8 +132,7 @@ describe("size limit", () => {
       setTimeout(() => reject(new Error("no response")), 2000);
     });
     expect([413, -1]).toContain(status);
-    await new Promise((r) => setTimeout(r, 50));
-    expect(files()).toEqual([]);
+    expect(await settledFiles([])).toEqual([]);
   });
 
   it("accepts exactly the limit", async () => {
@@ -146,8 +151,7 @@ describe("interrupted upload", () => {
         resolve();
       }, 50);
     });
-    await new Promise((r) => setTimeout(r, 100));
-    expect(files()).toEqual([]);
+    expect(await settledFiles([])).toEqual([]);
   });
 
   it("keeps the previous file when a replacement upload is cut off", async () => {
@@ -161,8 +165,7 @@ describe("interrupted upload", () => {
         resolve();
       }, 50);
     });
-    await new Promise((r) => setTimeout(r, 100));
+    expect(await settledFiles(["keep.json"])).toEqual(["keep.json"]);
     expect(readFileSync(join(dir, "keep.json"), "utf8")).toBe('{"v":1}');
-    expect(files()).toEqual(["keep.json"]);
   });
 });

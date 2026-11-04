@@ -11,7 +11,8 @@
 // - the file name is plain and its Content-Type matches the extension;
 // - the bytes actually received stay within the limit (Content-Length is only a hint).
 // The body goes to a temporary file in the same directory and is renamed into place only
-// after the whole request arrived; on any failure the temporary file is removed.
+// after the whole request arrived; on any failure the temporary file is removed before the
+// response is sent.
 import { randomBytes } from "node:crypto";
 import { createWriteStream, mkdirSync, renameSync, rmSync } from "node:fs";
 import type { IncomingMessage, ServerResponse } from "node:http";
@@ -71,13 +72,23 @@ export function createSaveHandler(opts: SaveOptions) {
     const out = createWriteStream(temp, { flags: "wx" });
     let received = 0;
     let finished = false;
+    // The file is opened asynchronously, so delete it only once the stream has closed
+    // (deleting earlier could race the open and leave an empty .part file behind), and
+    // answer only after the cleanup.
     const fail = (status: number, error: string) => {
       if (finished) return;
       finished = true;
-      out.destroy();
-      rmSync(temp, { force: true });
-      reply(res, status, { error });
-      req.destroy();
+      req.pause();
+      const cleanup = () => {
+        rmSync(temp, { force: true });
+        reply(res, status, { error });
+        req.destroy();
+      };
+      if (out.closed) cleanup();
+      else {
+        out.once("close", cleanup);
+        out.destroy();
+      }
     };
     req.on("data", (chunk: Buffer) => {
       received += chunk.length;
