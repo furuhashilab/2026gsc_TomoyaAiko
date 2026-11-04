@@ -67,14 +67,16 @@ def cmd_build(args) -> int:
 def cmd_validate(args) -> int:
     course = json.loads(args.course.read_text())
     p = course.get("properties", {})
+    # The graph is rebuilt from the trusted AOI config (--aoi), not from the course's own
+    # aoi metadata; validate() then checks the course's AOI and length_crs against it.
+    aoi = load_aoi(args.aoi)
     try:
-        a, snap = p["aoi"], p["osm_snapshot"]
-        aoi = Aoi(a["id"], a["id"], *a["bbox"], length_crs=a["length_crs"])
+        snap = p["osm_snapshot"]
         g, snapshot = load_snapshot_graph(aoi, snap["profile"], snap["attic_date"], args.data_dir)
     except KeyError as exc:
         print(f"invalid course file: missing {exc}", file=sys.stderr)
         return 1
-    v = validate(course, g, snapshot["element_sha256"])
+    v = validate(course, g, snapshot["element_sha256"], expected_aoi=aoi)
     _print_validation(v)
     return 0 if v["status"] == "valid" else 1
 
@@ -97,6 +99,7 @@ def main(argv: list[str] | None = None) -> None:
     b.set_defaults(func=cmd_build)
     v = sub.add_parser("validate", help="validate a course file")
     v.add_argument("course", type=Path)
+    v.add_argument("--aoi", type=Path, default=DEFAULT_AOI_PATH, help="trusted AOI config")
     v.set_defaults(func=cmd_validate)
     args = p.parse_args(argv)
     try:

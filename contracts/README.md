@@ -40,7 +40,12 @@ uv run cf-course validate ../web/public/courses/sapporo-demo.course.geojson
 ## 検証（`cf-course validate`）
 | 種類 | コード |
 |---|---|
-| エラー | `E_SCHEMA`、`E_LENGTH_CRS`、`E_SNAPSHOT_MISMATCH`、`E_UNKNOWN_SEGMENT`、`E_DIRECTION_NOT_ALLOWED`（一方通行の逆走・向きが不確定）、`E_SEGMENT_MISMATCH`、`E_NOT_ROUTABLE`、`E_OUTSIDE_AOI`、`E_DISCONTINUOUS`、`E_UTURN`、`E_REPEATED_SEGMENT`、`E_NOT_CLOSED`、`E_RALLY_SAME_ENDS`、`E_GEOMETRY_MISMATCH`、`E_LENGTH_MISMATCH`（0.1% を超える差） |
+| エラー | `E_SCHEMA`、`E_LENGTH_CRS`、`E_LENGTH_CRS_MISMATCH`（道路グラフの距離計算に使った座標系と違う）、`E_AOI_MISMATCH`（信頼できる AOI 設定と違う）、`E_SNAPSHOT_MISMATCH`、`E_UNKNOWN_SEGMENT`、`E_DIRECTION_NOT_ALLOWED`（一方通行の逆走・向きが不確定）、`E_SEGMENT_MISMATCH`、`E_NOT_ROUTABLE`、`E_OUTSIDE_AOI`、`E_DISCONTINUOUS`、`E_UTURN`（周回では閉じ目、つまり最後の区間から最初の区間へのつなぎ目も対象）、`E_REPEATED_SEGMENT`、`E_NOT_CLOSED`、`E_RALLY_SAME_ENDS`、`E_GEOMETRY_MISMATCH`、`E_LENGTH_MISMATCH`（0.1% を超える差） |
 | 警告 | `W_NODE_REVISITED`、`W_OPPOSITE_DIRECTION_REUSE`、`W_DEFAULT_TWO_WAY_MAJOR`、`W_LENGTH_OUT_OF_RANGE`、`W_NO_ELEVATION`、`W_TURN_RESTRICTIONS_NOT_EVALUATED`（毎回出る） |
 
-道路グラフは、`data/raw/` にある時点固定の OSM データから作り直して検証に使います。コースに記録された要素ハッシュと一致しない場合は、検証できないので `E_SNAPSHOT_MISMATCH` になります。
+道路グラフは、`data/raw/` にある時点固定の OSM データから作り直して検証に使います。
+
+**コース側のメタデータは信頼しません。**
+- `cf-course validate` は、コースに書かれた `aoi` ではなく、信頼できる AOI 設定（`--aoi`、既定は `config/aoi.sapporo.json`）から道路グラフを作ります。
+- そのうえで、コースの `aoi`（ID・bbox）がその AOI 設定と一致するか、コースの `aoi.length_crs` が道路グラフの距離計算に実際に使った座標系と一致するかを照合します。
+- たとえば EPSG:6691（JGD2011 UTM 54N）は札幌でも使える座標系ですが、道路グラフが EPSG:6680 で計算されていれば不合格になります。コースに記録された要素ハッシュと一致しない場合は、検証できないので `E_SNAPSHOT_MISMATCH` になります。

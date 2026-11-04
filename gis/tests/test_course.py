@@ -295,3 +295,71 @@ def test_sapporo_demo_recipe_reproduces_recorded_course():
     uids = [s["edge_uid"] for s in c["properties"]["segments"]]
     assert hashlib.sha256("\n".join(uids).encode()).hexdigest() == summary["segments_sha256"]
     assert c["properties"]["validation"]["status"] == "valid"
+
+
+# --- review fixes: closing U-turn, length CRS / AOI consistency ----------------------------
+
+# 3 -> 23, once round the roundabout (23 -> 20 -> 21 -> 22 -> 23), then 23 -> 3:
+# the course closes at node 3 by reversing its first segment.
+CLOSING_UTURN = ["108:0:f", "107:3:f", "107:0:f", "107:1:f", "107:2:f", "108:0:r"]
+
+
+def test_uturn_where_the_circuit_closes_is_rejected(setup):
+    g, aoi, snapshot = setup
+    c = build_course(
+        g, aoi, snapshot, course_id="x", name="x", mode="circuit", segments=CLOSING_UTURN
+    )
+    uturns = [e for e in c["properties"]["validation"]["errors"] if e["code"] == "E_UTURN"]
+    assert len(uturns) == 1 and uturns[0]["segment_index"] == 0
+    assert "closes" in uturns[0]["message"]
+
+
+def test_rally_only_checks_adjacent_segments_for_uturns(setup):
+    g, aoi, snapshot = setup
+    c = build_course(
+        g, aoi, snapshot, course_id="x", name="x", mode="rally", segments=CLOSING_UTURN
+    )
+    assert "E_UTURN" not in codes(c["properties"]["validation"])
+
+
+def test_length_crs_must_match_the_graph_even_if_usable_here(setup, loop):
+    def fn(c, p):
+        p["aoi"]["length_crs"] = "EPSG:6691"  # JGD2011 / UTM zone 54N: valid for Sapporo too
+
+    v = revalidate(mutate(loop, fn), setup)
+    assert "E_LENGTH_CRS_MISMATCH" in codes(v)
+    assert "E_LENGTH_CRS" not in codes(v)  # the CRS itself is geographically usable
+
+
+def test_course_aoi_must_match_the_aoi_the_graph_was_built_from(setup, loop):
+    g, aoi, snapshot = setup
+
+    def fn(c, p):
+        p["aoi"]["bbox"] = [141.34, 43.05, 141.36, 43.07]
+
+    assert "E_AOI_MISMATCH" not in codes(validate(loop, g, snapshot["element_sha256"], aoi))
+    v = validate(mutate(loop, fn), g, snapshot["element_sha256"], expected_aoi=aoi)
+    assert "E_AOI_MISMATCH" in codes(v)
+
+
+def test_cli_rebuilds_the_graph_from_the_trusted_aoi_not_the_course(tmp_path, capsys):
+    from circuitforge_gis.course_cli import main
+
+    raw = tmp_path / "raw" / "osm_fixture_mvp-drive_fixture.json"
+    raw.parent.mkdir()
+    raw.write_bytes((FIXTURES / "mini_overpass.json").read_bytes())
+    aoi_config = str(FIXTURES / "aoi_fixture.json")
+
+    def run(course):
+        path = tmp_path / "c.course.geojson"
+        path.write_text(json.dumps(course))
+        with pytest.raises(SystemExit) as exc:
+            main(["--data-dir", str(tmp_path), "validate", str(path), "--aoi", aoi_config])
+        return exc.value.code, capsys.readouterr().out
+
+    sample = json.loads(SAMPLE.read_text())
+    assert run(sample)[0] == 0
+    tampered = copy.deepcopy(sample)
+    tampered["properties"]["aoi"]["length_crs"] = "EPSG:6691"
+    code, out = run(tampered)
+    assert code == 1 and "E_LENGTH_CRS_MISMATCH" in out and "E_AOI_MISMATCH" not in out

@@ -17,7 +17,7 @@ from collections import Counter
 
 import networkx as nx
 from jsonschema import Draft202012Validator
-from pyproj import Transformer
+from pyproj import CRS, Transformer
 
 from .aoi import REPO_ROOT, Aoi
 from .graph import check_length_crs
@@ -211,7 +211,7 @@ def build_course(
         props["synthetic"] = True
     props["attribution"] = attribution
     props["disclaimer"] = DISCLAIMER
-    props["validation"] = validate(course, g, snapshot["element_sha256"])
+    props["validation"] = validate(course, g, snapshot["element_sha256"], expected_aoi=aoi)
     return course
 
 
@@ -222,8 +222,20 @@ def _issue(code: str, message: str, index: int | None = None) -> dict:
     return out
 
 
-def validate(course: dict, g: nx.MultiDiGraph, snapshot_sha256: str) -> dict:
-    """Validate a course against the road graph built from the given OSM snapshot."""
+def _same_crs(a: str, b: str) -> bool:
+    return CRS.from_user_input(a) == CRS.from_user_input(b)
+
+
+def validate(
+    course: dict, g: nx.MultiDiGraph, snapshot_sha256: str, expected_aoi: Aoi | None = None
+) -> dict:
+    """Validate a course against the road graph built from the given OSM snapshot.
+
+    The course's own metadata is not trusted: ``aoi.length_crs`` must be the CRS the
+    graph's lengths were computed in (``g.graph["length_crs"]``), and when
+    ``expected_aoi`` (the AOI the graph was built from) is given, the course's AOI must
+    match it.
+    """
     errors: list[dict] = []
     warnings: list[dict] = []
 
@@ -249,6 +261,33 @@ def validate(course: dict, g: nx.MultiDiGraph, snapshot_sha256: str) -> dict:
         check_length_crs(aoi)
     except ValueError as exc:
         errors.append(_issue("E_LENGTH_CRS", str(exc)))
+    graph_crs = g.graph.get("length_crs")
+    if graph_crs is None:
+        errors.append(_issue("E_LENGTH_CRS_MISMATCH", "the road graph has no recorded length CRS"))
+    elif not _same_crs(a["length_crs"], graph_crs):
+        errors.append(
+            _issue(
+                "E_LENGTH_CRS_MISMATCH",
+                f"course length_crs {a['length_crs']} differs from the graph's {graph_crs}",
+            )
+        )
+    if expected_aoi is not None:
+        exp = [
+            expected_aoi.lon_min,
+            expected_aoi.lat_min,
+            expected_aoi.lon_max,
+            expected_aoi.lat_max,
+        ]
+        same_bbox = all(
+            abs(x - y) <= COORD_TOLERANCE_DEG for x, y in zip(a["bbox"], exp, strict=True)
+        )
+        if a["id"] != expected_aoi.id or not same_bbox:
+            errors.append(
+                _issue(
+                    "E_AOI_MISMATCH",
+                    f"course AOI {a['id']} {a['bbox']} differs from {expected_aoi.id} {exp}",
+                )
+            )
     if p["osm_snapshot"]["element_sha256"] != snapshot_sha256:
         errors.append(
             _issue(
@@ -293,12 +332,18 @@ def validate(course: dict, g: nx.MultiDiGraph, snapshot_sha256: str) -> dict:
         if d["aoi_status"] != "inside":
             errors.append(_issue("E_OUTSIDE_AOI", f"{uid}: segment leaves the AOI", i))
 
-    for i in range(1, len(segs)):
-        prev, cur = segs[i - 1], segs[i]
+    # Adjacent pairs; for a circuit also the closing pair (last segment -> first segment).
+    pairs = [(i - 1, i) for i in range(1, len(segs))]
+    if p["mode"] == "circuit" and len(segs) > 1:
+        pairs.append((len(segs) - 1, 0))
+    for j, i in pairs:
+        prev, cur = segs[j], segs[i]
         if cur["from_node"] != prev["to_node"]:
-            errors.append(_issue("E_DISCONTINUOUS", f"gap between segment {i - 1} and {i}", i))
+            if i != 0:  # an open circuit is reported as E_NOT_CLOSED below
+                errors.append(_issue("E_DISCONTINUOUS", f"gap between segment {j} and {i}", i))
         elif cur["to_node"] == prev["from_node"]:
-            errors.append(_issue("E_UTURN", f"U-turn at node {cur['from_node']}", i))
+            where = " (where the circuit closes)" if i == 0 else ""
+            errors.append(_issue("E_UTURN", f"U-turn at node {cur['from_node']}{where}", i))
     for uid, n in Counter(s["edge_uid"] for s in segs).items():
         if n > 1:
             errors.append(_issue("E_REPEATED_SEGMENT", f"{uid} is used {n} times"))
