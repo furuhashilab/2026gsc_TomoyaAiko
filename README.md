@@ -115,14 +115,15 @@ CircuitForge AI は、ユーザーが**好きな地域**と**理想のコース�
 
 ## セットアップ
 
-**現在あるのは、開発環境・道路データの下準備・手動コースの 3D 表示までです。**
+**現在あるのは、開発環境・道路データの下準備・手動コースの 3D 表示と車両アニメーションまでです。**
 - Web：札幌の暫定 AOI を地図に表示する CesiumJS ビューア（[Issue #5](https://github.com/furuhashilab/2026gsc_TomoyaAiko/issues/5)）
 - Python：OSM の道路網を取得し、通行方向を考慮した道路グラフと GeoJSON を作るコマンド（[Issue #6](https://github.com/furuhashilab/2026gsc_TomoyaAiko/issues/6)）
 - コース形式（[contracts/](contracts/README.md)）と、手動でコースを作成・検証するコマンド。ビューアでのコース表示（[Issue #7](https://github.com/furuhashilab/2026gsc_TomoyaAiko/issues/7)）
 
 - 3D 都市シーン：PLATEAU の建物と PLATEAU-Terrain の地形の上にコースを表示（[Issue #8](https://github.com/furuhashilab/2026gsc_TomoyaAiko/issues/8)）
+- 車両アニメーション：汎用レースカー（Kenney、CC0）がコースに沿って走り、追走・車載風・空撮の視点と、再生・一時停止・最初から・速度変更が使える（[Issue #9](https://github.com/furuhashilab/2026gsc_TomoyaAiko/issues/9)）。ルートを見せるためのアニメーションで、物理挙動や実際の速度は再現していない
 
-車両アニメーション・コースの自動生成はまだありません。
+コースの自動生成はまだありません。
 
 ### 構成
 ```

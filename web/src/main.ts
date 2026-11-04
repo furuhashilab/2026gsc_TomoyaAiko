@@ -13,6 +13,7 @@ import {
   ImageryLayer,
   LabelStyle,
   Rectangle,
+  type TerrainProvider,
   UrlTemplateImageryProvider,
   VerticalOrigin,
   Viewer,
@@ -21,10 +22,15 @@ import {
 import "cesium/Build/Cesium/Widgets/widgets.css";
 import aoiConfig from "../../config/aoi.sapporo.json";
 import sceneConfig from "../../config/scene.sapporo.json";
+import vehicleConfig from "../../config/vehicle.json";
 import syntheticCourse from "../../contracts/examples/synthetic-loop.course.geojson?raw";
 import { parseAoi } from "./aoi";
 import { arrowSegments, bearingRad, type Course, parseCourse } from "./course";
+import { LatestOnly } from "./latest";
+import { Minimap } from "./minimap";
 import { parseScene } from "./scene";
+import { type CameraMode, VehicleAnimation } from "./vehicle/animation";
+import { parseVehicleConfig } from "./vehicle/config";
 
 const aoi = parseAoi(aoiConfig);
 const scene = parseScene(sceneConfig);
@@ -67,6 +73,9 @@ viewer.creditDisplay.addStaticCredit(terrainCredit);
 
 const tilesets: Cesium3DTileset[] = [];
 let sceneDisabled = false;
+// Resolves with the PLATEAU terrain once it passed the checks, or null without terrain.
+let resolveTerrain: (t: TerrainProvider | null) => void = () => {};
+const terrainReady = new Promise<TerrainProvider | null>((r) => (resolveTerrain = r));
 
 // Fall back to map + course only: never leave buildings standing on a missing terrain.
 function disableScene(reason: string): void {
@@ -76,6 +85,8 @@ function disableScene(reason: string): void {
   viewer.terrainProvider = new EllipsoidTerrainProvider();
   viewer.scene.globe.depthTestAgainstTerrain = false;
   viewer.creditDisplay.removeStaticCredit(terrainCredit);
+  vehicle.useEllipsoidHeights();
+  resolveTerrain(null);
   setStatus("terrain", `地形：読み込み失敗（${reason}）`);
   setStatus("buildings", "建物：地形がないため非表示（地図とコースのみ表示）");
 }
@@ -106,6 +117,7 @@ async function loadScene(): Promise<void> {
     const version = await loadTerrain(terrainUrl);
     const note = version === scene.terrain.version ? "" : `／設定の版 ${scene.terrain.version} と異なるため再検証が必要`;
     setStatus("terrain", `地形：PLATEAU-Terrain（${version}${note}）`);
+    resolveTerrain(viewer.terrainProvider);
   } catch (e) {
     disableScene(e instanceof Error ? e.message : String(e));
     return;
@@ -192,18 +204,94 @@ function escapeHtml(s: string): string {
   return s.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
 }
 
+// Vehicle animation (Issue #9): visualises the route; not a physics simulation.
+const vehicleCfg = parseVehicleConfig(vehicleConfig);
+const vehicle = new VehicleAnimation(viewer, vehicleCfg);
+const vehicleInfo = document.getElementById("vehicleInfo") as HTMLDivElement;
+const speedSelect = document.getElementById("vehicleSpeed") as HTMLSelectElement;
+for (const m of vehicleCfg.multipliers) speedSelect.add(new Option(`${m}×`, String(m), m === 1, m === 1));
+
+// ?vehicleModel=... lets the model-failure fallback be checked by hand.
+const vehicleModelUri = params.get("vehicleModel") ?? vehicleCfg.modelUri;
+
+async function loadVehicle(course: Course): Promise<void> {
+  vehicleInfo.textContent = "車両：準備中（地形の高さを取得しています）";
+  try {
+    // false = a newer course was picked meanwhile; its own load updates the panel
+    if (await vehicle.load(course, await terrainReady, vehicleModelUri)) {
+      vehicle.setMultiplier(Number(speedSelect.value));
+    }
+  } catch (e) {
+    vehicleInfo.textContent = `車両：準備に失敗（${e instanceof Error ? e.message : String(e)}）`;
+  }
+}
+
+function refreshVehicleInfo(): void {
+  const s = vehicle.current();
+  if (!s) return;
+  const pct = ((s.distance / vehicle.length) * 100).toFixed(0);
+  const base = (vehicleCfg.baseSpeedMps * 3.6).toFixed(0);
+  const source = vehicle.terrainInfo?.source === "terrain" ? "地形に追従" : "地形なし（楕円体上）";
+  const v = vehicle.visual;
+  const model =
+    v?.kind === "fallback"
+      ? `\n車両：簡易形状で表示中（モデルの読み込みに失敗：${v.reason}）`
+      : v?.kind === "loading"
+        ? "\n車両：モデルを読み込み中"
+        : "";
+  vehicleInfo.textContent =
+    `${s.lap} 周目 / ${(s.distance / 1000).toFixed(2)} km（${pct}%） / ` +
+    `再生 ${speedSelect.value}×（基準の表示速度 ${base} km/h 相当） / ${source}${model}`;
+}
+setInterval(refreshVehicleInfo, 250);
+
+// Minimap: same vehicle state as the 3D model, updated every rendered frame.
+const minimap = new Minimap(document.getElementById("minimap") as HTMLDivElement, 200, 200, vehicleCfg.headingWindowM);
+let minimapTrack: unknown = null;
+viewer.scene.postRender.addEventListener(() => {
+  const track = vehicle.currentTrack;
+  const s = vehicle.current();
+  if (!track || !s) return;
+  if (track !== minimapTrack) {
+    minimap.setTrack(track);
+    minimapTrack = track;
+  }
+  minimap.update(s.distance, s.lap);
+});
+
+document.getElementById("vehiclePlay")?.addEventListener("click", () => vehicle.play());
+document.getElementById("vehiclePause")?.addEventListener("click", () => vehicle.pause());
+document.getElementById("vehicleReset")?.addEventListener("click", () => vehicle.reset());
+speedSelect.addEventListener("change", () => vehicle.setMultiplier(Number(speedSelect.value)));
+document.getElementById("vehicleCamera")?.addEventListener("change", (ev) => {
+  vehicle.setCamera((ev.target as HTMLSelectElement).value as CameraMode);
+});
+
 function showCourse(course: Course, source: string, note = ""): void {
+  void loadVehicle(course);
   courseLayer.entities.removeAll();
   const positions = course.coordinates.map(([lon, lat]) => Cartesian3.fromDegrees(lon, lat));
-  // Everything is draped on the terrain (not on building roofs).
+  // Everything is draped on the terrain (not on building roofs). A wider dark line under
+  // the orange one acts as an outline against the light base map.
+  courseLayer.entities.add({
+    polyline: {
+      positions,
+      width: 14,
+      material: Color.fromCssColorString("#1b1f24").withAlpha(0.75),
+      clampToGround: true,
+      classificationType: ClassificationType.TERRAIN,
+      zIndex: 0,
+    },
+  });
   courseLayer.entities.add({
     name: course.name,
     polyline: {
       positions,
-      width: 6,
+      width: 8,
       material: Color.fromCssColorString("#ff7a00"),
       clampToGround: true,
       classificationType: ClassificationType.TERRAIN,
+      zIndex: 1,
     },
   });
   // Direction arrows roughly every 250 m: ground-clamped billboards rotated to the travel
@@ -273,36 +361,49 @@ function showError(message: string): void {
   info.innerHTML = `<span class="ng">${escapeHtml(message)}</span>`;
 }
 
+// Course sources (initial URL, file picker) can overlap; only the latest one is shown.
+const courseLoads = new LatestOnly();
+
 async function loadInitialCourse(): Promise<void> {
   const url = params.get("course") ?? DEFAULT_COURSE_URL;
-  try {
-    const res = await fetch(url);
-    // The dev server answers unknown paths with index.html, so check the content type too.
-    if (!res.ok || !/json/.test(res.headers.get("content-type") ?? "")) {
-      throw new Error(res.ok ? "ファイルが見つかりません" : `ファイルが見つかりません（HTTP ${res.status}）`);
-    }
-    showCourse(parseCourse(await res.json()), url);
-  } catch (e) {
-    showCourse(
-      parseCourse(JSON.parse(syntheticCourse)),
-      "contracts/examples/synthetic-loop.course.geojson",
-      `${url} を読み込めなかったため合成サンプルを表示しています（${e instanceof Error ? e.message : String(e)}）。`,
-    );
-  }
+  await courseLoads.run(
+    async () => {
+      try {
+        const res = await fetch(url);
+        // The dev server answers unknown paths with index.html, so check the content type too.
+        if (!res.ok || !/json/.test(res.headers.get("content-type") ?? "")) {
+          throw new Error(res.ok ? "ファイルが見つかりません" : `ファイルが見つかりません（HTTP ${res.status}）`);
+        }
+        return { course: parseCourse(await res.json()), source: url, note: "" };
+      } catch (e) {
+        return {
+          course: parseCourse(JSON.parse(syntheticCourse)),
+          source: "contracts/examples/synthetic-loop.course.geojson",
+          note: `${url} を読み込めなかったため合成サンプルを表示しています（${e instanceof Error ? e.message : String(e)}）。`,
+        };
+      }
+    },
+    (r) => showCourse(r.course, r.source, r.note),
+  );
 }
 
 document.getElementById("courseFile")?.addEventListener("change", async (ev) => {
   const file = (ev.target as HTMLInputElement).files?.[0];
   if (!file) return;
-  try {
-    showCourse(parseCourse(JSON.parse(await file.text())), file.name);
-  } catch (e) {
-    showError(e instanceof Error ? e.message : String(e));
-  }
+  await courseLoads.run(
+    async () => {
+      try {
+        return { course: parseCourse(JSON.parse(await file.text())), source: file.name, error: "" };
+      } catch (e) {
+        return { course: null, source: file.name, error: e instanceof Error ? e.message : String(e) };
+      }
+    },
+    (r) => (r.course ? showCourse(r.course, r.source) : showError(r.error)),
+  );
 });
 
 void loadInitialCourse();
 void loadScene();
 
 // Dev builds only: expose the viewer for manual checks in the browser console.
-if (import.meta.env.DEV) (window as unknown as { __cf: unknown }).__cf = { viewer, scene, status };
+if (import.meta.env.DEV) (window as unknown as { __cf: unknown }).__cf = { viewer, scene, status, vehicle, vehicleCfg };
