@@ -7,5 +7,7 @@
   141.354,
   43.063
  ],
- "crs": "EPSG:4326"
+ "crs": "EPSG:4326",
+ "length_crs": "EPSG:6680",
+ "length_crs_name": "JGD2011 / Japan Plane Rectangular CS XII"
 }

@@ -4,6 +4,8 @@
   "bbox": [141.335, 43.05, 141.365, 43.072],
   "bbox_order": "lon_min, lat_min, lon_max, lat_max",
   "crs": "EPSG:4326",
+  "length_crs": "EPSG:6680",
+  "length_crs_name": "JGD2011 / Japan Plane Rectangular CS XII",
   "status": "tentative",
   "decided": "2026-11-04",
   "source": "docs/DECISIONS.md D-0008, docs/RESEARCH_DESIGN.md §5.1"

@@ -21,9 +21,10 @@ DEFAULT_DATE = "2026-11-03T16:25:05Z"  # same attic date as the Issue #4 evidenc
 
 
 def run(elements: list[dict], aoi, out_dir: Path, meta: dict) -> dict:
+    length_crs = graph.check_length_crs(aoi)
     full = graph.build_directed_graph(elements)
     clipped, clip_report = graph.clip_to_aoi(full, aoi)
-    graph.add_projected_lengths(clipped)
+    graph.add_projected_lengths(clipped, length_crs)
     comp_report = graph.add_components(clipped)
     simplified = graph.simplify(clipped)
     verify_report = graph.verify_simplification(clipped, simplified)
@@ -57,6 +58,7 @@ def main(argv: list[str] | None = None) -> None:
     args = p.parse_args(argv)
 
     aoi = load_aoi(args.aoi)
+    graph.check_length_crs(aoi)  # fail before downloading if lengths cannot be computed
     profile = PROFILES[args.profile]
     query = build_query(aoi, profile, args.date)
     tag = f"{aoi.id}_{profile.name}_{args.date.replace(':', '')}"

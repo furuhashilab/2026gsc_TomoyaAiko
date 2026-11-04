@@ -21,6 +21,8 @@ class Aoi:
     lat_min: float
     lon_max: float
     lat_max: float
+    # Projected CRS (metres) for lengths in this AOI, e.g. EPSG:6680 for Sapporo.
+    length_crs: str | None = None
 
 
 def parse_aoi(data: dict) -> Aoi:
@@ -35,7 +37,11 @@ def parse_aoi(data: dict) -> Aoi:
         raise ValueError(f"AOI longitudes out of range or not increasing: {lon_min}, {lon_max}")
     if not (-90 <= lat_min < lat_max <= 90):
         raise ValueError(f"AOI latitudes out of range or not increasing: {lat_min}, {lat_max}")
-    return Aoi(str(data["id"]), str(data["name"]), lon_min, lat_min, lon_max, lat_max)
+    length_crs = data.get("length_crs")
+    return Aoi(
+        str(data["id"]), str(data["name"]), lon_min, lat_min, lon_max, lat_max,
+        str(length_crs) if length_crs else None,
+    )  # fmt: skip
 
 
 def load_aoi(path: Path = DEFAULT_AOI_PATH) -> Aoi:

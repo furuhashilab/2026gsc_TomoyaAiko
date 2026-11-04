@@ -9,6 +9,8 @@ uv run cf-osm --refetch  # Overpass から取り直す
 ```
 共有 AOI（`../config/aoi.sapporo.json`）について、OSM の取得 → 有向道路グラフ → AOI での切り取り → 簡略化と検証 → 属性の点検 → GeoJSON 出力 を実行します。結果は `../data/processed/<aoi>_<profile>_<date>/` に保存されます（gitignore の対象）。
 
+距離は、AOI 設定の `length_crs`（札幌は EPSG:6680）で計算します。別の地域の AOI を使うときは、その地域に合ったメートル単位の投影座標系を `length_crs` に設定してください。座標系の適用範囲外の AOI は、取得を始める前にエラーで止まります。
+
 | 出力 | 内容 |
 |---|---|
 | `manifest.json` | 取得条件（クエリ、時点、要素数、要素ハッシュ） |
@@ -21,7 +23,7 @@ uv run cf-osm --refetch  # Overpass から取り直す
 | `profile.py` | 取得する道路の種類。MVP は service を除外。`drive-with-service` を将来用に用意 |
 | `osm_fetch.py` | Overpass クエリ（Issue #4 と同じもの）、取得、要素ハッシュ |
 | `rules.py` | 通行方向とアクセス制限の判定（OSMnx の標準の判定には頼らない） |
-| `graph.py` | グラフの構築、AOI での切り取り、EPSG:6680 での距離、連結成分、簡略化とその検証 |
+| `graph.py` | グラフの構築、AOI での切り取り、投影座標系での距離（適用範囲の確認つき）、連結成分、簡略化とその検証（辺の識別子による一対一の照合） |
 | `audit.py` / `export.py` / `cli.py` | 点検レポート、GeoJSON 出力、コマンド |
 
 判定ルールと検証結果は [docs/evidence/issue-6/README.md](../docs/evidence/issue-6/README.md) にあります。

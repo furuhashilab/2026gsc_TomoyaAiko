@@ -7,7 +7,7 @@ import networkx as nx
 from shapely.geometry import LineString, mapping
 
 ATTRIBUTION = "© OpenStreetMap contributors (ODbL 1.0)"
-_SKIP_NODE = {"x", "y", "x_6680", "y_6680"}
+_SKIP_NODE = {"x", "y", "x_proj", "y_proj"}
 _SKIP_EDGE = {"geometry", "merged_edges"}
 
 

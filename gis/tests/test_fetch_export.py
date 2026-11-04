@@ -37,7 +37,7 @@ def test_geojson_is_lon_lat_with_attribution(tmp_path):
     elements = json.loads((FIXTURES / "mini_overpass.json").read_text())["elements"]
     aoi = load_aoi(FIXTURES / "aoi_fixture.json")
     g, _ = graph.clip_to_aoi(graph.build_directed_graph(elements), aoi)
-    graph.add_projected_lengths(g)
+    graph.add_projected_lengths(g, graph.check_length_crs(aoi))
     graph.add_components(g)
     nodes_path, edges_path = write_geojson(graph.simplify(g), tmp_path, {"test": True})
     for path in (nodes_path, edges_path):

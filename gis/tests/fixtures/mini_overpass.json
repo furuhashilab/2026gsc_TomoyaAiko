@@ -186,6 +186,24 @@
    "lon": 141.3538
   },
   {
+   "type": "node",
+   "id": 60,
+   "lat": 43.0626,
+   "lon": 141.3532
+  },
+  {
+   "type": "node",
+   "id": 61,
+   "lat": 43.0626,
+   "lon": 141.3535
+  },
+  {
+   "type": "node",
+   "id": 62,
+   "lat": 43.0626,
+   "lon": 141.3538
+  },
+  {
    "type": "way",
    "id": 101,
    "nodes": [
@@ -400,6 +418,34 @@
    "tags": {
     "highway": "residential",
     "oneway:bicycle": "no"
+   }
+  },
+  {
+   "type": "way",
+   "id": 118,
+   "nodes": [
+    60,
+    61,
+    62
+   ],
+   "tags": {
+    "highway": "residential",
+    "oneway": "yes",
+    "name": "duplicate"
+   }
+  },
+  {
+   "type": "way",
+   "id": 119,
+   "nodes": [
+    60,
+    61,
+    62
+   ],
+   "tags": {
+    "highway": "residential",
+    "oneway": "yes",
+    "name": "duplicate"
    }
   }
  ]

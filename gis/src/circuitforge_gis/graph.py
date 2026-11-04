@@ -2,12 +2,13 @@
 
 Pipeline: Overpass JSON -> OSM XML -> ``osmnx.graph_from_xml`` (unsimplified, with
 ``all_oneway`` so OSMnx adds each way once) -> edges rebuilt from ``rules.classify_way``
--> AOI clipping -> EPSG:6680 lengths -> weak/strong components -> ``simplify_graph``
+-> AOI clipping -> projected lengths -> weak/strong components -> ``simplify_graph``
 with ``track_merged`` -> ``verify_simplification``.
 
 Coordinates stay in EPSG:4326 (node ``x`` = lon, ``y`` = lat). Lengths used by the
-project (``length_m``) are planar distances in JGD2011 / Japan Plane Rectangular CS
-XII (EPSG:6680, the zone covering Sapporo). Two references are kept for checking:
+project (``length_m``) are planar distances in the AOI's ``length_crs`` (EPSG:6680,
+JGD2011 / Japan Plane Rectangular CS XII, for Sapporo); ``check_length_crs`` refuses a
+CRS whose area of use does not contain the AOI. Two references are kept for checking:
 ``length_geod_m`` (GRS80 ellipsoidal geodesic) and OSMnx's spherical great-circle
 ``length`` as ``length_gc_m`` (spherical, so it can differ by ~0.3% depending on bearing).
 """
@@ -15,19 +16,19 @@ XII (EPSG:6680, the zone covering Sapporo). Two references are kept for checking
 import math
 import tempfile
 import xml.etree.ElementTree as ET
+from collections import Counter
 from contextlib import contextmanager
 from itertools import chain
 from pathlib import Path
 
 import networkx as nx
 import osmnx as ox
-from pyproj import Geod, Transformer
+from pyproj import CRS, Geod, Transformer
 from shapely.geometry import LineString, box
 
 from .aoi import Aoi
 from .rules import classify_way
 
-LENGTH_CRS = "EPSG:6680"
 # Edge tags copied from OSM; direction/access are decided from all raw tags in rules.py.
 EDGE_TAGS = [
     "highway", "name", "ref", "oneway", "junction", "lanes", "maxspeed", "width", "surface",
@@ -100,12 +101,16 @@ def build_directed_graph(elements: list[dict]) -> nx.MultiDiGraph:
             routable=r.routable,
         )
         if r.direction == "reverse":
-            g.add_edge(b, a, way_order=False, **attrs)
+            pairs = [(b, a, False)]
         elif r.direction == "both":
-            g.add_edge(a, b, way_order=True, **attrs)
-            g.add_edge(b, a, way_order=False, **attrs)
+            pairs = [(a, b, True), (b, a, False)]
         else:  # forward, or uncertain: keep the drawn order only, never add the reverse
-            g.add_edge(a, b, way_order=True, **attrs)
+            pairs = [(a, b, True)]
+        for x, y, way_order in pairs:
+            # edge_uid identifies one directed raw segment; it lets verify_simplification
+            # match raw and simplified edges one-to-one even when parallel edges exist.
+            uid = f"{d['osmid']}:{x}:{y}:{g.number_of_edges(x, y)}"
+            g.add_edge(x, y, **{**attrs, "edge_uid": uid, "way_order": way_order})
     return g
 
 
@@ -152,14 +157,39 @@ def clip_to_aoi(g: nx.MultiDiGraph, aoi: Aoi) -> tuple[nx.MultiDiGraph, dict]:
     return clipped, report
 
 
-def add_projected_lengths(g: nx.MultiDiGraph) -> None:
-    tr = Transformer.from_crs("EPSG:4326", LENGTH_CRS, always_xy=True)
-    geod = Geod(ellps="GRS80")  # JGD2011 ellipsoid
+def check_length_crs(aoi: Aoi) -> CRS:
+    """Return the AOI's length CRS, or raise if it is missing or unsuitable for the AOI.
+
+    The check uses the CRS's published area of use as a bounding box, so it rejects
+    clearly wrong zones (e.g. EPSG:6680 for Tokyo) but cannot detect every boundary
+    case of a zone defined by municipalities.
+    """
+    if not aoi.length_crs:
+        raise ValueError(f"AOI {aoi.id!r} has no length_crs; set a projected CRS in metres")
+    crs = CRS.from_user_input(aoi.length_crs)
+    if not crs.is_projected or any(a.unit_name != "metre" for a in crs.axis_info):
+        raise ValueError(f"length_crs {aoi.length_crs} must be a projected CRS in metres")
+    area = crs.area_of_use
+    if area is None or not (
+        area.west <= aoi.lon_min and aoi.lon_max <= area.east
+        and area.south <= aoi.lat_min and aoi.lat_max <= area.north
+    ):  # fmt: skip
+        bounds = None if area is None else (area.west, area.south, area.east, area.north)
+        raise ValueError(
+            f"AOI {aoi.id!r} lies outside the area of use of {aoi.length_crs} {bounds}"
+        )
+    return crs
+
+
+def add_projected_lengths(g: nx.MultiDiGraph, length_crs: CRS) -> None:
+    tr = Transformer.from_crs("EPSG:4326", length_crs, always_xy=True)
+    geod = Geod(ellps="GRS80")  # reference only (JGD2011 / WGS84 ellipsoids agree here)
+    g.graph["length_crs"] = length_crs.to_string()
     for _, d in g.nodes(data=True):
-        d["x_6680"], d["y_6680"] = tr.transform(d["x"], d["y"])
+        d["x_proj"], d["y_proj"] = tr.transform(d["x"], d["y"])
     for u, v, d in g.edges(data=True):
         a, b = g.nodes[u], g.nodes[v]
-        d["length_m"] = math.hypot(b["x_6680"] - a["x_6680"], b["y_6680"] - a["y_6680"])
+        d["length_m"] = math.hypot(b["x_proj"] - a["x_proj"], b["y_proj"] - a["y_proj"])
         d["length_geod_m"] = geod.inv(a["x"], a["y"], b["x"], b["y"])[2]
 
 
@@ -192,23 +222,62 @@ def add_components(g: nx.MultiDiGraph) -> dict:
     }
 
 
+def mark_parallel_edge_nodes(g: nx.MultiDiGraph) -> int:
+    """Flag both ends of parallel edges so simplification never passes through them.
+
+    OSMnx's simplify_graph keeps only the first of several edges between two
+    interstitial nodes and drops the rest; making those nodes endpoints keeps them all.
+    """
+    nodes = {n for u, v, k in g.edges(keys=True) if k > 0 for n in (u, v)}
+    for n in nodes:
+        g.nodes[n]["parallel_edge_endpoint"] = True
+    return len(nodes)
+
+
 def simplify(g: nx.MultiDiGraph) -> nx.MultiDiGraph:
+    mark_parallel_edge_nodes(g)
     return ox.simplify_graph(
         g,
+        node_attrs_include=["parallel_edge_endpoint"],
         edge_attrs_differ=SIMPLIFY_KEEP_SEPARATE,
         remove_rings=False,  # keep isolated loops (e.g. roundabouts) in the graph
         track_merged=True,
-        edge_attr_aggs={"length_m": sum, "length_geod_m": sum, "length_gc_m": sum},
+        edge_attr_aggs={
+            "length_m": sum,
+            "length_geod_m": sum,
+            "length_gc_m": sum,
+            "edge_uid": list,
+        },
     )
 
 
 def verify_simplification(g: nx.MultiDiGraph, s: nx.MultiDiGraph) -> dict:
-    """Check that simplification kept every vertex, attribute and length of the raw graph."""
+    """Check that simplification kept every raw edge exactly once, with its vertices,
+    attributes and length.
+
+    Raw and simplified edges are matched one-to-one by ``edge_uid`` (not by counts or by
+    node pairs), so parallel edges cannot hide a dropped or duplicated edge. For each
+    simplified edge the raw uids must form a chain from u to v in ``merged_edges`` order.
+    """
+    raw = {d["edge_uid"]: (u, v, d) for u, v, d in g.edges(data=True)}
     problems: list[str] = []
-    covered = 0
+    if len(raw) != g.number_of_edges():
+        problems.append("edge_uid is not unique in the raw graph")
+    seen: Counter = Counter()
     for u, v, d in s.edges(data=True):
+        uids = d["edge_uid"] if isinstance(d["edge_uid"], list) else [d["edge_uid"]]
         merged = d.get("merged_edges") or [(u, v)]
-        covered += len(merged)
+        seen.update(uids)
+        if len(uids) != len(merged):
+            problems.append(f"edge {u}->{v}: {len(uids)} uids for {len(merged)} merged segments")
+            continue
+        originals = [raw.get(uid) for uid in uids]
+        if None in originals:
+            problems.append(f"edge {u}->{v}: unknown edge_uid")
+            continue
+        if [(a, b) for a, b, _ in originals] != list(merged):
+            problems.append(f"edge {u}->{v}: uids do not match merged segments")
+            continue
         seq = [merged[0][0]] + [b for _, b in merged]
         if (
             seq[0] != u
@@ -217,24 +286,22 @@ def verify_simplification(g: nx.MultiDiGraph, s: nx.MultiDiGraph) -> dict:
         ):
             problems.append(f"edge {u}->{v}: merged path is not a chain from u to v")
             continue
-        originals = []
-        for a, b in merged:
-            cands = [
-                e for e in g.get_edge_data(a, b, default={}).values()
-                if all(e.get(attr) == d.get(attr) for attr in SIMPLIFY_KEEP_SEPARATE)
-            ]  # fmt: skip
-            if not cands:
-                problems.append(f"edge {u}->{v}: no raw edge {a}->{b} with the same attributes")
-                break
-            originals.append(cands[0])
-        else:
-            expected = [(g.nodes[n]["x"], g.nodes[n]["y"]) for n in seq]
-            got = list(d["geometry"].coords) if "geometry" in d else expected
-            if got != expected:
-                problems.append(f"edge {u}->{v}: geometry vertices differ from raw nodes")
-            raw_len = sum(e["length_m"] for e in originals)
-            if not math.isclose(raw_len, d["length_m"], rel_tol=1e-9, abs_tol=1e-6):
-                problems.append(f"edge {u}->{v}: length_m {d['length_m']} != raw {raw_len}")
+        for attr in SIMPLIFY_KEEP_SEPARATE:
+            if any(o.get(attr) != d.get(attr) for *_, o in originals):
+                problems.append(f"edge {u}->{v}: attribute {attr} differs from raw edges")
+        expected = [(g.nodes[n]["x"], g.nodes[n]["y"]) for n in seq]
+        got = list(d["geometry"].coords) if "geometry" in d else expected
+        if got != expected:
+            problems.append(f"edge {u}->{v}: geometry vertices differ from raw nodes")
+        raw_len = sum(o["length_m"] for *_, o in originals)
+        if not math.isclose(raw_len, d["length_m"], rel_tol=1e-9, abs_tol=1e-6):
+            problems.append(f"edge {u}->{v}: length_m {d['length_m']} != raw {raw_len}")
+    duplicated = sorted(uid for uid, c in seen.items() if c > 1)
+    missing = sorted(set(raw) - set(seen))
+    if duplicated:
+        problems.append(f"{len(duplicated)} raw edges appear in more than one simplified edge")
+    if missing:
+        problems.append(f"{len(missing)} raw edges missing after simplification: {missing[:5]}")
     raw_routable = routable_subgraph(g)
     simp_routable = routable_subgraph(s)
     report = {
@@ -242,7 +309,12 @@ def verify_simplification(g: nx.MultiDiGraph, s: nx.MultiDiGraph) -> dict:
         "raw_edges": g.number_of_edges(),
         "simplified_nodes": s.number_of_nodes(),
         "simplified_edges": s.number_of_edges(),
-        "raw_edges_covered": covered,
+        "parallel_edge_endpoints": sum(
+            1 for *_, d in g.nodes(data=True) if d.get("parallel_edge_endpoint")
+        ),
+        "raw_edges_matched_once_by_uid": sum(1 for uid in raw if seen[uid] == 1),
+        "raw_edges_duplicated": len(duplicated),
+        "raw_edges_missing": len(missing),
         "total_length_m_raw": sum(d["length_m"] for *_, d in g.edges(data=True)),
         "total_length_m_simplified": sum(d["length_m"] for *_, d in s.edges(data=True)),
         "wcc_count_raw": nx.number_weakly_connected_components(g),
@@ -254,8 +326,6 @@ def verify_simplification(g: nx.MultiDiGraph, s: nx.MultiDiGraph) -> dict:
             1 for c in nx.strongly_connected_components(simp_routable) if len(c) > 1
         ),
     }
-    if covered != g.number_of_edges():
-        problems.append(f"{covered} raw edges covered, expected {g.number_of_edges()}")
     pairs = [
         ("wcc_count_raw", "wcc_count_simplified"),
         ("scc_nontrivial_raw", "scc_nontrivial_simplified"),
