@@ -12,6 +12,7 @@ import {
   JulianDate,
   Matrix4,
   Model,
+  PerspectiveFrustum,
   type TerrainProvider,
   Transforms,
   type Viewer,
@@ -71,6 +72,8 @@ export class VehicleAnimation {
   visual: VehicleVisual | null = null;
   private camera: CameraMode = "free";
   private camHeading = 0;
+  // the viewer's own field of view, restored when leaving the chase camera
+  private readonly defaultFov: number | null;
   private start = JulianDate.now();
   terrainInfo: TerrainSampleInfo | null = null;
 
@@ -78,6 +81,8 @@ export class VehicleAnimation {
     private readonly viewer: Viewer,
     private readonly cfg: VehicleConfig,
   ) {
+    const frustum = viewer.camera.frustum;
+    this.defaultFov = frustum instanceof PerspectiveFrustum && frustum.fov !== undefined ? frustum.fov : null;
     viewer.scene.preRender.addEventListener(() => {
       this.updateModelMatrix();
       this.updateCamera();
@@ -273,6 +278,12 @@ export class VehicleAnimation {
 
   setCamera(mode: CameraMode): void {
     this.camera = mode;
+    // Only the chase camera widens the view; every other mode gets the viewer's default back.
+    const frustum = this.viewer.camera.frustum;
+    const chaseFov = this.cfg.cameras.chase.fovRad;
+    if (frustum instanceof PerspectiveFrustum && this.defaultFov !== null) {
+      frustum.fov = mode === "chase" && chaseFov !== null ? chaseFov : this.defaultFov;
+    }
     if (mode === "free") this.viewer.camera.lookAtTransform(Matrix4.IDENTITY);
     else if (this.track) this.camHeading = this.stateAt(this.viewer.clock.currentTime).heading;
   }
