@@ -115,11 +115,12 @@ CircuitForge AI は、ユーザーが**好きな地域**と**理想のコース�
 
 ## セットアップ
 
-**現在あるのは、開発環境と道路データの下準備だけです。**
+**現在あるのは、開発環境・道路データの下準備・手動コースの表示までです。**
 - Web：札幌の暫定 AOI を地図に表示する CesiumJS ビューア（[Issue #5](https://github.com/furuhashilab/2026gsc_TomoyaAiko/issues/5)）
 - Python：OSM の道路網を取得し、通行方向を考慮した道路グラフと GeoJSON を作るコマンド（[Issue #6](https://github.com/furuhashilab/2026gsc_TomoyaAiko/issues/6)）
+- コース形式（[contracts/](contracts/README.md)）と、手動でコースを作成・検証するコマンド。ビューアでのコース表示（[Issue #7](https://github.com/furuhashilab/2026gsc_TomoyaAiko/issues/7)）
 
-ルートの表示・3D 都市・車両・コース生成はまだありません。
+3D 都市（PLATEAU）・車両アニメーション・コースの自動生成はまだありません。
 
 ### 構成
 ```
@@ -166,6 +167,7 @@ npm run dev
 ```
 - `npm ci` は `package-lock.json` に書かれたとおりのバージョンをインストールします（初回は数分かかります）。
 - ブラウザで <http://localhost:5173> を開くと、地理院タイルの地図の上に、札幌中心部の AOI が赤い枠で表示されます。右下に「地理院タイル」の出典が出ます。
+- コースも表示されます。札幌のデモコース（`web/public/courses/sapporo-demo.course.geojson`）がなければ、合成サンプルが表示されます。札幌のデモコースを作る手順は [contracts/README.md](contracts/README.md) にあります。画面左上のボタンから、手元のコースファイルも開けます。
 - 止めるときはターミナルで `Ctrl + C` を押します。
 - Cesium ion のアカウントやトークンは不要です。
 

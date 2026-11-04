@@ -18,6 +18,7 @@
 - Exported GeoJSON carries `"attribution": "© OpenStreetMap contributors (ODbL 1.0)"`; any UI showing it must display OSM attribution.
 - Processed outputs are a derivative database under ODbL. If they are ever published or redistributed, the ODbL share-alike and attribution obligations must be reviewed first (#12).
 - Committed OSM-derived content is limited to small summaries (counts, hashes) and a hand-made test fixture that contains no OSM data.
+- Course files (Issue #7) built from OSM are derivative data too: they are generated locally (e.g. `web/public/courses/`, gitignored) from committed recipes. Only synthetic course samples (no OSM content) are committed until #12 decides how OSM-derived samples may be published.
 
 ## Practical requirements
 1. Add visible, appropriate OSM and PLATEAU attribution in the running UI.

@@ -28,6 +28,14 @@ uv run cf-osm --refetch  # Overpass から取り直す
 
 判定ルールと検証結果は [docs/evidence/issue-6/README.md](../docs/evidence/issue-6/README.md) にあります。
 
+## コース（Issue #7）
+```bash
+uv run cf-course build --recipe ../contracts/examples/sapporo-demo.recipe.json -o ../web/public/courses/sapporo-demo.course.geojson
+uv run cf-course build --mode circuit --via 141.3516,43.0620 141.3600,43.0632 ... -o my.course.geojson
+uv run cf-course validate my.course.geojson
+```
+形式・検証ルール・識別子は [contracts/README.md](../contracts/README.md) を参照してください。`course.py` が作成と検証を、`course_cli.py` がコマンドを担当します。
+
 ## テスト
 ```bash
 uv run pytest             # オフライン（tests/fixtures の手作りデータ）。CI と同じ

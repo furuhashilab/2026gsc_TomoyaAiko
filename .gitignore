@@ -45,3 +45,6 @@ artifacts/
 *.pth
 *.ckpt
 *.safetensors
+
+# Courses generated locally from OSM (ODbL derivative; see Issue #12)
+web/public/courses/*.geojson

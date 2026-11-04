@@ -1,0 +1,44 @@
+{
+  "id": "sapporo-demo-circuit-001",
+  "name": "札幌中心部デモ周回（架空・手動作成）",
+  "mode": "circuit",
+  "aoi_config": "config/aoi.sapporo.json",
+  "profile": "mvp-drive",
+  "attic_date": "2026-11-03T16:25:05Z",
+  "preferences": {
+    "length_range_m": [
+      3000,
+      5000
+    ]
+  },
+  "via": [
+    [
+      141.35164,
+      43.06203
+    ],
+    [
+      141.36003,
+      43.06317
+    ],
+    [
+      141.36137,
+      43.05784
+    ],
+    [
+      141.34808,
+      43.05721
+    ],
+    [
+      141.34701,
+      43.06147
+    ]
+  ],
+  "note": "Via points are hand-picked lon/lat near intersections in the LOD2 band (not OSM data). The course file itself is generated locally with `uv run cf-course build --recipe ...`; it is not committed because it is derived from OSM (see Issue #12).",
+  "via_description": [
+    "札幌駅前通 × 北1条・雁来通（スタート）",
+    "北1条・雁来通 × 東3丁目通",
+    "東3丁目通 × 南3条通",
+    "南2条通 × 西7丁目通",
+    "国道230号 × 西7丁目通"
+  ]
+}

@@ -1,7 +1,7 @@
 """Build a directed road graph from Overpass elements.
 
-Pipeline: Overpass JSON -> OSM XML -> ``osmnx.graph_from_xml`` (unsimplified, with
-``all_oneway`` so OSMnx adds each way once) -> edges rebuilt from ``rules.classify_way``
+Pipeline: Overpass JSON -> OSM XML -> ``osmnx.graph_from_xml`` (nodes) -> directed
+edges built per way segment from ``rules.classify_way`` (``segment_uid``)
 -> AOI clipping -> projected lengths -> weak/strong components -> ``simplify_graph``
 with ``track_merged`` -> ``verify_simplification``.
 
@@ -13,6 +13,7 @@ CRS whose area of use does not contain the AOI. Two references are kept for chec
 ``length`` as ``length_gc_m`` (spherical, so it can differ by ~0.3% depending on bearing).
 """
 
+import itertools
 import math
 import tempfile
 import xml.etree.ElementTree as ET
@@ -34,8 +35,6 @@ EDGE_TAGS = [
     "highway", "name", "ref", "oneway", "junction", "lanes", "maxspeed", "width", "surface",
     "access", "vehicle", "motor_vehicle", "motorcar", "bridge", "tunnel", "layer", "area",
 ]  # fmt: skip
-# OSMnx treats these oneway values as "travel against node order" and reverses them.
-OSMNX_REVERSED_VALUES = {"-1", "reverse", "T"}
 # Edges are never merged across a change of these attributes during simplification.
 SIMPLIFY_KEEP_SEPARATE = [
     "highway", "name", "direction", "access", "routable", "aoi_status", "scc_id",
@@ -71,9 +70,24 @@ def _osmnx_settings(**overrides):
             setattr(ox.settings, k, v)
 
 
+def segment_uid(way_id: int, index: int, way_order: bool) -> str:
+    """Stable id of one directed OSM segment: way id, segment index in the way, direction.
+
+    ``index`` is the position of the segment (nodes[index] -> nodes[index + 1]) in the
+    way's node list, so two parallel segments between the same nodes are always told
+    apart (different ways, or different positions in one way), and the id does not depend
+    on graph construction order. ``f`` = drawn order, ``r`` = against drawn order.
+    """
+    return f"{way_id}:{index}:{'f' if way_order else 'r'}"
+
+
 def build_directed_graph(elements: list[dict]) -> nx.MultiDiGraph:
-    """Full (unclipped, unsimplified) graph with edges following rules.classify_way."""
-    rules = {e["id"]: classify_way(e.get("tags", {})) for e in elements if e["type"] == "way"}
+    """Full (unclipped, unsimplified) graph with edges following rules.classify_way.
+
+    OSMnx builds the node set from the OSM XML; edges are created here from each way's
+    node list so that every directed segment gets a ``segment_uid`` and its direction is
+    decided by rules.py only.
+    """
     with tempfile.TemporaryDirectory() as tmp:
         xml_path = Path(tmp) / "aoi.osm"
         overpass_to_osm_xml(elements, xml_path)
@@ -82,17 +96,18 @@ def build_directed_graph(elements: list[dict]) -> nx.MultiDiGraph:
 
     g = nx.MultiDiGraph(crs="EPSG:4326")
     g.add_nodes_from(g0.nodes(data=True))
-    for u, v, d in g0.edges(data=True):
-        r = rules[d["osmid"]]
-        # (a, b) is the segment in OSM way order; OSMnx stored oneway=-1/reverse/T reversed.
-        a, b = (v, u) if d.get("oneway") in OSMNX_REVERSED_VALUES else (u, v)
-        attrs = {k: d[k] for k in EDGE_TAGS if k in d}
+    for way in (e for e in elements if e["type"] == "way"):
+        nodes = way["nodes"]
+        if len(nodes) < 2 or any(n not in g for n in nodes):
+            continue
+        tags = way.get("tags", {})
+        r = classify_way(tags)
+        attrs = {k: tags[k] for k in EDGE_TAGS if k in tags}
         # OSMnx's GraphML loader expects a boolean "oneway"; keep the raw tag apart.
         if "oneway" in attrs:
             attrs["oneway_tag"] = attrs.pop("oneway")
         attrs.update(
-            osmid=d["osmid"],
-            length_gc_m=d["length"],
+            osmid=way["id"],
             direction=r.direction,
             direction_source=r.direction_source,
             access=r.access,
@@ -100,17 +115,24 @@ def build_directed_graph(elements: list[dict]) -> nx.MultiDiGraph:
             review="; ".join(r.review),
             routable=r.routable,
         )
-        if r.direction == "reverse":
-            pairs = [(b, a, False)]
-        elif r.direction == "both":
-            pairs = [(a, b, True), (b, a, False)]
-        else:  # forward, or uncertain: keep the drawn order only, never add the reverse
-            pairs = [(a, b, True)]
-        for x, y, way_order in pairs:
-            # edge_uid identifies one directed raw segment; it lets verify_simplification
-            # match raw and simplified edges one-to-one even when parallel edges exist.
-            uid = f"{d['osmid']}:{x}:{y}:{g.number_of_edges(x, y)}"
-            g.add_edge(x, y, **{**attrs, "edge_uid": uid, "way_order": way_order})
+        for i, (a, b) in enumerate(itertools.pairwise(nodes)):
+            if r.direction == "reverse":
+                pairs = [(b, a, False)]
+            elif r.direction == "both":
+                pairs = [(a, b, True), (b, a, False)]
+            else:  # forward, or uncertain: keep the drawn order only, never add the reverse
+                pairs = [(a, b, True)]
+            na, nb = g.nodes[a], g.nodes[b]
+            length_gc = float(ox.distance.great_circle(na["y"], na["x"], nb["y"], nb["x"]))
+            for x, y, way_order in pairs:
+                g.add_edge(
+                    x, y,
+                    **attrs,
+                    edge_uid=segment_uid(way["id"], i, way_order),
+                    way_seq=i,
+                    way_order=way_order,
+                    length_gc_m=length_gc,
+                )  # fmt: skip
     return g
 
 

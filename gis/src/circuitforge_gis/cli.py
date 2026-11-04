@@ -20,6 +20,11 @@ from .profile import MVP_DRIVE, PROFILES
 DEFAULT_DATE = "2026-11-03T16:25:05Z"  # same attic date as the Issue #4 evidence
 
 
+def snapshot_tag(aoi_id: str, profile_name: str, date: str) -> str:
+    """Name shared by data/raw/osm_<tag>.json and data/processed/<tag>/."""
+    return f"{aoi_id}_{profile_name}_{date.replace(':', '')}"
+
+
 def run(elements: list[dict], aoi, out_dir: Path, meta: dict) -> dict:
     length_crs = graph.check_length_crs(aoi)
     full = graph.build_directed_graph(elements)
@@ -61,7 +66,7 @@ def main(argv: list[str] | None = None) -> None:
     graph.check_length_crs(aoi)  # fail before downloading if lengths cannot be computed
     profile = PROFILES[args.profile]
     query = build_query(aoi, profile, args.date)
-    tag = f"{aoi.id}_{profile.name}_{args.date.replace(':', '')}"
+    tag = snapshot_tag(aoi.id, profile.name, args.date)
     raw_path = args.data_dir / "raw" / f"osm_{tag}.json"
     if args.refetch or not raw_path.exists():
         response = fetch(query, raw_path)

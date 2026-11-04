@@ -1,0 +1,140 @@
+{
+ "type": "Feature",
+ "geometry": {
+  "type": "LineString",
+  "coordinates": [
+   [
+    141.3505,
+    43.0615
+   ],
+   [
+    141.3515,
+    43.0615
+   ],
+   [
+    141.3516,
+    43.0622
+   ],
+   [
+    141.3514,
+    43.0626
+   ],
+   [
+    141.351,
+    43.0627
+   ],
+   [
+    141.3505,
+    43.0625
+   ],
+   [
+    141.3505,
+    43.0615
+   ]
+  ]
+ },
+ "properties": {
+  "schema": "circuitforge-course",
+  "schema_version": "0.1.0",
+  "id": "synthetic-loop",
+  "name": "Synthetic test loop (hand-made roads, not OSM)",
+  "mode": "circuit",
+  "authoring": {
+   "method": "manual-via-points",
+   "via": [
+    {
+     "node": 4
+    },
+    {
+     "node": 5
+    }
+   ],
+   "path_completion": "shortest path by length_m (integer millimetres) on routable edges inside the AOI; ties broken by the lexicographically smallest edge_uid sequence",
+   "tool": "circuitforge-gis 0.1.0"
+  },
+  "preferences": {
+   "length_range_m": [
+    100,
+    1000
+   ]
+  },
+  "fictional": true,
+  "aoi": {
+   "id": "fixture",
+   "bbox": [
+    141.35,
+    43.06,
+    141.354,
+    43.063
+   ],
+   "length_crs": "EPSG:6680"
+  },
+  "osm_snapshot": {
+   "attic_date": "fixture",
+   "element_sha256": "794c6fc5ea4b56fccf941c9de7194f6fc302025a5638c71c1333084202fd11df",
+   "profile": "mvp-drive"
+  },
+  "rule_set": "circuitforge-gis/D-0010",
+  "segments": [
+   {
+    "edge_uid": "102:0:f",
+    "way_id": 102,
+    "from_node": 4,
+    "to_node": 5
+   },
+   {
+    "edge_uid": "106:4:r",
+    "way_id": 106,
+    "from_node": 5,
+    "to_node": 13
+   },
+   {
+    "edge_uid": "106:3:r",
+    "way_id": 106,
+    "from_node": 13,
+    "to_node": 12
+   },
+   {
+    "edge_uid": "106:2:r",
+    "way_id": 106,
+    "from_node": 12,
+    "to_node": 11
+   },
+   {
+    "edge_uid": "106:1:r",
+    "way_id": 106,
+    "from_node": 11,
+    "to_node": 10
+   },
+   {
+    "edge_uid": "106:0:r",
+    "way_id": 106,
+    "from_node": 10,
+    "to_node": 4
+   }
+  ],
+  "length_m": 398.882,
+  "synthetic": true,
+  "attribution": "Synthetic test data (no OSM content)",
+  "disclaimer": "Fictional course for visualisation and research only. Not a proposal to drive, race or close public roads. 架空の可視化用コースであり、公道走行の提案ではありません。",
+  "validation": {
+   "status": "valid",
+   "errors": [],
+   "warnings": [
+    {
+     "code": "W_NO_ELEVATION",
+     "message": "no elevation in coordinates"
+    },
+    {
+     "code": "W_TURN_RESTRICTIONS_NOT_EVALUATED",
+     "message": "OSM turn restrictions are not modelled"
+    }
+   ],
+   "validator": "circuitforge-gis 0.1.0",
+   "metrics": {
+    "segments": 6,
+    "computed_length_m": 398.882
+   }
+  }
+ }
+}
