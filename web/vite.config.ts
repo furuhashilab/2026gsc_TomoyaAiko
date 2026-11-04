@@ -1,7 +1,7 @@
-import { mkdirSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { type Plugin, defineConfig } from "vite";
 import { viteStaticCopy } from "vite-plugin-static-copy";
+import { createSaveHandler } from "./src/dev/save-video-outputs.ts";
 
 // CesiumJS needs its Workers, Assets, Widgets and ThirdParty folders served as static
 // files; this follows the official cesium-vite-example setup.
@@ -9,29 +9,13 @@ const cesiumSource = "node_modules/cesium/Build/Cesium";
 const cesiumBaseUrl = "cesiumStatic";
 
 // Dev server only: lets tools/video-export.html write its WebM and record JSON to
-// web/out/video/ (git-ignored). Only plain file names with these extensions are accepted.
+// web/out/video/ (git-ignored). Origin, size and type checks: src/dev/save-video-outputs.ts.
 function saveVideoOutputs(): Plugin {
-  const dir = resolve("out/video");
   return {
     name: "circuitforge-save-video-outputs",
     apply: "serve",
     configureServer(server) {
-      server.middlewares.use("/__video-out", (req, res) => {
-        const name = new URL(req.url ?? "", "http://localhost").searchParams.get("name") ?? "";
-        if (req.method !== "POST" || !/^[\w.-]+\.(webm|json)$/.test(name)) {
-          res.statusCode = 400;
-          res.end();
-          return;
-        }
-        const chunks: Buffer[] = [];
-        req.on("data", (c: Buffer) => chunks.push(c));
-        req.on("end", () => {
-          mkdirSync(dir, { recursive: true });
-          writeFileSync(resolve(dir, name), Buffer.concat(chunks));
-          res.setHeader("content-type", "application/json");
-          res.end(JSON.stringify({ path: `web/out/video/${name}` }));
-        });
-      });
+      server.middlewares.use("/__video-out", createSaveHandler({ dir: resolve("out/video"), label: "web/out/video" }));
     },
   };
 }

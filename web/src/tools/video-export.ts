@@ -5,6 +5,7 @@ import "@fontsource/noto-sans-jp/700.css";
 import "cesium/Build/Cesium/Widgets/widgets.css";
 import syntheticRaw from "../../../contracts/examples/synthetic-loop.course.geojson?raw";
 import { parseCourse } from "../course";
+import { SAVE_HEADER } from "../dev/save-protocol";
 import { exportVideo } from "../video/exporter";
 import { parseTimeline } from "../video/timeline";
 
@@ -36,8 +37,12 @@ function link(id: string, blob: Blob, name: string): void {
 // Dev server only: write the files to web/out/video/ (see vite.config.ts).
 async function saveToDisk(name: string, body: Blob): Promise<string | null> {
   if (!import.meta.env.DEV) return null;
-  const res = await fetch(`/__video-out?name=${encodeURIComponent(name)}`, { method: "POST", body });
-  if (!res.ok) throw new Error(`保存に失敗しました（HTTP ${res.status}）`);
+  const res = await fetch(`/__video-out?name=${encodeURIComponent(name)}`, {
+    method: "POST",
+    headers: { "content-type": body.type, [SAVE_HEADER]: "1" },
+    body,
+  });
+  if (!res.ok) throw new Error(`保存に失敗しました（HTTP ${res.status}：${((await res.json().catch(() => ({}))) as { error?: string }).error ?? ""}）`);
   return ((await res.json()) as { path: string }).path;
 }
 
