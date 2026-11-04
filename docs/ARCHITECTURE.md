@@ -62,6 +62,8 @@ For Circuit Mode, closure is checked on the graph, not by coordinate proximity. 
 - `config/vehicle.json`: model URI, provenance, licence (CC0 Kenney Car Kit `race.glb`, unmodified) and SHA-256 of every shipped file; dimensions, scale, forward axis, heading offset, ground offset; animation settings (heading/pitch window, terrain sample step, base display speed, playback multipliers); camera settings.
 - `web/src/vehicle/track.ts` (no CesiumJS): position by linear interpolation on the course polyline (stays on the centre line), chord heading over a window, terrain heights sampled every `terrain_sample_step_m` and interpolated, pitch from height differences; loops for circuits, stops for rallies. City-independent: only the course, scene and vehicle configs are inputs.
 - `web/src/vehicle/animation.ts`: model entity driven by the viewer clock; play / pause / reset / speed; chase, onboard-like (ahead of the nose; the model has no cockpit) and aerial cameras plus free camera. Without terrain the vehicle runs on the ellipsoid like the course line.
+- Model loading: pre-flight check that the GLB and its external texture can be fetched (`model-check.ts`); on failure or a model error a simple box vehicle is shown with the reason, and the animation continues. Slow loading is not treated as failure.
+- Async loads (course file, terrain sampling, model) are tagged with a generation id (`latest.ts`); results of superseded loads are discarded.
 - Checks: `web/tools/vehicle-check.html` (terrain-step cost/error, grounding, heading) recorded in `docs/evidence/issue-9/`.
 
 ## Visualization details

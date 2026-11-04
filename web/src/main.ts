@@ -26,6 +26,7 @@ import vehicleConfig from "../../config/vehicle.json";
 import syntheticCourse from "../../contracts/examples/synthetic-loop.course.geojson?raw";
 import { parseAoi } from "./aoi";
 import { arrowSegments, bearingRad, type Course, parseCourse } from "./course";
+import { LatestOnly } from "./latest";
 import { parseScene } from "./scene";
 import { type CameraMode, VehicleAnimation } from "./vehicle/animation";
 import { parseVehicleConfig } from "./vehicle/config";
@@ -209,11 +210,16 @@ const vehicleInfo = document.getElementById("vehicleInfo") as HTMLDivElement;
 const speedSelect = document.getElementById("vehicleSpeed") as HTMLSelectElement;
 for (const m of vehicleCfg.multipliers) speedSelect.add(new Option(`${m}×`, String(m), m === 1, m === 1));
 
+// ?vehicleModel=... lets the model-failure fallback be checked by hand.
+const vehicleModelUri = params.get("vehicleModel") ?? vehicleCfg.modelUri;
+
 async function loadVehicle(course: Course): Promise<void> {
   vehicleInfo.textContent = "車両：準備中（地形の高さを取得しています）";
   try {
-    await vehicle.load(course, await terrainReady);
-    vehicle.setMultiplier(Number(speedSelect.value));
+    // false = a newer course was picked meanwhile; its own load updates the panel
+    if (await vehicle.load(course, await terrainReady, vehicleModelUri)) {
+      vehicle.setMultiplier(Number(speedSelect.value));
+    }
   } catch (e) {
     vehicleInfo.textContent = `車両：準備に失敗（${e instanceof Error ? e.message : String(e)}）`;
   }
@@ -225,9 +231,16 @@ function refreshVehicleInfo(): void {
   const pct = ((s.distance / vehicle.length) * 100).toFixed(0);
   const base = (vehicleCfg.baseSpeedMps * 3.6).toFixed(0);
   const source = vehicle.terrainInfo?.source === "terrain" ? "地形に追従" : "地形なし（楕円体上）";
+  const v = vehicle.visual;
+  const model =
+    v?.kind === "fallback"
+      ? `\n車両：簡易形状で表示中（モデルの読み込みに失敗：${v.reason}）`
+      : v?.kind === "loading"
+        ? "\n車両：モデルを読み込み中"
+        : "";
   vehicleInfo.textContent =
     `${s.lap} 周目 / ${(s.distance / 1000).toFixed(2)} km（${pct}%） / ` +
-    `再生 ${speedSelect.value}×（基準の表示速度 ${base} km/h 相当） / ${source}`;
+    `再生 ${speedSelect.value}×（基準の表示速度 ${base} km/h 相当） / ${source}${model}`;
 }
 setInterval(refreshVehicleInfo, 250);
 
@@ -321,32 +334,45 @@ function showError(message: string): void {
   info.innerHTML = `<span class="ng">${escapeHtml(message)}</span>`;
 }
 
+// Course sources (initial URL, file picker) can overlap; only the latest one is shown.
+const courseLoads = new LatestOnly();
+
 async function loadInitialCourse(): Promise<void> {
   const url = params.get("course") ?? DEFAULT_COURSE_URL;
-  try {
-    const res = await fetch(url);
-    // The dev server answers unknown paths with index.html, so check the content type too.
-    if (!res.ok || !/json/.test(res.headers.get("content-type") ?? "")) {
-      throw new Error(res.ok ? "ファイルが見つかりません" : `ファイルが見つかりません（HTTP ${res.status}）`);
-    }
-    showCourse(parseCourse(await res.json()), url);
-  } catch (e) {
-    showCourse(
-      parseCourse(JSON.parse(syntheticCourse)),
-      "contracts/examples/synthetic-loop.course.geojson",
-      `${url} を読み込めなかったため合成サンプルを表示しています（${e instanceof Error ? e.message : String(e)}）。`,
-    );
-  }
+  await courseLoads.run(
+    async () => {
+      try {
+        const res = await fetch(url);
+        // The dev server answers unknown paths with index.html, so check the content type too.
+        if (!res.ok || !/json/.test(res.headers.get("content-type") ?? "")) {
+          throw new Error(res.ok ? "ファイルが見つかりません" : `ファイルが見つかりません（HTTP ${res.status}）`);
+        }
+        return { course: parseCourse(await res.json()), source: url, note: "" };
+      } catch (e) {
+        return {
+          course: parseCourse(JSON.parse(syntheticCourse)),
+          source: "contracts/examples/synthetic-loop.course.geojson",
+          note: `${url} を読み込めなかったため合成サンプルを表示しています（${e instanceof Error ? e.message : String(e)}）。`,
+        };
+      }
+    },
+    (r) => showCourse(r.course, r.source, r.note),
+  );
 }
 
 document.getElementById("courseFile")?.addEventListener("change", async (ev) => {
   const file = (ev.target as HTMLInputElement).files?.[0];
   if (!file) return;
-  try {
-    showCourse(parseCourse(JSON.parse(await file.text())), file.name);
-  } catch (e) {
-    showError(e instanceof Error ? e.message : String(e));
-  }
+  await courseLoads.run(
+    async () => {
+      try {
+        return { course: parseCourse(JSON.parse(await file.text())), source: file.name, error: "" };
+      } catch (e) {
+        return { course: null, source: file.name, error: e instanceof Error ? e.message : String(e) };
+      }
+    },
+    (r) => (r.course ? showCourse(r.course, r.source) : showError(r.error)),
+  );
 });
 
 void loadInitialCourse();
