@@ -27,6 +27,7 @@ import syntheticCourse from "../../contracts/examples/synthetic-loop.course.geoj
 import { parseAoi } from "./aoi";
 import { arrowSegments, bearingRad, type Course, parseCourse } from "./course";
 import { LatestOnly } from "./latest";
+import { Minimap } from "./minimap";
 import { parseScene } from "./scene";
 import { type CameraMode, VehicleAnimation } from "./vehicle/animation";
 import { parseVehicleConfig } from "./vehicle/config";
@@ -244,6 +245,20 @@ function refreshVehicleInfo(): void {
 }
 setInterval(refreshVehicleInfo, 250);
 
+// Minimap: same vehicle state as the 3D model, updated every rendered frame.
+const minimap = new Minimap(document.getElementById("minimap") as HTMLDivElement, 200, 200, vehicleCfg.headingWindowM);
+let minimapTrack: unknown = null;
+viewer.scene.postRender.addEventListener(() => {
+  const track = vehicle.currentTrack;
+  const s = vehicle.current();
+  if (!track || !s) return;
+  if (track !== minimapTrack) {
+    minimap.setTrack(track);
+    minimapTrack = track;
+  }
+  minimap.update(s.distance, s.lap);
+});
+
 document.getElementById("vehiclePlay")?.addEventListener("click", () => vehicle.play());
 document.getElementById("vehiclePause")?.addEventListener("click", () => vehicle.pause());
 document.getElementById("vehicleReset")?.addEventListener("click", () => vehicle.reset());
@@ -256,15 +271,27 @@ function showCourse(course: Course, source: string, note = ""): void {
   void loadVehicle(course);
   courseLayer.entities.removeAll();
   const positions = course.coordinates.map(([lon, lat]) => Cartesian3.fromDegrees(lon, lat));
-  // Everything is draped on the terrain (not on building roofs).
+  // Everything is draped on the terrain (not on building roofs). A wider dark line under
+  // the orange one acts as an outline against the light base map.
+  courseLayer.entities.add({
+    polyline: {
+      positions,
+      width: 14,
+      material: Color.fromCssColorString("#1b1f24").withAlpha(0.75),
+      clampToGround: true,
+      classificationType: ClassificationType.TERRAIN,
+      zIndex: 0,
+    },
+  });
   courseLayer.entities.add({
     name: course.name,
     polyline: {
       positions,
-      width: 6,
+      width: 8,
       material: Color.fromCssColorString("#ff7a00"),
       clampToGround: true,
       classificationType: ClassificationType.TERRAIN,
+      zIndex: 1,
     },
   });
   // Direction arrows roughly every 250 m: ground-clamped billboards rotated to the travel

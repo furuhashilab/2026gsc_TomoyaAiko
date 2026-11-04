@@ -242,6 +242,11 @@ export class VehicleAnimation {
     return Cartesian3.fromDegrees(s.lon, s.lat, s.height + this.cfg.groundOffsetM);
   }
 
+  /** The track the vehicle currently follows (shared with the minimap). */
+  get currentTrack(): Track | null {
+    return this.track;
+  }
+
   get ready(): boolean {
     return this.track !== null;
   }
