@@ -1,0 +1,537 @@
+{
+ "catalog": "https://api.plateauview.mlit.go.jp/datacatalog/plateau-datasets",
+ "retrieved_utc": "2026-11-04T03:48:05Z",
+ "aoi": [
+  141.335,
+  43.05,
+  141.365,
+  43.072
+ ],
+ "tile_selection": "leaf tiles whose content boundingVolume.region intersects the AOI",
+ "datasets": [
+  {
+   "id": "01101_bldg_lod1",
+   "ward": "中央区",
+   "ward_code": "01101",
+   "year": 2020,
+   "registration_year": 2024,
+   "spec": "4.1",
+   "lod": "1",
+   "texture": true,
+   "crs": "JGD2011",
+   "url": "https://assets.cms.plateau.reearth.io/assets/a6/031403-b4dc-4d5d-8c2f-50361fedc764/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01101_chuo-ku_lod1/tileset.json",
+   "tiles": [
+    {
+     "uri": "data/data12.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/a6/031403-b4dc-4d5d-8c2f-50361fedc764/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01101_chuo-ku_lod1/data/data12.b3dm",
+     "bytes": 553968,
+     "sha256": "a2b51c9e4651e7dd6931640892f3c1ce7bf1a9b06a6a82ff1dfbf774231d27a2"
+    },
+    {
+     "uri": "data/data13.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/a6/031403-b4dc-4d5d-8c2f-50361fedc764/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01101_chuo-ku_lod1/data/data13.b3dm",
+     "bytes": 928852,
+     "sha256": "218c65ba8fdef85e80c3ef21c5a0f0cc354f04d3cd23e97bf76e08f9ec2cb273"
+    },
+    {
+     "uri": "data/data15.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/a6/031403-b4dc-4d5d-8c2f-50361fedc764/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01101_chuo-ku_lod1/data/data15.b3dm",
+     "bytes": 3952180,
+     "sha256": "0fcf20b952406a53b670c25c4c07b7123ba80221a5ffe86ad0767331646b489a"
+    },
+    {
+     "uri": "data/data17.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/a6/031403-b4dc-4d5d-8c2f-50361fedc764/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01101_chuo-ku_lod1/data/data17.b3dm",
+     "bytes": 2541860,
+     "sha256": "9e2b80b7f7fb9fafd790c49b35899e4695e2a4be24fe47b98e4b26002c0b836a"
+    },
+    {
+     "uri": "data/data24.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/a6/031403-b4dc-4d5d-8c2f-50361fedc764/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01101_chuo-ku_lod1/data/data24.b3dm",
+     "bytes": 3912996,
+     "sha256": "96999fca93b771e1d84c24d7674f80ec1458c7c00c31453916b6ce242e27854a"
+    },
+    {
+     "uri": "data/data25.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/a6/031403-b4dc-4d5d-8c2f-50361fedc764/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01101_chuo-ku_lod1/data/data25.b3dm",
+     "bytes": 3149472,
+     "sha256": "b5f723964287d92fd5affd53c0326fd075ca142da930b6419abdf6df4cd838b7"
+    },
+    {
+     "uri": "data/data26.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/a6/031403-b4dc-4d5d-8c2f-50361fedc764/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01101_chuo-ku_lod1/data/data26.b3dm",
+     "bytes": 1961356,
+     "sha256": "576c219c55cb6961269aa3726ea2e7426fd06459f88aae52cbcfd5d5a661b600"
+    },
+    {
+     "uri": "data/data27.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/a6/031403-b4dc-4d5d-8c2f-50361fedc764/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01101_chuo-ku_lod1/data/data27.b3dm",
+     "bytes": 3555848,
+     "sha256": "2fbfaa7355a12a9c263827367223dff5bd0e562d2d9e0ec5511c326d1d503e58"
+    },
+    {
+     "uri": "data/data29.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/a6/031403-b4dc-4d5d-8c2f-50361fedc764/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01101_chuo-ku_lod1/data/data29.b3dm",
+     "bytes": 538712,
+     "sha256": "9fb8cedecfcd2466aa79e7a9f6e237bce8e778564dff8c5e98882cf89d449377"
+    },
+    {
+     "uri": "data/data3.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/a6/031403-b4dc-4d5d-8c2f-50361fedc764/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01101_chuo-ku_lod1/data/data3.b3dm",
+     "bytes": 1484560,
+     "sha256": "e90e89ec283de7fb1093da3521d69f1a5026bf99f9daab9aebdcba53bbb525ca"
+    },
+    {
+     "uri": "data/data30.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/a6/031403-b4dc-4d5d-8c2f-50361fedc764/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01101_chuo-ku_lod1/data/data30.b3dm",
+     "bytes": 4001036,
+     "sha256": "c0b53b8e393acc61a78a1565aeee1c89270ec2f8a2d77770e9e32391ed1fcf5a"
+    },
+    {
+     "uri": "data/data31.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/a6/031403-b4dc-4d5d-8c2f-50361fedc764/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01101_chuo-ku_lod1/data/data31.b3dm",
+     "bytes": 2348192,
+     "sha256": "814e383fd5c0e07de9a5f1c1bbcd8e4c34e0bb50aa33d6597e91d75a80c03cb5"
+    },
+    {
+     "uri": "data/data34.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/a6/031403-b4dc-4d5d-8c2f-50361fedc764/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01101_chuo-ku_lod1/data/data34.b3dm",
+     "bytes": 2008688,
+     "sha256": "7a4e9a1bd1694b0feb9629dc940f2ce240b0637c01f278b8566ca5e6d40f559a"
+    },
+    {
+     "uri": "data/data35.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/a6/031403-b4dc-4d5d-8c2f-50361fedc764/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01101_chuo-ku_lod1/data/data35.b3dm",
+     "bytes": 2580644,
+     "sha256": "2d7fa73430d97bd48f9609b63c3b5c626155293ade7f63aa33c9a74ec7239d31"
+    },
+    {
+     "uri": "data/data36.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/a6/031403-b4dc-4d5d-8c2f-50361fedc764/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01101_chuo-ku_lod1/data/data36.b3dm",
+     "bytes": 2584936,
+     "sha256": "0514363546a66d0d3eb1eefacd412ff8a08e796043123003e1525beee28ce5ab"
+    },
+    {
+     "uri": "data/data37.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/a6/031403-b4dc-4d5d-8c2f-50361fedc764/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01101_chuo-ku_lod1/data/data37.b3dm",
+     "bytes": 1997380,
+     "sha256": "97dc218c58ec77de3b6b38fb3a4f8318a406abcffe5aaf452d2de044749de21b"
+    },
+    {
+     "uri": "data/data39.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/a6/031403-b4dc-4d5d-8c2f-50361fedc764/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01101_chuo-ku_lod1/data/data39.b3dm",
+     "bytes": 3693672,
+     "sha256": "c3e310ef6120c1230452bc3aad64c277f74205ffd80a91f0729f319f037fc2e7"
+    },
+    {
+     "uri": "data/data4.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/a6/031403-b4dc-4d5d-8c2f-50361fedc764/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01101_chuo-ku_lod1/data/data4.b3dm",
+     "bytes": 1269704,
+     "sha256": "7791101d4194cc39b6e3261c813bfa358f5f2a83df8aafb7dcb9fe4648fbdd31"
+    },
+    {
+     "uri": "data/data41.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/a6/031403-b4dc-4d5d-8c2f-50361fedc764/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01101_chuo-ku_lod1/data/data41.b3dm",
+     "bytes": 2943144,
+     "sha256": "653c0da094b17c38d7c2d0208d71fd57ad473fc6974b01d7972f3367f7ca0f3b"
+    },
+    {
+     "uri": "data/data44.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/a6/031403-b4dc-4d5d-8c2f-50361fedc764/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01101_chuo-ku_lod1/data/data44.b3dm",
+     "bytes": 4224644,
+     "sha256": "498221fb795e69b90aee2bd9efb267f719231e176b2c0591ab468d74512d84c3"
+    },
+    {
+     "uri": "data/data45.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/a6/031403-b4dc-4d5d-8c2f-50361fedc764/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01101_chuo-ku_lod1/data/data45.b3dm",
+     "bytes": 4083416,
+     "sha256": "c9090f9b549bc33f4f8b132388bf65331bdbd2699e6e65f21243b8eabbde0bc5"
+    },
+    {
+     "uri": "data/data46.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/a6/031403-b4dc-4d5d-8c2f-50361fedc764/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01101_chuo-ku_lod1/data/data46.b3dm",
+     "bytes": 4707980,
+     "sha256": "5a4cc1ab01ba5fe50aa5965653ec344a7038917fa9d42613beea365b1ac2da4d"
+    },
+    {
+     "uri": "data/data47.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/a6/031403-b4dc-4d5d-8c2f-50361fedc764/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01101_chuo-ku_lod1/data/data47.b3dm",
+     "bytes": 6958788,
+     "sha256": "3bf5bd8b632a250f66ada1b7f39d8fae232747e9c9dee36c7bbb70cadc6f1bf5"
+    },
+    {
+     "uri": "data/data49.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/a6/031403-b4dc-4d5d-8c2f-50361fedc764/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01101_chuo-ku_lod1/data/data49.b3dm",
+     "bytes": 3488556,
+     "sha256": "033f22c00d8f31064158d8bf7b7400d013b230fc2abacba0b7b66dba0f0b8639"
+    },
+    {
+     "uri": "data/data51.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/a6/031403-b4dc-4d5d-8c2f-50361fedc764/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01101_chuo-ku_lod1/data/data51.b3dm",
+     "bytes": 6371356,
+     "sha256": "1883345d6e4ec225193fcf23807c4ed5d2215d0992550c7ef51968cc6344555b"
+    }
+   ]
+  },
+  {
+   "id": "01101_bldg_lod2_no_texture",
+   "ward": "中央区",
+   "ward_code": "01101",
+   "year": 2020,
+   "registration_year": 2024,
+   "spec": "4.1",
+   "lod": "2",
+   "texture": false,
+   "crs": "JGD2011",
+   "url": "https://assets.cms.plateau.reearth.io/assets/bc/2e9ddc-cfe2-42fc-a91f-3bb95f97ddad/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01101_chuo-ku_lod2_no_texture/tileset.json",
+   "tiles": [
+    {
+     "uri": "data/data12.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/bc/2e9ddc-cfe2-42fc-a91f-3bb95f97ddad/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01101_chuo-ku_lod2_no_texture/data/data12.b3dm",
+     "bytes": 1220664,
+     "sha256": "676033343feff3f6ba4a92f6327d0f7b9b7bdc5a76f42e0d03d963b08041c064"
+    },
+    {
+     "uri": "data/data13.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/bc/2e9ddc-cfe2-42fc-a91f-3bb95f97ddad/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01101_chuo-ku_lod2_no_texture/data/data13.b3dm",
+     "bytes": 976280,
+     "sha256": "a5156b5fda7ef599b049c39900c33d22afa394279974f2f6db88d3c57f450e80"
+    },
+    {
+     "uri": "data/data15.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/bc/2e9ddc-cfe2-42fc-a91f-3bb95f97ddad/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01101_chuo-ku_lod2_no_texture/data/data15.b3dm",
+     "bytes": 3952180,
+     "sha256": "0fcf20b952406a53b670c25c4c07b7123ba80221a5ffe86ad0767331646b489a"
+    },
+    {
+     "uri": "data/data17.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/bc/2e9ddc-cfe2-42fc-a91f-3bb95f97ddad/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01101_chuo-ku_lod2_no_texture/data/data17.b3dm",
+     "bytes": 2541860,
+     "sha256": "9e2b80b7f7fb9fafd790c49b35899e4695e2a4be24fe47b98e4b26002c0b836a"
+    },
+    {
+     "uri": "data/data24.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/bc/2e9ddc-cfe2-42fc-a91f-3bb95f97ddad/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01101_chuo-ku_lod2_no_texture/data/data24.b3dm",
+     "bytes": 4015492,
+     "sha256": "e0e4604cc8ad499592dca489d787c737e9695dae0a9420c2afde8ed1887e4adc"
+    },
+    {
+     "uri": "data/data25.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/bc/2e9ddc-cfe2-42fc-a91f-3bb95f97ddad/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01101_chuo-ku_lod2_no_texture/data/data25.b3dm",
+     "bytes": 5345696,
+     "sha256": "8aeba882428da7743a3920c214e69ef471d27da09a0f33a7424b452c82043e18"
+    },
+    {
+     "uri": "data/data26.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/bc/2e9ddc-cfe2-42fc-a91f-3bb95f97ddad/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01101_chuo-ku_lod2_no_texture/data/data26.b3dm",
+     "bytes": 1961356,
+     "sha256": "576c219c55cb6961269aa3726ea2e7426fd06459f88aae52cbcfd5d5a661b600"
+    },
+    {
+     "uri": "data/data27.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/bc/2e9ddc-cfe2-42fc-a91f-3bb95f97ddad/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01101_chuo-ku_lod2_no_texture/data/data27.b3dm",
+     "bytes": 5708756,
+     "sha256": "eebcc79c3d1aeb78168abcdad4c831cae635b1dd28a74a75321833f26273dc14"
+    },
+    {
+     "uri": "data/data29.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/bc/2e9ddc-cfe2-42fc-a91f-3bb95f97ddad/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01101_chuo-ku_lod2_no_texture/data/data29.b3dm",
+     "bytes": 538712,
+     "sha256": "9fb8cedecfcd2466aa79e7a9f6e237bce8e778564dff8c5e98882cf89d449377"
+    },
+    {
+     "uri": "data/data3.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/bc/2e9ddc-cfe2-42fc-a91f-3bb95f97ddad/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01101_chuo-ku_lod2_no_texture/data/data3.b3dm",
+     "bytes": 1914488,
+     "sha256": "8a2f846e9456784edd33a41c1aedf2cc4812cd8aeae17da8bd4070c635791133"
+    },
+    {
+     "uri": "data/data30.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/bc/2e9ddc-cfe2-42fc-a91f-3bb95f97ddad/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01101_chuo-ku_lod2_no_texture/data/data30.b3dm",
+     "bytes": 5106160,
+     "sha256": "2d7428156863c5480a08caf22c1ff1fb0ceff4ec4a51f252b0f6fd20f579f240"
+    },
+    {
+     "uri": "data/data31.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/bc/2e9ddc-cfe2-42fc-a91f-3bb95f97ddad/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01101_chuo-ku_lod2_no_texture/data/data31.b3dm",
+     "bytes": 2348192,
+     "sha256": "814e383fd5c0e07de9a5f1c1bbcd8e4c34e0bb50aa33d6597e91d75a80c03cb5"
+    },
+    {
+     "uri": "data/data34.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/bc/2e9ddc-cfe2-42fc-a91f-3bb95f97ddad/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01101_chuo-ku_lod2_no_texture/data/data34.b3dm",
+     "bytes": 4568300,
+     "sha256": "ad85d492bcf42d4c6a476d7aafed1b15a4d5641317492377ce9baf8f9470e62f"
+    },
+    {
+     "uri": "data/data35.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/bc/2e9ddc-cfe2-42fc-a91f-3bb95f97ddad/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01101_chuo-ku_lod2_no_texture/data/data35.b3dm",
+     "bytes": 2949496,
+     "sha256": "1a2d88b564abd3472256d29d53a5a1c4e24578d4df6c31dda42e053a61044bdc"
+    },
+    {
+     "uri": "data/data36.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/bc/2e9ddc-cfe2-42fc-a91f-3bb95f97ddad/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01101_chuo-ku_lod2_no_texture/data/data36.b3dm",
+     "bytes": 4431552,
+     "sha256": "a3fa1dfaa64a35c8fb33ee65dc15d6d996c3d24bbd80aadbe8bae991749c43f0"
+    },
+    {
+     "uri": "data/data37.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/bc/2e9ddc-cfe2-42fc-a91f-3bb95f97ddad/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01101_chuo-ku_lod2_no_texture/data/data37.b3dm",
+     "bytes": 1997380,
+     "sha256": "97dc218c58ec77de3b6b38fb3a4f8318a406abcffe5aaf452d2de044749de21b"
+    },
+    {
+     "uri": "data/data39.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/bc/2e9ddc-cfe2-42fc-a91f-3bb95f97ddad/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01101_chuo-ku_lod2_no_texture/data/data39.b3dm",
+     "bytes": 3693672,
+     "sha256": "c3e310ef6120c1230452bc3aad64c277f74205ffd80a91f0729f319f037fc2e7"
+    },
+    {
+     "uri": "data/data4.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/bc/2e9ddc-cfe2-42fc-a91f-3bb95f97ddad/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01101_chuo-ku_lod2_no_texture/data/data4.b3dm",
+     "bytes": 2047088,
+     "sha256": "f4985476c9ad32dd20b22b4a33008ed536a460c1d6094a0fd8a9b09a8af8281a"
+    },
+    {
+     "uri": "data/data41.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/bc/2e9ddc-cfe2-42fc-a91f-3bb95f97ddad/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01101_chuo-ku_lod2_no_texture/data/data41.b3dm",
+     "bytes": 2943144,
+     "sha256": "653c0da094b17c38d7c2d0208d71fd57ad473fc6974b01d7972f3367f7ca0f3b"
+    },
+    {
+     "uri": "data/data44.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/bc/2e9ddc-cfe2-42fc-a91f-3bb95f97ddad/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01101_chuo-ku_lod2_no_texture/data/data44.b3dm",
+     "bytes": 5690296,
+     "sha256": "d9bb7ad3c98c362e7ed6f9a0fa00da7b789e94c00a4efcedc7627060d150259d"
+    },
+    {
+     "uri": "data/data45.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/bc/2e9ddc-cfe2-42fc-a91f-3bb95f97ddad/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01101_chuo-ku_lod2_no_texture/data/data45.b3dm",
+     "bytes": 4083416,
+     "sha256": "c9090f9b549bc33f4f8b132388bf65331bdbd2699e6e65f21243b8eabbde0bc5"
+    },
+    {
+     "uri": "data/data46.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/bc/2e9ddc-cfe2-42fc-a91f-3bb95f97ddad/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01101_chuo-ku_lod2_no_texture/data/data46.b3dm",
+     "bytes": 4707980,
+     "sha256": "5a4cc1ab01ba5fe50aa5965653ec344a7038917fa9d42613beea365b1ac2da4d"
+    },
+    {
+     "uri": "data/data47.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/bc/2e9ddc-cfe2-42fc-a91f-3bb95f97ddad/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01101_chuo-ku_lod2_no_texture/data/data47.b3dm",
+     "bytes": 6958788,
+     "sha256": "3bf5bd8b632a250f66ada1b7f39d8fae232747e9c9dee36c7bbb70cadc6f1bf5"
+    },
+    {
+     "uri": "data/data49.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/bc/2e9ddc-cfe2-42fc-a91f-3bb95f97ddad/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01101_chuo-ku_lod2_no_texture/data/data49.b3dm",
+     "bytes": 3488556,
+     "sha256": "033f22c00d8f31064158d8bf7b7400d013b230fc2abacba0b7b66dba0f0b8639"
+    },
+    {
+     "uri": "data/data51.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/bc/2e9ddc-cfe2-42fc-a91f-3bb95f97ddad/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01101_chuo-ku_lod2_no_texture/data/data51.b3dm",
+     "bytes": 6371356,
+     "sha256": "1883345d6e4ec225193fcf23807c4ed5d2215d0992550c7ef51968cc6344555b"
+    }
+   ]
+  },
+  {
+   "id": "01102_bldg_lod1",
+   "ward": "北区",
+   "ward_code": "01102",
+   "year": 2020,
+   "registration_year": 2024,
+   "spec": "4.1",
+   "lod": "1",
+   "texture": true,
+   "crs": "JGD2011",
+   "url": "https://assets.cms.plateau.reearth.io/assets/b6/2fe16c-44c8-4a42-8138-82c971cd0e2c/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01102_kita-ku_lod1/tileset.json",
+   "tiles": [
+    {
+     "uri": "data/data107.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/b6/2fe16c-44c8-4a42-8138-82c971cd0e2c/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01102_kita-ku_lod1/data/data107.b3dm",
+     "bytes": 1483004,
+     "sha256": "2d15c682e8670bfdece511c1b8ea45b45c8d11c8b70438a94bd6ec936a9e31b8"
+    },
+    {
+     "uri": "data/data157.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/b6/2fe16c-44c8-4a42-8138-82c971cd0e2c/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01102_kita-ku_lod1/data/data157.b3dm",
+     "bytes": 4756624,
+     "sha256": "87a99510991155d0c90062b9afa177a7c6be1b0b47acde3ece5a331ba944cd11"
+    },
+    {
+     "uri": "data/data158.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/b6/2fe16c-44c8-4a42-8138-82c971cd0e2c/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01102_kita-ku_lod1/data/data158.b3dm",
+     "bytes": 678088,
+     "sha256": "22fd2327229ae0c171c515bf2eaf7b917f7db97bc9eed2d04272333ebac065e9"
+    }
+   ]
+  },
+  {
+   "id": "01102_bldg_lod2_no_texture",
+   "ward": "北区",
+   "ward_code": "01102",
+   "year": 2020,
+   "registration_year": 2024,
+   "spec": "4.1",
+   "lod": "2",
+   "texture": false,
+   "crs": "JGD2011",
+   "url": "https://assets.cms.plateau.reearth.io/assets/a3/49edb5-4014-4e04-a668-7ceae68cd91b/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01102_kita-ku_lod2_no_texture/tileset.json",
+   "tiles": [
+    {
+     "uri": "data/data350.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/a3/49edb5-4014-4e04-a668-7ceae68cd91b/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01102_kita-ku_lod2_no_texture/data/data350.b3dm",
+     "bytes": 1186772,
+     "sha256": "b85ca47d6682654ec15350a70f8ec31feff36fdbf937580cfc093b6fbd2f569b"
+    },
+    {
+     "uri": "data/data351.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/a3/49edb5-4014-4e04-a668-7ceae68cd91b/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01102_kita-ku_lod2_no_texture/data/data351.b3dm",
+     "bytes": 1429088,
+     "sha256": "f2c072b1eaf6957541a0e5af774754f08fcd1019fadc95b0295556faed1deaef"
+    },
+    {
+     "uri": "data/data518.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/a3/49edb5-4014-4e04-a668-7ceae68cd91b/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01102_kita-ku_lod2_no_texture/data/data518.b3dm",
+     "bytes": 1747724,
+     "sha256": "562c67d2b236bc829470e6507c0668b1f07a16874360a11beae00a9ef588b3a4"
+    },
+    {
+     "uri": "data/data519.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/a3/49edb5-4014-4e04-a668-7ceae68cd91b/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01102_kita-ku_lod2_no_texture/data/data519.b3dm",
+     "bytes": 666196,
+     "sha256": "d0f66861c8aca313d757345165e8556caa6ade5be06ded94ef6678ca3d41d61a"
+    },
+    {
+     "uri": "data/data520.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/a3/49edb5-4014-4e04-a668-7ceae68cd91b/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01102_kita-ku_lod2_no_texture/data/data520.b3dm",
+     "bytes": 2235280,
+     "sha256": "feab4042b0dfe059bedfdc172f3c73c39af26338581576fe4137725838629f7b"
+    },
+    {
+     "uri": "data/data521.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/a3/49edb5-4014-4e04-a668-7ceae68cd91b/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01102_kita-ku_lod2_no_texture/data/data521.b3dm",
+     "bytes": 2009264,
+     "sha256": "f6917d50347bfa25144356c6057daed67dbc972a838df9b2c41a23c46363e1c5"
+    },
+    {
+     "uri": "data/data523.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/a3/49edb5-4014-4e04-a668-7ceae68cd91b/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01102_kita-ku_lod2_no_texture/data/data523.b3dm",
+     "bytes": 264612,
+     "sha256": "82e5311a9a2fba1862c66bcb7e6e19635bef63a003a7c1ff8d89e228e54b6443"
+    },
+    {
+     "uri": "data/data524.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/a3/49edb5-4014-4e04-a668-7ceae68cd91b/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01102_kita-ku_lod2_no_texture/data/data524.b3dm",
+     "bytes": 495876,
+     "sha256": "6a95960d57afcd8c63529771350ca4859838d0fca85890fa17b751586910bd5d"
+    }
+   ]
+  },
+  {
+   "id": "01103_bldg_lod1",
+   "ward": "東区",
+   "ward_code": "01103",
+   "year": 2020,
+   "registration_year": 2024,
+   "spec": "4.1",
+   "lod": "1",
+   "texture": true,
+   "crs": "JGD2011",
+   "url": "https://assets.cms.plateau.reearth.io/assets/98/2f5131-ad3c-4551-943a-3607ed6afa3c/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01103_higashi-ku_lod1/tileset.json",
+   "tiles": [
+    {
+     "uri": "data/data235.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/98/2f5131-ad3c-4551-943a-3607ed6afa3c/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01103_higashi-ku_lod1/data/data235.b3dm",
+     "bytes": 2350496,
+     "sha256": "77358e931ccf90cac795583d249ab49b0ddf7afc7aadb6b24340db9730a688e9"
+    },
+    {
+     "uri": "data/data236.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/98/2f5131-ad3c-4551-943a-3607ed6afa3c/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01103_higashi-ku_lod1/data/data236.b3dm",
+     "bytes": 3023804,
+     "sha256": "f4ea4515894fbb9d3df7576fea4eb862365ba001597b45fc28c664eb8474cf24"
+    },
+    {
+     "uri": "data/data239.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/98/2f5131-ad3c-4551-943a-3607ed6afa3c/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01103_higashi-ku_lod1/data/data239.b3dm",
+     "bytes": 1238188,
+     "sha256": "53d019bb1ec4dabeb47e14beb571f8c6aef53efbbd0520711af2beaf38671126"
+    }
+   ]
+  },
+  {
+   "id": "01103_bldg_lod2_no_texture",
+   "ward": "東区",
+   "ward_code": "01103",
+   "year": 2020,
+   "registration_year": 2024,
+   "spec": "4.1",
+   "lod": "2",
+   "texture": false,
+   "crs": "JGD2011",
+   "url": "https://assets.cms.plateau.reearth.io/assets/76/337461-23ff-4818-8028-a607f19506bd/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01103_higashi-ku_lod2_no_texture/tileset.json",
+   "tiles": [
+    {
+     "uri": "data/data235.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/76/337461-23ff-4818-8028-a607f19506bd/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01103_higashi-ku_lod2_no_texture/data/data235.b3dm",
+     "bytes": 2437980,
+     "sha256": "8a9b1453b4595aba865b6fc1aeb0a0a4d07a8be4946b5bda78a5179a505da48e"
+    },
+    {
+     "uri": "data/data236.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/76/337461-23ff-4818-8028-a607f19506bd/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01103_higashi-ku_lod2_no_texture/data/data236.b3dm",
+     "bytes": 3273088,
+     "sha256": "448debb430d5e4b6dc3fd03cb99d3882cd644a3e827d1a8d35f7e857032d3b67"
+    },
+    {
+     "uri": "data/data239.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/76/337461-23ff-4818-8028-a607f19506bd/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01103_higashi-ku_lod2_no_texture/data/data239.b3dm",
+     "bytes": 1667196,
+     "sha256": "5c9aced548682296f0f4fbe69cfaae074012ba7ced6771294e6b1fcc9a4aa44b"
+    }
+   ]
+  },
+  {
+   "id": "01105_bldg_lod1",
+   "ward": "豊平区",
+   "ward_code": "01105",
+   "year": 2020,
+   "registration_year": 2024,
+   "spec": "4.1",
+   "lod": "1",
+   "texture": true,
+   "crs": "JGD2011",
+   "url": "https://assets.cms.plateau.reearth.io/assets/02/d7a24f-76db-4295-844e-c667831fea43/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01105_toyohira-ku_lod1/tileset.json",
+   "tiles": [
+    {
+     "uri": "data/data72.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/02/d7a24f-76db-4295-844e-c667831fea43/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01105_toyohira-ku_lod1/data/data72.b3dm",
+     "bytes": 2422592,
+     "sha256": "cbba691b72f3848d85d85c98fd25405179be27148c066d5679c17b1df796a157"
+    },
+    {
+     "uri": "data/data74.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/02/d7a24f-76db-4295-844e-c667831fea43/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01105_toyohira-ku_lod1/data/data74.b3dm",
+     "bytes": 3300128,
+     "sha256": "8d753f4b6fc12f45a597549afec8452f6f699168a284efb59b36593852bc2401"
+    },
+    {
+     "uri": "data/data76.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/02/d7a24f-76db-4295-844e-c667831fea43/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01105_toyohira-ku_lod1/data/data76.b3dm",
+     "bytes": 14496,
+     "sha256": "eef2545fd1a2e0383440101166aeaf8a4a24a1ebedc49b841d0b911fe10c39a7"
+    },
+    {
+     "uri": "data/data77.b3dm",
+     "url": "https://assets.cms.plateau.reearth.io/assets/02/d7a24f-76db-4295-844e-c667831fea43/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01105_toyohira-ku_lod1/data/data77.b3dm",
+     "bytes": 931336,
+     "sha256": "3ccde8ed94639c096ca066769369ed60e92d000489b2ce1ec933636fa9b89a2c"
+    }
+   ]
+  }
+ ]
+}

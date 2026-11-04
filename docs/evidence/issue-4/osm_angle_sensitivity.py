@@ -1,12 +1,16 @@
 """Sensitivity of straight/corner proxies to OSM vertex density (Issue #4).
 
-Input: Overpass JSON of drivable highway ways in the AOI. Stdlib only.
+Input: Overpass JSON of drivable highway ways in the AOI, fetched with
+overpass_query.overpassql (attic date pinned). Stdlib only.
 Projection: local equirectangular tangent plane at the AOI centre (scale error
 < 0.1 % over ~2.4 km; adequate for angle/length statistics, not for final metrics).
 
+Corner counts are computed inside each OSM way only. Turns at junctions between
+ways are not measured here, so this is a preliminary check, not route-level evidence.
+
 usage: python3 -I osm_angle_sensitivity.py OSM_JSON
 """
-import json, math, sys, statistics, collections
+import collections, hashlib, json, math, statistics, sys
 
 AOI = (141.335, 43.050, 141.365, 43.072)
 LAT0 = math.radians((AOI[1] + AOI[3]) / 2)
@@ -91,7 +95,12 @@ def main(path):
     nodes = {e["id"]: xy(e["lon"], e["lat"]) for e in d["elements"] if e["type"] == "node"
              and AOI[0] <= e["lon"] <= AOI[2] and AOI[1] <= e["lat"] <= AOI[3]}
     ways = [e for e in d["elements"] if e["type"] == "way"]
-    print("OSM base timestamp:", d.get("osm3s", {}).get("timestamp_osm_base"), "| ways", len(ways))
+    # The raw response carries a fetch-time header, so compare element content instead of file bytes.
+    canon = sorted(json.dumps(e, sort_keys=True, ensure_ascii=False) for e in d["elements"])
+    digest = hashlib.sha256("\n".join(canon).encode()).hexdigest()
+    counts = collections.Counter(e["type"] for e in d["elements"])
+    print("OSM base timestamp:", d.get("osm3s", {}).get("timestamp_osm_base"), "| elements", dict(counts),
+          "| sha256(sorted elements)", digest[:16])
 
     tags = collections.Counter()
     for w in ways:

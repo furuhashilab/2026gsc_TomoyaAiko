@@ -1,4 +1,4 @@
-OSM base timestamp: 2026-11-03T16:25:05Z | ways 630
+OSM base timestamp: 2026-11-04T03:48:37Z | elements {'node': 4502, 'way': 630} | sha256(sorted elements) c2eed5dd2b6d397a
 tag presence (share of ways): {'oneway': '38%', 'maxspeed': '14%', 'lanes': '53%', 'width': '0%', 'surface': '56%', 'access': '0%'}
 total way length 118.4 km | vertex spacing median 14.3 m, p10 6.0 m, p90 96.5 m
 interior-vertex |turn| distribution: {'0-5°': '90.0%', '5-10°': '4.5%', '10-30°': '4.5%', '30-45°': '0.6%', '45-90°': '0.4%', '90-181°': '0.0%'} (n=3039)
