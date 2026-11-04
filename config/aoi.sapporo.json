@@ -1,0 +1,10 @@
+{
+  "id": "sapporo-center",
+  "name": "札幌中心部（暫定AOI）",
+  "bbox": [141.335, 43.05, 141.365, 43.072],
+  "bbox_order": "lon_min, lat_min, lon_max, lat_max",
+  "crs": "EPSG:4326",
+  "status": "tentative",
+  "decided": "2026-11-04",
+  "source": "docs/DECISIONS.md D-0008, docs/RESEARCH_DESIGN.md §5.1"
+}
