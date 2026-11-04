@@ -1,11 +1,18 @@
 [project]
 name = "circuitforge-gis"
 version = "0.1.0"
-description = "GIS processing for CircuitForge AI (OSM road graph work starts in Issue #6)"
+description = "GIS processing for CircuitForge AI: OSM road graph (Issue #6)"
 readme = "README.md"
 requires-python = ">=3.12,<3.13"
-# Runtime GIS libraries (OSMnx, NetworkX, ...) are added in Issue #6 once needed.
-dependencies = []
+dependencies = [
+    "networkx==3.7",
+    "osmnx==2.1.1",
+    "pyproj==3.8.0",
+    "shapely==2.2.0",
+]
+
+[project.scripts]
+cf-osm = "circuitforge_gis.cli:main"
 
 [dependency-groups]
 dev = [
@@ -13,12 +20,19 @@ dev = [
     "ruff==0.17.1",
 ]
 
+[tool.uv]
+# Resolve only releases published at least two weeks before this date (project policy).
+exclude-newer = "2026-10-21T00:00:00Z"
+
 [build-system]
 requires = ["uv_build>=0.13.7,<0.14.0"]
 build-backend = "uv_build"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+# Tests that download real OSM data are opt-in: uv run pytest -m network
+addopts = "-m 'not network'"
+markers = ["network: downloads data from Overpass (not run in CI)"]
 
 [tool.ruff]
 line-length = 100
