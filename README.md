@@ -245,6 +245,12 @@ GitHub に push すると、同じチェックが CI（GitHub Actions）でも�
 
 **地形がないと建物を表示しない理由：** 建物の高さは楕円体高なので、地形なしで表示すると約 50 m 浮いて見えます。地形の読み込みに失敗した場合、ビューアは建物を表示せず、地図とコースだけを表示します。
 
+### コース紹介映像の書き出し（PoC、Issue #29・#30）
+`npm run dev` で `/tools/video-export.html` を開き、映像の構成（`config/video/*.json`）を選んで「書き出す」を押すと、`web/out/video/` に WebM と記録の JSON が保存されます。
+- Chrome など、WebCodecs に対応したブラウザが必要です。
+- 合成コースだけを使い、外部の地図・建物は使いません。
+- 詳細と検証結果は [docs/evidence/issue-30/README.md](docs/evidence/issue-30/README.md) にあります。
+
 ### バージョンと環境変数の管理
 - **固定するもの：**
   - Web の依存パッケージは `package.json` で正確なバージョンに固定し、`package-lock.json` をコミットしています。

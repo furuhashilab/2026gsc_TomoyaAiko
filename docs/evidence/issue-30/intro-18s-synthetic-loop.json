@@ -1,0 +1,156 @@
+{
+  "tool": "circuitforge-web video-export PoC",
+  "generatedAt": "2026-11-04T13:11:42.869Z",
+  "course": {
+    "id": "synthetic-loop",
+    "name": "Synthetic test loop (hand-made roads, not OSM)",
+    "lengthM": 398.882,
+    "mode": "circuit",
+    "segments": 6,
+    "synthetic": true,
+    "sha256": "383b0e93af47cd89ea08c0612854bd14644315eb340c0885646f15e2b1e8529b"
+  },
+  "timeline": {
+    "id": "intro-18s",
+    "sha256": "1411e2cebdd67b6f04babf29b5041e1e3bdc26b3671f0462886e387890ed65dd",
+    "definition": {
+      "id": "intro-18s",
+      "width": 1920,
+      "height": 1080,
+      "fps": 30,
+      "durationS": 18,
+      "codecs": [
+        "vp9",
+        "vp8"
+      ],
+      "bitrate": 12000000,
+      "scenes": [
+        {
+          "id": "opening",
+          "start": 0,
+          "end": 4,
+          "camera": {
+            "from": {
+              "heading": -60,
+              "pitch": -6,
+              "rangeK": 30
+            },
+            "to": {
+              "heading": -20,
+              "pitch": -45,
+              "rangeK": 6
+            }
+          },
+          "overlays": []
+        },
+        {
+          "id": "draw-course",
+          "start": 4,
+          "end": 10,
+          "camera": {
+            "from": {
+              "heading": -20,
+              "pitch": -45,
+              "rangeK": 6
+            },
+            "to": {
+              "heading": 70,
+              "pitch": -60,
+              "rangeK": 3.2
+            }
+          },
+          "draw": [
+            0,
+            1
+          ],
+          "overlays": [
+            "startFinish"
+          ]
+        },
+        {
+          "id": "course-info",
+          "start": 10,
+          "end": 15,
+          "camera": {
+            "from": {
+              "heading": 70,
+              "pitch": -60,
+              "rangeK": 3.2
+            },
+            "to": {
+              "heading": 110,
+              "pitch": -40,
+              "rangeK": 3.6
+            }
+          },
+          "overlays": [
+            "title",
+            "stats"
+          ]
+        },
+        {
+          "id": "overview-credits",
+          "start": 15,
+          "end": 18,
+          "camera": {
+            "from": {
+              "heading": 110,
+              "pitch": -40,
+              "rangeK": 3.6
+            },
+            "to": {
+              "heading": 140,
+              "pitch": -89,
+              "rangeK": 4.5
+            }
+          },
+          "overlays": [
+            "credits"
+          ]
+        }
+      ]
+    }
+  },
+  "encoding": {
+    "container": "webm",
+    "codec": "vp9",
+    "bitrate": 12000000,
+    "keyFrameIntervalS": 2,
+    "width": 1920,
+    "height": 1080,
+    "fps": 30,
+    "frames": 540
+  },
+  "rendering": {
+    "cesium": "1.146.0",
+    "sceneTime": "2026-06-21T03:00:00Z",
+    "externalData": "none",
+    "maxRendersPerFrame": 87,
+    "meanRendersPerFrame": 3.0814814814814815,
+    "devicePixelRatio": 1
+  },
+  "environment": {
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Claude/4.4212.0 Chrome/152.0.7977.167 Safari/537.36"
+  },
+  "output": {
+    "bytes": 8159772,
+    "sha256": "b406a251938b2daa16eef0674115763d51da34d37b1edc38b1f011bb667b18f1",
+    "encodeSeconds": 13.465100000023842
+  },
+  "verification": {
+    "width": 1920,
+    "height": 1080,
+    "durationS": 18,
+    "packetCount": 540,
+    "averageFps": 29.99944445528785,
+    "codec": "vp9",
+    "playableToEnd": true,
+    "videoElementDurationS": 18
+  },
+  "credits": [
+    "コース：Synthetic test data (no OSM content)",
+    "CesiumJS 1.146.0（Apache-2.0）",
+    "フォント：Noto Sans JP（SIL Open Font License 1.1）",
+    "地図・建物・地形：使用していません（単色の地面）"
+  ]
+}

@@ -20,6 +20,17 @@
 | PLATEAU-Terrain (`tile.plateauview.mlit.go.jp/terrain`) | Provider docs (https://docs.plateauview.mlit.go.jp/datasets/terrain/) require the attribution and describe a trial service with no guarantee; **no data licence is stated**. Mapterhorn and GSI are named as sources. | PLATEAU \| Mapterhorn \| 国土地理院 | **Unconfirmed** — do not assume PDL1.0 or any other licence. Only streamed for display; no terrain data is stored or redistributed. Open question recorded in #12. |
 | GSI tiles (地理院タイル) | GSI terms, attribution required | 地理院タイル | Used since #5 |
 
+## Video export PoC (Issues #29/#30)
+| Item | Terms (as confirmed 2026-11-04) | Notes |
+|---|---|---|
+| Mediabunny 1.62.0 (npm `mediabunny`) | MPL-2.0 (file-level copyleft) | Used unmodified for WebM muxing/encoding via WebCodecs. Modified Mediabunny files would have to be published if distributed. |
+| Noto Sans JP via `@fontsource/noto-sans-jp` 5.3.1 | SIL Open Font License 1.1 | Bundled so the burned-in text never falls back to a system font. Credited in the video. |
+| `@types/node` 24.19.2 | MIT | Dev only (typing the dev-server save endpoint in `vite.config.ts`). |
+| Course in the PoC videos | Synthetic sample, no OSM content | OSM-derived courses are not used for video until #12 decides publication under ODbL (the video would be a Produced Work needing "© OpenStreetMap contributors"). |
+| External map tiles, PLATEAU, terrain | Not used in the PoC | A plain-colour globe only. Using them in videos needs the attribution burned in and, for GSI 基本測量成果 (standard/pale maps), a check of the 測量法 procedure first (#26). |
+
+Generated videos are written to `web/out/video/` (git-ignored) and are not committed; their record JSON (inputs, hashes, settings, verification) is committed under `docs/evidence/issue-30/`.
+
 ## OSM-derived data in this repository (Issue #6)
 - Raw Overpass responses and processed graphs/GeoJSON stay under `data/raw/` and `data/processed/` (gitignored); they are reproducible from the pinned query and attic date recorded in `docs/evidence/issue-6/manifest.json`.
 - Exported GeoJSON carries `"attribution": "© OpenStreetMap contributors (ODbL 1.0)"`; any UI showing it must display OSM attribution.

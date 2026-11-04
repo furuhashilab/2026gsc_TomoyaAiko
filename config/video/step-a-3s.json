@@ -1,0 +1,19 @@
+{
+  "id": "step-a-3s",
+  "width": 1280,
+  "height": 720,
+  "fps": 30,
+  "durationS": 3,
+  "codecs": ["vp9", "vp8"],
+  "bitrate": 6000000,
+  "scenes": [
+    {
+      "id": "draw",
+      "start": 0,
+      "end": 3,
+      "camera": { "from": { "heading": -40, "pitch": -35, "rangeK": 8 }, "to": { "heading": 20, "pitch": -60, "rangeK": 3.5 } },
+      "draw": [0, 1],
+      "overlays": ["title"]
+    }
+  ]
+}
