@@ -133,11 +133,13 @@ gis/                      Python 3.12 の GIS 処理（uv で管理。OSM の処
 次のコマンドは **ターミナル**（アプリケーション → ユーティリティ → ターミナル）で 1 行ずつ実行します。
 
 1. **Homebrew**（Mac 用のパッケージ管理）。`brew --version` でバージョンが出れば入っています。入っていなければ、[公式サイト](https://brew.sh/ja/)のインストール用コマンドを実行します。インストール時に **Mac のログインパスワード**を聞かれ、Xcode Command Line Tools の導入を求められることがあります。
-2. **Node.js 24**（Web 用）。[nvm](https://github.com/nvm-sh/nvm) を使う場合：
+2. **Node.js**（Web 用）。**推奨は Node.js 24** で、CI もこのバージョンで動かしています。[nvm](https://github.com/nvm-sh/nvm) を使う場合：
    ```bash
    nvm install 24
    ```
-   リポジトリ直下の `.nvmrc` に 24 と書いてあるので、`nvm use` でも切り替えられます。`node --version` が v22 以上ならそのままでも動きます。
+   リポジトリ直下の `.nvmrc` に 24 と書いてあるので、`nvm use` でも切り替えられます。
+   - **対応範囲は `^22.13.0 || >=24`**（22 系は 22.13 以上、または 24 以上）。依存パッケージの条件をすべて満たす範囲です。ESLint 10 が 22.13 以上を必要とし、vite-plugin-static-copy と Vitest は 23 系を対象外にしています。
+   - `node --version` で確認してください。範囲外のバージョンでは、`web/.npmrc` の `engine-strict=true` により `npm ci` がエラーで止まります。
 3. **uv**（Python 用。Python 本体とライブラリを、プロジェクトごとに分けて管理する）：
    ```bash
    brew install uv
@@ -206,7 +208,7 @@ GitHub に push すると、同じチェックが CI（GitHub Actions）でも�
 - **Cesium の内部パッケージ：** `package.json` の `overrides` で、`@cesium/engine` などを cesium 1.146.0 と同時期に出た版に固定しています。cesium 1.146.0 はこれらを `^` 付きで指定していて、1.147 用の新しい版が入るとビルドが壊れるためです。cesium を上げるときは、この固定も合わせて見直してください。
 - **TypeScript：** 6.0 系を使っています。7.0 系は、lint に使う typescript-eslint がまだ対応していないためです。
 - **環境変数：** 秘密情報はコミットしません（`.env` と `.env.*` は `.gitignore` 済み）。必要な変数の例は `.env.example` にあります。現時点で必須の変数はありません。
-- **既知の注意点：** `npm audit` で、開発用ツール（ESLint）が使う minimatch に深刻度 moderate の指摘が出ます。開発時に自分のコードを lint するときだけ使われ、アプリ本体には含まれません。修正版（11 系）は公開から日が浅く、ESLint も未対応のため、ESLint 側の更新を待ちます（`npm audit --omit=dev` では 0 件）。
+- **既知の注意点：** `npm audit` で、開発用ツール（ESLint）が使う minimatch に深刻度 moderate の指摘が出ます。開発時に自分のコードを lint するときだけ使われ、アプリ本体には含まれません。修正版（11 系）は公開から日が浅く、ESLint も未対応のため、ESLint 側の更新を待ちます（`npm audit --omit=dev` では 0 件）。判断の理由と、対応する条件は [Issue #20](https://github.com/furuhashilab/2026gsc_TomoyaAiko/issues/20) で追跡しています。
 
 ## データ・ライセンス
 
