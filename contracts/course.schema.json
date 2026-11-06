@@ -103,7 +103,7 @@
           "type": "object",
           "required": ["method", "tool"],
           "properties": {
-            "method": { "enum": ["manual-via-points", "manual-segments"] },
+            "method": { "enum": ["manual-via-points", "manual-segments", "generated-outbound-return"] },
             "via": { "type": "array" },
             "path_completion": { "type": "string" },
             "tool": { "type": "string" }

@@ -1,8 +1,9 @@
-# Course contract（CircuitForge Course v0.1.0）
+# Course contract（CircuitForge Course v0.1.1）
 
 コース（架空のモータースポーツコース）の交換形式です。決定の経緯は [docs/DECISIONS.md](../docs/DECISIONS.md) の D-0011、全体の設計は [docs/ARCHITECTURE.md](../docs/ARCHITECTURE.md#course-contract-decided-v010-issue-7) にあります。
 
 - スキーマ：[course.schema.json](course.schema.json)（JSON Schema 2020-12）
+- **v0.1.1（Issue #10）：** `authoring.method` に `generated-outbound-return`（自動生成の案 A）を追加しました。追加だけの変更なので、0.1.0 のファイルもそのまま読めます。生成したコースの `authoring` には、`seed`・`attempt`・`start_node`・`turn_node`・`params` も記録します。
 - 形式：GeoJSON の `Feature` 1 つ（RFC 7946、WGS84、`[lon, lat]` の順）。拡張子は `.course.geojson`
 - **本体は `properties.segments`**（OSM の有向区間の順番付きリスト）。`geometry` と `length_m` はそこから計算した値で、検証のときに計算し直して照合します。
 

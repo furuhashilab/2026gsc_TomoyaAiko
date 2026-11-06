@@ -14,6 +14,7 @@ import heapq
 import importlib.metadata
 import json
 from collections import Counter
+from collections.abc import Callable
 
 import networkx as nx
 from jsonschema import Draft202012Validator
@@ -24,7 +25,7 @@ from .graph import check_length_crs
 
 SCHEMA_PATH = REPO_ROOT / "contracts" / "course.schema.json"
 SCHEMA_ID = "circuitforge-course"
-SCHEMA_VERSION = "0.1.0"
+SCHEMA_VERSION = "0.1.1"  # 0.1.1: authoring.method "generated-outbound-return" (Issue #10)
 RULE_SET = "circuitforge-gis/D-0010"
 TOOL = f"circuitforge-gis {importlib.metadata.version('circuitforge-gis')}"
 MAX_SNAP_M = 30.0
@@ -61,12 +62,18 @@ def search_graph(g: nx.MultiDiGraph) -> nx.MultiDiGraph:
     return s
 
 
-def shortest_path(s: nx.MultiDiGraph, source: int, target: int) -> list[str]:
+def length_mm(d: dict) -> int:
+    return round(d["length_m"] * 1000)
+
+
+def shortest_path(
+    s: nx.MultiDiGraph, source: int, target: int, cost: Callable[[dict], int] = length_mm
+) -> list[str]:
     """Deterministic shortest path as a list of edge_uids.
 
-    Labels are (cost in integer mm, tuple of edge_uids) and compared lexicographically,
-    so among equal-cost paths the one with the smallest edge_uid sequence wins,
-    independent of graph insertion order.
+    Labels are (cost, tuple of edge_uids) and compared lexicographically, so among
+    equal-cost paths the one with the smallest edge_uid sequence wins, independent of
+    graph insertion order. ``cost`` maps edge data to an integer (default: length in mm).
     """
     if source == target:
         return []
@@ -74,7 +81,7 @@ def shortest_path(s: nx.MultiDiGraph, source: int, target: int) -> list[str]:
     heap: list[tuple[int, tuple[str, ...], int]] = [(0, (), source)]
     done: set[int] = set()
     while heap:
-        cost, path, n = heapq.heappop(heap)
+        cost_so_far, path, n = heapq.heappop(heap)
         if n in done:
             continue
         done.add(n)
@@ -83,7 +90,7 @@ def shortest_path(s: nx.MultiDiGraph, source: int, target: int) -> list[str]:
         for _, m, d in s.out_edges(n, data=True):
             if m in done:
                 continue
-            label = (cost + round(d["length_m"] * 1000), (*path, d["edge_uid"]))
+            label = (cost_so_far + cost(d), (*path, d["edge_uid"]))
             if m not in best or label < best[m]:
                 best[m] = label
                 heapq.heappush(heap, (label[0], label[1], m))
@@ -167,8 +174,11 @@ def build_course(
     preferences: dict | None = None,
     attribution: str = ATTRIBUTION_OSM,
     synthetic: bool = False,
+    authoring: dict | None = None,
 ) -> dict:
-    """Build a course from via points (node ids or [lon, lat]) or an explicit segment list."""
+    """Build a course from via points (node ids or [lon, lat]) or an explicit segment list.
+
+    ``authoring`` replaces the default record for a segment list (used by generators)."""
     if (via is None) == (segments is None):
         raise CourseError("give either via points or segments")
     crs = check_length_crs(aoi)
@@ -199,7 +209,7 @@ def build_course(
         }
     else:
         uids = list(segments)
-        authoring = {"method": "manual-segments", "tool": TOOL}
+        authoring = authoring or {"method": "manual-segments", "tool": TOOL}
     if not uids:
         raise CourseError("the course has no segments")
     meta = {"id": course_id, "name": name, "mode": mode, "authoring": authoring}
