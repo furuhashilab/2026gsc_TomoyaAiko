@@ -1,6 +1,7 @@
 import {
   Cartesian2,
   Cartesian3,
+  Cesium3DTileStyle,
   Cesium3DTileset,
   CesiumTerrainProvider,
   ClassificationType,
@@ -210,6 +211,12 @@ async function showBuildings(style: BuildingStyle): Promise<void> {
             failed.add(t.id);
             refreshBuildingStatus();
           });
+          // Plan A look for untextured tilesets only: a style colour would tint textured photos.
+          const look = basemaps.untexturedLook;
+          if (look && !t.replaces) {
+            tileset.style = new Cesium3DTileStyle({ color: `color('${look.color}')` });
+            tileset.imageBasedLighting.imageBasedLightingFactor = new Cartesian2(look.imageBasedLightingFactor, look.imageBasedLightingFactor);
+          }
           tilesets.set(t.id, viewer.scene.primitives.add(tileset));
         } catch {
           failed.add(t.id);
