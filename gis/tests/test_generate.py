@@ -380,3 +380,20 @@ def test_a_foreign_record_file_is_not_trusted(grid, tmp_path):
     run = generate(g, aoi, snapshot, GenerateParams(target_m=520, tolerance=0.15, count=1, seed=7))
     with pytest.raises(ValueError, match="not a generation record"):
         write_outputs(tmp_path, *run)
+
+
+def test_an_unmanaged_file_with_a_target_name_is_never_overwritten(grid, tmp_path):
+    g, aoi, snapshot = grid
+    run = generate(g, aoi, snapshot, GenerateParams(target_m=520, tolerance=0.15, count=2, seed=7))
+    mine = tmp_path / f"{run[0][0]['properties']['id']}.course.geojson"
+    mine.write_text("my own course")  # same name as a course this run would write
+    with pytest.raises(ValueError, match="would overwrite"):
+        write_outputs(tmp_path, *run)
+    assert mine.read_text() == "my own course"
+    assert sorted(p.name for p in tmp_path.iterdir()) == [mine.name]  # nothing else written
+    # a stray log without a record is not ours either
+    mine.unlink()
+    (tmp_path / "generation-log.json").write_text("someone's log")
+    with pytest.raises(ValueError, match="generation-log.json"):
+        write_outputs(tmp_path, *run)
+    assert (tmp_path / "generation-log.json").read_text() == "someone's log"

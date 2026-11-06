@@ -414,11 +414,13 @@ def write_outputs(out: Path, courses: list[dict], record: dict, log: dict) -> di
     """Write a run to ``out`` without mixing it with an earlier run.
 
     Only files that the previous run in ``out`` listed in its own record (its course
-    files) are removed before writing; any other file is left alone and reported, so a
-    user's own files are never deleted. Returns {"removed": [...], "left": [...]}.
+    files, record and log) are removed or overwritten; any other file is left alone and
+    reported, so a user's own files are never deleted. If a file this run would write
+    already exists and is not one of those, nothing is changed and ValueError is raised.
+    Returns {"removed": [...], "left": [...]}.
     """
     out.mkdir(parents=True, exist_ok=True)
-    removed = []
+    managed: set[str] = set()
     prev = out / RECORD_FILE
     if prev.exists():
         try:
@@ -427,14 +429,24 @@ def write_outputs(out: Path, courses: list[dict], record: dict, log: dict) -> di
             raise ValueError(f"{prev} is not a readable generation record; move it away") from exc
         if old.get("schema") != "circuitforge-generation-record":
             raise ValueError(f"{prev} is not a generation record; choose another --output")
+        managed = {RECORD_FILE, LOG_FILE}
         for c in old.get("candidates", []):
             name = course_file(c["id"])
-            if "/" in name or name.startswith("."):
-                continue
-            path = out / name
-            if path.is_file():
-                path.unlink()
-                removed.append(name)
+            if "/" not in name and not name.startswith("."):
+                managed.add(name)
+    targets = {course_file(c["properties"]["id"]) for c in courses} | {RECORD_FILE, LOG_FILE}
+    clash = sorted(n for n in targets - managed if (out / n).exists())
+    if clash:  # checked before anything is removed or written
+        raise ValueError(
+            f"{out} already has files this run would overwrite that no earlier run here "
+            f"wrote: {', '.join(clash[:5])}; move them away or choose another --output"
+        )
+    removed = []
+    for name in sorted(managed - {RECORD_FILE, LOG_FILE}):
+        path = out / name
+        if path.is_file():
+            path.unlink()
+            removed.append(name)
     for c in courses:
         (out / course_file(c["properties"]["id"])).write_text(
             json.dumps(c, ensure_ascii=False, indent=1) + "\n"
