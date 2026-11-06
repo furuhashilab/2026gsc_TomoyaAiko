@@ -1,4 +1,4 @@
-"""Command line entry point: ``uv run cf-course build|validate``.
+"""Command line entry point: ``uv run cf-course build|validate|generate``.
 
 The road graph is rebuilt from the pinned raw OSM file in ``data/raw/`` (written by
 ``cf-osm``), and its element hash must match the course's ``osm_snapshot``.
@@ -13,6 +13,7 @@ from . import graph
 from .aoi import DEFAULT_AOI_PATH, REPO_ROOT, Aoi, load_aoi
 from .cli import DEFAULT_DATE, snapshot_tag
 from .course import CourseError, build_course, validate
+from .generate import GenerateParams, generate, record_json
 from .osm_fetch import element_hash
 from .profile import MVP_DRIVE
 
@@ -81,6 +82,30 @@ def cmd_validate(args) -> int:
     return 0 if v["status"] == "valid" else 1
 
 
+def cmd_generate(args) -> int:
+    aoi = load_aoi(args.aoi)
+    g, snapshot = load_snapshot_graph(aoi, MVP_DRIVE.name, args.date, args.data_dir)
+    params = GenerateParams(
+        target_m=args.target_m, tolerance=args.tolerance, count=args.count, seed=args.seed,
+        max_attempts=args.max_attempts, time_limit_s=args.time_limit,
+        allow_default_two_way_major=args.allow_default_two_way_major,
+    )  # fmt: skip
+    courses, record, log = generate(g, aoi, snapshot, params)
+    out = args.output or args.data_dir / "processed" / "generated" / f"{aoi.id}_seed{args.seed}"
+    out.mkdir(parents=True, exist_ok=True)
+    for c in courses:
+        path = out / f"{c['properties']['id']}.course.geojson"
+        path.write_text(json.dumps(c, ensure_ascii=False, indent=1) + "\n")
+    (out / "generation-record.json").write_text(record_json(record))
+    (out / "generation-log.json").write_text(record_json(log))
+    print(f"wrote    {len(courses)} courses and the record/log to {out}")
+    print(f"accepted {record['accepted']}/{params.count} in {record['attempts']} attempts "
+          f"({record['stop_reason']}, {log['elapsed_s']} s)")  # fmt: skip
+    for reason, n in record["failures"].items():
+        print(f"  {reason}: {n}")
+    return 0 if record["accepted"] == params.count else 1
+
+
 def main(argv: list[str] | None = None) -> None:
     p = argparse.ArgumentParser(prog="cf-course", description=__doc__)
     p.add_argument("--data-dir", type=Path, default=REPO_ROOT / "data")
@@ -101,6 +126,20 @@ def main(argv: list[str] | None = None) -> None:
     v.add_argument("course", type=Path)
     v.add_argument("--aoi", type=Path, default=DEFAULT_AOI_PATH, help="trusted AOI config")
     v.set_defaults(func=cmd_validate)
+    gp = sub.add_parser("generate", help="generate circuit candidates (Issue #10, plan A)")
+    gp.add_argument("--aoi", type=Path, default=DEFAULT_AOI_PATH)
+    gp.add_argument("--date", default=DEFAULT_DATE)
+    gp.add_argument("--target-m", type=float, default=3000.0)
+    gp.add_argument("--tolerance", type=float, default=0.10, help="relative, e.g. 0.10 = ±10%%")
+    gp.add_argument("--count", type=int, default=10)
+    gp.add_argument("--seed", type=int, default=0)
+    gp.add_argument("--max-attempts", type=int, default=300)
+    gp.add_argument("--time-limit", type=float, default=120.0, help="seconds")
+    gp.add_argument("--allow-default-two-way-major", action="store_true")
+    gp.add_argument(
+        "-o", "--output", type=Path, help="directory (default: data/processed/generated/...)"
+    )
+    gp.set_defaults(func=cmd_generate)
     args = p.parse_args(argv)
     try:
         sys.exit(args.func(args))

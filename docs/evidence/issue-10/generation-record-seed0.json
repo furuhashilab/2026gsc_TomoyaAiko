@@ -1,0 +1,167 @@
+{
+ "schema": "circuitforge-generation-record",
+ "schema_version": "0.1.0",
+ "method": "generated-outbound-return",
+ "tool": "circuitforge-gis 0.1.0",
+ "rule_set": "circuitforge-gis/D-0010",
+ "aoi": {
+  "id": "sapporo-center",
+  "bbox": [
+   141.335,
+   43.05,
+   141.365,
+   43.072
+  ]
+ },
+ "osm_snapshot": {
+  "attic_date": "2026-11-03T16:25:05Z",
+  "element_sha256": "c2eed5dd2b6d397afc9d66b466183a4f23b52b0461484ef6e3b2cbada8a6f213",
+  "profile": "mvp-drive"
+ },
+ "params": {
+  "target_m": 3000.0,
+  "tolerance": 0.1,
+  "count": 10,
+  "seed": 0,
+  "max_attempts": 300,
+  "time_limit_s": 120.0,
+  "turn_band": [
+   0.35,
+   0.5
+  ],
+  "jitter": 0.3,
+  "allow_default_two_way_major": false,
+  "length_range_m": [
+   2700.0,
+   3300.0
+  ]
+ },
+ "forbidden_warnings": [
+  "W_LENGTH_OUT_OF_RANGE",
+  "W_NODE_REVISITED",
+  "W_OPPOSITE_DIRECTION_REUSE"
+ ],
+ "generation_graph": {
+  "nodes": 2924,
+  "edges": 5458
+ },
+ "attempts": 20,
+ "accepted": 10,
+ "valid_rate": 0.5,
+ "stop_reason": "count reached",
+ "failures": {
+  "LENGTH_OUT_OF_RANGE": 7,
+  "NO_RETURN_PATH": 3
+ },
+ "candidates": [
+  {
+   "id": "gen-a-seed0-01",
+   "attempt": 5,
+   "segments": 104,
+   "length_m": 3139.101,
+   "length_error": 0.04637,
+   "cycle_sha256": "20f995c599cf380be3a111ed102c098b95001e0f54517f20f7329675d473d769",
+   "shape_sha256": "5eb9d3e1ffc972fe7bbee0de9c609cdf6df77ce1ab4092fc01864264880a232b",
+   "reverse_of": null
+  },
+  {
+   "id": "gen-a-seed0-02",
+   "attempt": 7,
+   "segments": 99,
+   "length_m": 3189.73,
+   "length_error": 0.06324,
+   "cycle_sha256": "3f6aff1139b728368db0dd68c21bf57db493f6eb0635e93709fdec74737b945d",
+   "shape_sha256": "6c0c55c24923d6c00fc4364eb0d2f725617c02943b6a81f482945d1db62a246c",
+   "reverse_of": null
+  },
+  {
+   "id": "gen-a-seed0-03",
+   "attempt": 9,
+   "segments": 104,
+   "length_m": 2954.295,
+   "length_error": 0.01523,
+   "cycle_sha256": "fcf3bfaa65e1f68725c6d8841c0bc65d60e5dbd8e80a7cc903cbee4608af70ba",
+   "shape_sha256": "e32d22676e595c27b1ae77db7622f690016a8a703774e05f21630d464daaae1e",
+   "reverse_of": null
+  },
+  {
+   "id": "gen-a-seed0-04",
+   "attempt": 10,
+   "segments": 94,
+   "length_m": 2839.508,
+   "length_error": 0.0535,
+   "cycle_sha256": "0f0888f3c208c728ce252c8c463c0389d2ef475073c6b3d2fb6bc646225af71e",
+   "shape_sha256": "091d4e30e291e63b24a10c76a03da35586166704a14ae97cc95964c43d707f2c",
+   "reverse_of": null
+  },
+  {
+   "id": "gen-a-seed0-05",
+   "attempt": 11,
+   "segments": 89,
+   "length_m": 2732.065,
+   "length_error": 0.08931,
+   "cycle_sha256": "bdf43ae2f2275eef59d2701f1813000215ef1fb68e82c4da82d1308c494c8122",
+   "shape_sha256": "219626de82bc4cb7ca3ac5e1485accf08059239d550f18f6cc9cd02bc62ded97",
+   "reverse_of": null
+  },
+  {
+   "id": "gen-a-seed0-06",
+   "attempt": 13,
+   "segments": 86,
+   "length_m": 2910.681,
+   "length_error": 0.02977,
+   "cycle_sha256": "c0eaa4656a510beea745cdc49eb50f087b33c46dbed310896fca8e3d249c899e",
+   "shape_sha256": "12695dbe8fa3f9155dd6fcf69a2f9d62187e92a8d220a9bee1dc0c9d888368cb",
+   "reverse_of": null
+  },
+  {
+   "id": "gen-a-seed0-07",
+   "attempt": 15,
+   "segments": 74,
+   "length_m": 2818.883,
+   "length_error": 0.06037,
+   "cycle_sha256": "eab7a204aeb78b62dc1170eb5e104ca7d8521ead6245742d3978917b500ebc27",
+   "shape_sha256": "8fbdfc1fed64707e10102db7e2b2e5a8d09d5ba71956b62a048841ff824db90d",
+   "reverse_of": null
+  },
+  {
+   "id": "gen-a-seed0-08",
+   "attempt": 18,
+   "segments": 99,
+   "length_m": 3212.645,
+   "length_error": 0.07088,
+   "cycle_sha256": "91b867a12fde5d70dd55ac90ae7960b678c9ad35993ba7722a248f41e43bd30a",
+   "shape_sha256": "9b6222b8ec407f9eed2b0a5dd1da7efc70530f52f4628c09f004d4f418338490",
+   "reverse_of": null
+  },
+  {
+   "id": "gen-a-seed0-09",
+   "attempt": 19,
+   "segments": 101,
+   "length_m": 3192.266,
+   "length_error": 0.06409,
+   "cycle_sha256": "4954f376c46de3742d50eb7febaa06bb53cb7cc89aa9bed7d1c3be997cb82b6b",
+   "shape_sha256": "69df2e4a56d111be4b1dff2fe5fe3738a6ecb4a4caa3dd0a5307ec164308c865",
+   "reverse_of": null
+  },
+  {
+   "id": "gen-a-seed0-10",
+   "attempt": 20,
+   "segments": 106,
+   "length_m": 2757.374,
+   "length_error": 0.08088,
+   "cycle_sha256": "704cf4fd584a28ac8edb7f16e7b2d120293e9bac49409ab43040db53b20396f2",
+   "shape_sha256": "65ffc12399d2d8881e9bfbde05db4442ce297c73e1686302a79fd1258f161ede",
+   "reverse_of": null
+  }
+ ],
+ "distinct_shapes": 10,
+ "diversity": {
+  "pairs": 45,
+  "edge_jaccard_min": 0.7676,
+  "edge_jaccard_mean": 0.9866,
+  "shape_jaccard_min": 0.7676,
+  "shape_jaccard_mean": 0.984,
+  "note": "edge = directed edge_uids; shape = road segments regardless of direction"
+ }
+}
