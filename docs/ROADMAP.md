@@ -4,20 +4,20 @@ All features below are **planned** unless a merged PR and reproducible demonstra
 
 **How to execute the roadmap step by step:** [実作業ガイド / WORKFLOW.md](WORKFLOW.md) — starting actions, Claude Code instructions, GitHub branch/PR cycle, and stage-by-stage completion gates.
 
-## Status (2026-11-04)
+## Status (2026-11-06)
 | Gate | Work | Status |
 |---|---|---|
 | A | #4 research scope / AOI (provisional), #12 rights | #4 open (provisional design merged), #12 open (OSM publication & terrain licence unresolved) |
 | B | #5 dev env, #6 OSM graph, #7 course format, #8 3D city scene, #9 vehicle animation | **complete** — #5–#9 merged (#9 via PR #25, with a course minimap and an outlined course line) |
-| C | **#10 automatic circuit generation** | **top priority after the small #26 step below** |
-| D | #11 preferences, features and evaluation | after #10 (design can start in parallel) |
+| C | #10 automatic circuit generation | **MVP merged** (PR #37: plan A, simple directed cycles, `cf-course generate`; 10 valid 3.0 km ±10% candidates per seed in Sapporo). Open: RQ1 comparison with a fixed-attempt random baseline |
+| D | #11 preferences, features and evaluation | **next** — longest straight, corner density, shape features, preference ranking |
 
 ## Realistic order from here
 Research value comes from Gates C and D; presentation work must not delay them.
 
 1. ~~Finish #9~~ — done (PR #25 merged). Gate B is complete.
-2. **#26, first part only — base-map switching and textured PLATEAU buildings.** The chase and onboard views are hard to read (white roads, grey box buildings), which hinders reviewing generated courses. One small PR: a config-driven base-map choice (GSI standard map / seamless aerial photo / none) with matching attribution, and a choice between the untextured buildings and the Chuo-ku LOD2 textured tileset. No kerbs, barriers, fences or fictional asphalt bands, and no external tiles in video export (that waits for #12). The rest of #26 stays at step 7.
-3. **#10 — automatic circuit generation (top priority).** Deterministic, seeded candidate generation on the Issue #6 graph, reusing the Issue #7 validator (one-ways, routability, inside-AOI edges only, closure, U-turns) and the notes recorded on #10. Baseline runtime and failure cases are part of the result.
+2. ~~#26 first part~~ — done (PR #36; default: seamless aerial photo + untextured buildings, wider chase camera). **#26, first part only — base-map switching and textured PLATEAU buildings.** The chase and onboard views are hard to read (white roads, grey box buildings), which hinders reviewing generated courses. One small PR: a config-driven base-map choice (GSI standard map / seamless aerial photo / none) with matching attribution, and a choice between the untextured buildings and the Chuo-ku LOD2 textured tileset. No kerbs, barriers, fences or fictional asphalt bands, and no external tiles in video export (that waits for #12). The rest of #26 stays at step 7.
+3. ~~#10 MVP~~ — done (PR #37). Remaining research task: RQ1 comparison with a random-generation baseline at a fixed number of attempts. **#10 — automatic circuit generation.** Deterministic, seeded candidate generation on the Issue #6 graph, reusing the Issue #7 validator (one-ways, routability, inside-AOI edges only, closure, U-turns) and the notes recorded on #10. Baseline runtime and failure cases are part of the result.
 4. **#11 — preferences, features and evaluation.** Feature definitions (length, straights, corners with the provisional thresholds of RESEARCH_DESIGN §5.2.1) and the rule-based baseline; human-evaluation design.
 5. **In parallel, small:** #12 decisions that unblock work (OSM-derived course publication under ODbL, terrain licence) and, once decided, #32 (PR preview URLs).
 6. **#27 — course annotations** (sectors, start/finish, corners, straights, elevation) as the shared data for display and video, defined together with #11 features. Minimal version only until Gate D.
