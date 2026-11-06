@@ -49,6 +49,28 @@ describe("parseBasemaps", () => {
   });
 });
 
+describe("untextured building look", () => {
+  it("reads the committed colour and light factor", () => {
+    expect(parseBasemaps(basemapConfig).untexturedLook).toEqual({ color: "#cbc4b7", imageBasedLightingFactor: 0.5 });
+  });
+
+  it("rejects a bad colour or light factor", () => {
+    const color = clone(basemapConfig);
+    color.untextured_building_look.color = "beige";
+    expect(() => parseBasemaps(color)).toThrow(/color/);
+    const light = clone(basemapConfig);
+    light.untextured_building_look.image_based_lighting_factor = 2;
+    expect(() => parseBasemaps(light)).toThrow(/image_based_lighting_factor/);
+  });
+
+  it("only untextured tilesets get the look (textured ones are marked by replaces)", () => {
+    const scene = parseScene(sceneConfig);
+    const styled = tilesetsFor(scene, "textured").filter((t) => !t.replaces).map((t) => t.id);
+    expect(styled).not.toContain("01101_bldg_lod2");
+    expect(styled).toHaveLength(scene.buildings.tilesets.length - 1);
+  });
+});
+
 describe("tilesetsFor", () => {
   const scene = parseScene(sceneConfig);
 

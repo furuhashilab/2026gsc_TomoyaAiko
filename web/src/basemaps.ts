@@ -18,8 +18,15 @@ export interface Basemap {
 export type BuildingStyle = "untextured" | "textured";
 export const BUILDING_STYLES: BuildingStyle[] = ["untextured", "textured"];
 
+/** Look of untextured buildings: a flat colour and the image-based (ambient) light factor. */
+export interface BuildingLook {
+  color: string;
+  imageBasedLightingFactor: number;
+}
+
 export interface BasemapConfig {
   basemaps: Basemap[];
+  untexturedLook: BuildingLook | null;
   buildings: { id: BuildingStyle; name: string }[];
   defaultBasemap: string;
   defaultBuildings: BuildingStyle;
@@ -63,7 +70,16 @@ export function parseBasemaps(data: unknown): BasemapConfig {
   if (!basemaps.some((b) => b.id === defaultBasemap)) fail(`default_basemap ${defaultBasemap} is not defined`);
   const defaultBuildings = d.default_buildings as BuildingStyle;
   if (!BUILDING_STYLES.includes(defaultBuildings)) fail("default_buildings must be untextured or textured");
-  return { basemaps, buildings, defaultBasemap, defaultBuildings };
+  return { basemaps, buildings, defaultBasemap, defaultBuildings, untexturedLook: parseLook(d.untextured_building_look) };
+}
+
+function parseLook(v: unknown): BuildingLook | null {
+  if (v === undefined) return null;
+  const l = v as Record<string, unknown>;
+  if (typeof l.color !== "string" || !/^#[0-9a-fA-F]{6}$/.test(l.color)) fail("untextured_building_look.color must be #rrggbb");
+  const f = l.image_based_lighting_factor ?? 1;
+  if (typeof f !== "number" || !(f >= 0 && f <= 1)) fail("untextured_building_look.image_based_lighting_factor must be between 0 and 1");
+  return { color: l.color, imageBasedLightingFactor: f };
 }
 
 /** The basemap named by `id` (e.g. a URL parameter), or the configured default. */

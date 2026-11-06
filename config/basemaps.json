@@ -45,6 +45,11 @@
       "category": "外部データなし"
     }
   ],
+  "untextured_building_look": {
+    "color": "#cbc4b7",
+    "image_based_lighting_factor": 0.5,
+    "note": "Issue #26 plan A: warm grey-beige instead of white, and half of Cesium's default image-based (ambient) light so sunlit and shaded walls differ. Applied only to tilesets without textures; textured tilesets keep Cesium's defaults so their photos are not tinted."
+  },
   "buildings": [
     { "id": "untextured", "name": "PLATEAU 建物（テクスチャなし）" },
     { "id": "textured", "name": "PLATEAU 建物（中央区 LOD2 テクスチャ付き）" }
