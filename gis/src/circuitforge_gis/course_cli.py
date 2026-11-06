@@ -13,7 +13,7 @@ from . import graph
 from .aoi import DEFAULT_AOI_PATH, REPO_ROOT, Aoi, load_aoi
 from .cli import DEFAULT_DATE, snapshot_tag
 from .course import CourseError, build_course, validate
-from .generate import GenerateParams, generate, record_json
+from .generate import GenerateParams, generate, write_outputs
 from .osm_fetch import element_hash
 from .profile import MVP_DRIVE
 
@@ -83,22 +83,29 @@ def cmd_validate(args) -> int:
 
 
 def cmd_generate(args) -> int:
+    try:  # check the inputs before the (slower) graph load
+        params = GenerateParams(
+            target_m=args.target_m, tolerance=args.tolerance, count=args.count, seed=args.seed,
+            max_attempts=args.max_attempts, time_limit_s=args.time_limit,
+            allow_default_two_way_major=args.allow_default_two_way_major,
+        )  # fmt: skip
+    except ValueError as exc:
+        print(f"error: invalid option: {exc}", file=sys.stderr)
+        return 2
     aoi = load_aoi(args.aoi)
     g, snapshot = load_snapshot_graph(aoi, MVP_DRIVE.name, args.date, args.data_dir)
-    params = GenerateParams(
-        target_m=args.target_m, tolerance=args.tolerance, count=args.count, seed=args.seed,
-        max_attempts=args.max_attempts, time_limit_s=args.time_limit,
-        allow_default_two_way_major=args.allow_default_two_way_major,
-    )  # fmt: skip
     courses, record, log = generate(g, aoi, snapshot, params)
     out = args.output or args.data_dir / "processed" / "generated" / f"{aoi.id}_seed{args.seed}"
-    out.mkdir(parents=True, exist_ok=True)
-    for c in courses:
-        path = out / f"{c['properties']['id']}.course.geojson"
-        path.write_text(json.dumps(c, ensure_ascii=False, indent=1) + "\n")
-    (out / "generation-record.json").write_text(record_json(record))
-    (out / "generation-log.json").write_text(record_json(log))
+    try:
+        files = write_outputs(out, courses, record, log)
+    except ValueError as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 2
     print(f"wrote    {len(courses)} courses and the record/log to {out}")
+    if files["removed"]:
+        print(f"removed  {len(files['removed'])} course files of the previous run in this folder")
+    if files["left"]:
+        print(f"note     other files left untouched: {', '.join(files['left'][:5])}")
     print(f"accepted {record['accepted']}/{params.count} in {record['attempts']} attempts "
           f"({record['stop_reason']}, {log['elapsed_s']} s)")  # fmt: skip
     for reason, n in record["failures"].items():

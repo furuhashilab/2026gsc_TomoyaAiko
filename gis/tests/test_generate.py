@@ -14,6 +14,7 @@ import pytest
 from circuitforge_gis import graph
 from circuitforge_gis.aoi import load_aoi
 from circuitforge_gis.course import edge_index, validate
+from circuitforge_gis.course_cli import main
 from circuitforge_gis.generate import (
     GenerateParams,
     canonical_cycle,
@@ -21,6 +22,7 @@ from circuitforge_gis.generate import (
     generate,
     shape_key,
     twin,
+    write_outputs,
 )
 from circuitforge_gis.osm_fetch import element_hash
 
@@ -308,3 +310,73 @@ def test_record_counts_failures_and_respects_the_attempt_limit(grid):
     assert record["attempts"] == 20 and record["stop_reason"] == "max_attempts reached"
     assert sum(record["failures"].values()) == 20
     assert "elapsed_s" in log and "elapsed_s" not in record
+
+
+# --- input checks and output folder ------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    "bad",
+    [
+        {"target_m": 0},
+        {"target_m": -100},
+        {"target_m": float("nan")},
+        {"tolerance": 0},
+        {"tolerance": 1},
+        {"tolerance": -0.1},
+        {"count": 0},
+        {"count": -3},
+        {"max_attempts": 0},
+        {"count": 11, "max_attempts": 10},
+        {"time_limit_s": 0},
+        {"time_limit_s": -1},
+        {"seed": -1},
+    ],
+)
+def test_invalid_parameters_are_refused(bad):
+    with pytest.raises(ValueError):
+        GenerateParams(**bad)
+
+
+@pytest.mark.parametrize(
+    "args",
+    [
+        ["--target-m", "0"],
+        ["--tolerance", "1.5"],
+        ["--count", "0"],
+        ["--max-attempts", "-1"],
+        ["--time-limit", "0"],
+    ],
+)
+def test_cli_rejects_invalid_values_before_loading_data(args, tmp_path, capsys):
+    # tmp_path has no OSM data: a clean "invalid option" exit shows the check runs first
+    with pytest.raises(SystemExit) as exc:
+        main(["--data-dir", str(tmp_path), "generate", *args])
+    assert exc.value.code == 2
+    assert "invalid option" in capsys.readouterr().err
+
+
+def test_regenerating_into_the_same_folder_does_not_mix_runs(grid, tmp_path):
+    g, aoi, snapshot = grid
+    run5 = generate(g, aoi, snapshot, GenerateParams(target_m=520, tolerance=0.15, count=5, seed=7))
+    (tmp_path / "my-notes.txt").write_text("keep me")
+    (tmp_path / "manual.course.geojson").write_text("{}")  # not written by the generator
+    write_outputs(tmp_path, *run5)
+    assert len(list(tmp_path.glob("gen-a-*.course.geojson"))) == 5
+    run3 = generate(g, aoi, snapshot, GenerateParams(target_m=520, tolerance=0.15, count=3, seed=9))
+    files = write_outputs(tmp_path, *run3)
+    written = sorted(p.name for p in tmp_path.glob("gen-a-*.course.geojson"))
+    assert written == sorted(f"{c['properties']['id']}.course.geojson" for c in run3[0])
+    assert len(files["removed"]) == 5
+    assert files["left"] == ["manual.course.geojson", "my-notes.txt"]
+    assert (tmp_path / "my-notes.txt").read_text() == "keep me"
+    record = json.loads((tmp_path / "generation-record.json").read_text())
+    assert record["accepted"] == 3 and record["params"]["seed"] == 9
+
+
+def test_a_foreign_record_file_is_not_trusted(grid, tmp_path):
+    g, aoi, snapshot = grid
+    (tmp_path / "generation-record.json").write_text('{"schema": "something-else"}')
+    run = generate(g, aoi, snapshot, GenerateParams(target_m=520, tolerance=0.15, count=1, seed=7))
+    with pytest.raises(ValueError, match="not a generation record"):
+        write_outputs(tmp_path, *run)

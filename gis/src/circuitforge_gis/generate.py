@@ -25,11 +25,13 @@ for the same snapshot, parameters and seed) and the *log* (timestamps, durations
 import dataclasses
 import hashlib
 import json
+import math
 import platform
 import random
 import sys
 import time
 from collections import Counter
+from pathlib import Path
 
 import networkx as nx
 from shapely.geometry import LineString
@@ -63,6 +65,37 @@ class GenerateParams:
     turn_band: tuple[float, float] = (0.35, 0.50)  # distance S->T as a fraction of target
     jitter: float = 0.3  # outbound/return edge weights are length x U(1, 1 + jitter)
     allow_default_two_way_major: bool = False
+
+    def __post_init__(self):
+        def finite(name):
+            v = getattr(self, name)
+            if isinstance(v, bool) or not isinstance(v, int | float) or not math.isfinite(v):
+                raise ValueError(f"{name} must be a finite number, got {v!r}")
+            return v
+
+        def whole(name, minimum):
+            v = getattr(self, name)
+            if isinstance(v, bool) or not isinstance(v, int) or v < minimum:
+                raise ValueError(f"{name} must be an integer >= {minimum}, got {v!r}")
+
+        if finite("target_m") <= 0:
+            raise ValueError(f"target_m must be > 0 m, got {self.target_m}")
+        if not 0 < finite("tolerance") < 1:
+            raise ValueError(f"tolerance must be between 0 and 1 (exclusive), got {self.tolerance}")
+        whole("count", 1)
+        whole("max_attempts", 1)
+        whole("seed", 0)
+        if self.count > self.max_attempts:
+            raise ValueError(
+                f"count ({self.count}) cannot exceed max_attempts ({self.max_attempts})"
+            )
+        if finite("time_limit_s") <= 0:
+            raise ValueError(f"time_limit_s must be > 0 s, got {self.time_limit_s}")
+        if finite("jitter") < 0:
+            raise ValueError(f"jitter must be >= 0, got {self.jitter}")
+        lo, hi = self.turn_band
+        if not 0 < lo <= hi < 1:
+            raise ValueError(f"turn_band must satisfy 0 < low <= high < 1, got {self.turn_band}")
 
     @property
     def length_range_m(self) -> list[float]:
@@ -367,3 +400,47 @@ def _diversity(accepted: list[dict]) -> dict:
 
 def record_json(record: dict) -> str:
     return json.dumps(record, ensure_ascii=False, indent=1) + "\n"
+
+
+RECORD_FILE = "generation-record.json"
+LOG_FILE = "generation-log.json"
+
+
+def course_file(course_id: str) -> str:
+    return f"{course_id}.course.geojson"
+
+
+def write_outputs(out: Path, courses: list[dict], record: dict, log: dict) -> dict:
+    """Write a run to ``out`` without mixing it with an earlier run.
+
+    Only files that the previous run in ``out`` listed in its own record (its course
+    files) are removed before writing; any other file is left alone and reported, so a
+    user's own files are never deleted. Returns {"removed": [...], "left": [...]}.
+    """
+    out.mkdir(parents=True, exist_ok=True)
+    removed = []
+    prev = out / RECORD_FILE
+    if prev.exists():
+        try:
+            old = json.loads(prev.read_text())
+        except json.JSONDecodeError as exc:
+            raise ValueError(f"{prev} is not a readable generation record; move it away") from exc
+        if old.get("schema") != "circuitforge-generation-record":
+            raise ValueError(f"{prev} is not a generation record; choose another --output")
+        for c in old.get("candidates", []):
+            name = course_file(c["id"])
+            if "/" in name or name.startswith("."):
+                continue
+            path = out / name
+            if path.is_file():
+                path.unlink()
+                removed.append(name)
+    for c in courses:
+        (out / course_file(c["properties"]["id"])).write_text(
+            json.dumps(c, ensure_ascii=False, indent=1) + "\n"
+        )
+    (out / RECORD_FILE).write_text(record_json(record))
+    (out / LOG_FILE).write_text(record_json(log))
+    keep = {course_file(c["properties"]["id"]) for c in courses} | {RECORD_FILE, LOG_FILE}
+    left = sorted(p.name for p in out.iterdir() if p.name not in keep)
+    return {"removed": sorted(removed), "left": left}
