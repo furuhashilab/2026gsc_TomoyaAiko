@@ -47,7 +47,13 @@
     "speed_note": "Display speed for visualising the route only; not a vehicle dynamics model and not a racing speed."
   },
   "cameras": {
-    "chase": { "range_m": 18, "pitch_deg": -18, "heading_smoothing": 0.12 },
+    "chase": {
+      "range_m": 32,
+      "pitch_deg": -30,
+      "fov_deg": 70,
+      "heading_smoothing": 0.12,
+      "note": "Issue #26: widened from 18 m / -18 deg / default 60 deg FOV so cross streets and intersections stay in view. fov_deg applies to the chase camera only; other modes restore the viewer default. At two sharp corners of the Sapporo demo (s ~1298 m, ~2376 m) the camera passes through a building edge for a few metres (docs/evidence/issue-26)."
+    },
     "onboard_like": { "forward_m": 2.6, "height_m": 1.1, "pitch_deg": -4, "note": "In front of the nose, not a modelled cockpit" },
     "aerial": { "range_m": 260, "pitch_deg": -89 }
   }

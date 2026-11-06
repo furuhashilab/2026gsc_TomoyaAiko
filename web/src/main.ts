@@ -21,10 +21,12 @@ import {
 } from "cesium";
 import "cesium/Build/Cesium/Widgets/widgets.css";
 import aoiConfig from "../../config/aoi.sapporo.json";
+import basemapConfig from "../../config/basemaps.json";
 import sceneConfig from "../../config/scene.sapporo.json";
 import vehicleConfig from "../../config/vehicle.json";
 import syntheticCourse from "../../contracts/examples/synthetic-loop.course.geojson?raw";
 import { parseAoi } from "./aoi";
+import { type Basemap, type BuildingStyle, basemapCreditHtml, parseBasemaps, pickBasemap, pickBuildingStyle, tilesetsFor } from "./basemaps";
 import { arrowSegments, bearingRad, type Course, parseCourse } from "./course";
 import { LatestOnly } from "./latest";
 import { Minimap } from "./minimap";
@@ -38,19 +40,15 @@ const params = new URLSearchParams(location.search);
 // Generated locally by `uv run cf-course build --recipe ../contracts/examples/sapporo-demo.recipe.json ...`
 const DEFAULT_COURSE_URL = "courses/sapporo-demo.course.geojson";
 
-// GSI standard map tiles: no access token needed; attribution is required.
-const gsiStandard = new UrlTemplateImageryProvider({
-  url: "https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png",
-  maximumLevel: 18,
-  credit: new Credit(
-    '<a href="https://maps.gsi.go.jp/development/ichiran.html" target="_blank" rel="noopener">地理院タイル</a>',
-    true,
-  ),
-});
+// Base map and building style (Issue #26): options, tile URLs and attribution come from
+// config/basemaps.json; ?basemap=<id>&buildingStyle=untextured|textured pick one by URL.
+const basemaps = parseBasemaps(basemapConfig);
+let basemap = pickBasemap(basemaps, params.get("basemap"));
+let buildingStyle = pickBuildingStyle(basemaps, params.get("buildingStyle"));
 
 // No Cesium ion services: ellipsoid terrain and widgets that would call ion are disabled.
 const viewer = new Viewer("cesiumContainer", {
-  baseLayer: new ImageryLayer(gsiStandard),
+  baseLayer: false,
   baseLayerPicker: false,
   geocoder: false,
   animation: false,
@@ -58,6 +56,20 @@ const viewer = new Viewer("cesiumContainer", {
   sceneModePicker: false,
   navigationHelpButton: false,
 });
+
+// GSI tiles need no access token; their credit is attached to the layer, so it is shown
+// only while that layer is displayed.
+function setBasemap(b: Basemap): void {
+  basemap = b;
+  viewer.imageryLayers.removeAll();
+  viewer.scene.globe.baseColor = Color.fromCssColorString(b.baseColor);
+  const credit = basemapCreditHtml(b);
+  if (b.url && credit) {
+    const provider = new UrlTemplateImageryProvider({ url: b.url, maximumLevel: b.maximumLevel, credit: new Credit(credit, true) });
+    viewer.imageryLayers.add(new ImageryLayer(provider));
+  }
+}
+setBasemap(basemap);
 
 // Terrain and buildings (Issue #8). Buildings are only shown on top of the PLATEAU
 // terrain: their heights are ellipsoidal, so without terrain they would float ~50 m.
@@ -71,7 +83,8 @@ setStatus("terrain", status.terrain);
 const terrainCredit = new Credit(`地形：${scene.terrain.attribution}`, true);
 viewer.creditDisplay.addStaticCredit(terrainCredit);
 
-const tilesets: Cesium3DTileset[] = [];
+// Building tilesets currently in the scene, by config id.
+const tilesets = new Map<string, Cesium3DTileset>();
 let sceneDisabled = false;
 // Resolves with the PLATEAU terrain once it passed the checks, or null without terrain.
 let resolveTerrain: (t: TerrainProvider | null) => void = () => {};
@@ -81,7 +94,8 @@ const terrainReady = new Promise<TerrainProvider | null>((r) => (resolveTerrain 
 function disableScene(reason: string): void {
   if (sceneDisabled) return;
   sceneDisabled = true;
-  for (const t of tilesets.splice(0)) viewer.scene.primitives.remove(t);
+  for (const t of tilesets.values()) viewer.scene.primitives.remove(t);
+  tilesets.clear();
   viewer.terrainProvider = new EllipsoidTerrainProvider();
   viewer.scene.globe.depthTestAgainstTerrain = false;
   viewer.creditDisplay.removeStaticCredit(terrainCredit);
@@ -126,37 +140,82 @@ async function loadScene(): Promise<void> {
     setStatus("buildings", "建物：無効化されています（?buildings=off）");
     return;
   }
+  // Untextured and textured tilesets share one dataset (same city and year), so one credit.
   viewer.creditDisplay.addStaticCredit(new Credit(`建物：${scene.buildings.attribution}`, true));
-  const total = scene.buildings.tilesets.length;
-  const pending = new Map<string, number>();
-  let ready = 0;
-  const failed: string[] = [];
-  const refresh = () => {
-    const tiles = [...pending.values()].reduce((a, b) => a + b, 0);
-    const parts = [`建物：${ready}/${total} タイルセット`, tiles > 0 ? `読み込み中 ${tiles} タイル` : "読み込み完了"];
-    if (failed.length) parts.push(`失敗 ${failed.join(", ")}`);
-    setStatus("buildings", parts.join(" / "));
-  };
+  buildingsEnabled = true;
+  await showBuildings(buildingStyle);
+}
+
+let buildingsEnabled = false;
+const buildingLoads = new LatestOnly();
+const pending = new Map<string, number>();
+// tileset.json requests in flight per id (a superseded request may overlap a newer one)
+const fetching = new Map<string, number>();
+const failed = new Set<string>();
+
+function refreshBuildingStatus(): void {
+  const wanted = tilesetsFor(scene, buildingStyle);
+  const ready = wanted.filter((t) => tilesets.has(t.id)).length;
+  const tiles = wanted.reduce((a, t) => a + (pending.get(t.id) ?? 0), 0);
+  const style = basemaps.buildings.find((b) => b.id === buildingStyle)?.name ?? buildingStyle;
+  const bad = wanted.filter((t) => failed.has(t.id)).map((t) => t.id);
+  // "complete" only when every wanted tileset is in the scene and no tile is pending
+  // a freshly added tileset reports no pending tiles until its first update, so also wait for tilesLoaded
+  const loading = tiles > 0 || wanted.some((t) => tilesets.get(t.id)?.tilesLoaded === false);
+  const busy = wanted.some((t) => (fetching.get(t.id) ?? 0) > 0) ? "タイルセットを取得中" : loading ? (tiles > 0 ? `読み込み中 ${tiles} タイル` : "読み込み中") : null;
+  const parts = [`建物：${style} ${ready}/${wanted.length} タイルセット`, busy ?? (bad.length ? "一部未表示" : "読み込み完了")];
+  if (bad.length) {
+    parts.push(`失敗 ${bad.join(", ")}`);
+    if (buildingStyle === "textured") parts.push("「建物」でテクスチャなしに戻せます");
+  }
+  setStatus("buildings", parts.join(" / "));
+}
+
+// Swap tilesets for a style: a textured tileset replaces its ward's untextured one, so
+// the old one is removed before the new one is added and no building is drawn twice.
+async function showBuildings(style: BuildingStyle): Promise<void> {
+  buildingStyle = style;
+  if (!buildingsEnabled || sceneDisabled) return;
+  const generation = buildingLoads.begin();
+  const wanted = tilesetsFor(scene, style);
+  const wantedIds = new Set(wanted.map((t) => t.id));
+  for (const [id, t] of tilesets) {
+    if (!wantedIds.has(id)) {
+      viewer.scene.primitives.remove(t);
+      tilesets.delete(id);
+      pending.delete(id);
+    }
+  }
+  refreshBuildingStatus();
   await Promise.all(
-    scene.buildings.tilesets.map(async (t) => {
-      try {
-        const tileset = await Cesium3DTileset.fromUrl(t.url, { maximumScreenSpaceError: 16 });
-        tileset.loadProgress.addEventListener((requests: number, processing: number) => {
-          pending.set(t.id, requests + processing);
-          refresh();
-        });
-        tileset.tileFailed.addEventListener(() => {
-          if (!failed.includes(t.id)) failed.push(t.id);
-          refresh();
-        });
-        if (sceneDisabled) return;
-        tilesets.push(viewer.scene.primitives.add(tileset));
-        ready += 1;
-      } catch {
-        failed.push(t.id);
-      }
-      refresh();
-    }),
+    wanted
+      .filter((t) => !tilesets.has(t.id))
+      .map(async (t) => {
+        failed.delete(t.id);
+        fetching.set(t.id, (fetching.get(t.id) ?? 0) + 1);
+        refreshBuildingStatus();
+        try {
+          const tileset = await Cesium3DTileset.fromUrl(t.url, { maximumScreenSpaceError: 16 }).finally(() => fetching.set(t.id, (fetching.get(t.id) ?? 1) - 1));
+          // a newer style was picked, or the terrain failed, while this one was loading
+          if (sceneDisabled || !buildingLoads.isCurrent(generation) || tilesets.has(t.id)) {
+            tileset.destroy();
+            return;
+          }
+          tileset.loadProgress.addEventListener((requests: number, processing: number) => {
+            pending.set(t.id, requests + processing);
+            refreshBuildingStatus();
+          });
+          tileset.allTilesLoaded.addEventListener(refreshBuildingStatus);
+          tileset.tileFailed.addEventListener(() => {
+            failed.add(t.id);
+            refreshBuildingStatus();
+          });
+          tilesets.set(t.id, viewer.scene.primitives.add(tileset));
+        } catch {
+          failed.add(t.id);
+        }
+        refreshBuildingStatus();
+      }),
   );
 }
 
@@ -263,6 +322,13 @@ document.getElementById("vehiclePlay")?.addEventListener("click", () => vehicle.
 document.getElementById("vehiclePause")?.addEventListener("click", () => vehicle.pause());
 document.getElementById("vehicleReset")?.addEventListener("click", () => vehicle.reset());
 speedSelect.addEventListener("change", () => vehicle.setMultiplier(Number(speedSelect.value)));
+
+const basemapSelect = document.getElementById("basemap") as HTMLSelectElement;
+for (const b of basemaps.basemaps) basemapSelect.add(new Option(b.name, b.id, false, b.id === basemap.id));
+basemapSelect.addEventListener("change", () => setBasemap(pickBasemap(basemaps, basemapSelect.value)));
+const buildingSelect = document.getElementById("buildingStyle") as HTMLSelectElement;
+for (const b of basemaps.buildings) buildingSelect.add(new Option(b.name, b.id, false, b.id === buildingStyle));
+buildingSelect.addEventListener("change", () => void showBuildings(pickBuildingStyle(basemaps, buildingSelect.value)));
 document.getElementById("vehicleCamera")?.addEventListener("change", (ev) => {
   vehicle.setCamera((ev.target as HTMLSelectElement).value as CameraMode);
 });
@@ -406,4 +472,4 @@ void loadInitialCourse();
 void loadScene();
 
 // Dev builds only: expose the viewer for manual checks in the browser console.
-if (import.meta.env.DEV) (window as unknown as { __cf: unknown }).__cf = { viewer, scene, status, vehicle, vehicleCfg };
+if (import.meta.env.DEV) (window as unknown as { __cf: unknown }).__cf = { viewer, scene, status, vehicle, vehicleCfg, basemaps, setBasemap, showBuildings, tilesets };

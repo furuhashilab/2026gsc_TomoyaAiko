@@ -14,7 +14,8 @@ export interface VehicleConfig {
   baseSpeedMps: number;
   multipliers: number[];
   cameras: {
-    chase: { rangeM: number; pitchRad: number; smoothing: number };
+    /** fovRad: field of view used only while chasing (null = keep the viewer's default). */
+    chase: { rangeM: number; pitchRad: number; smoothing: number; fovRad: number | null };
     onboardLike: { forwardM: number; heightM: number; pitchRad: number };
     aerial: { rangeM: number; pitchRad: number };
   };
@@ -29,6 +30,12 @@ function fail(message: string): never {
 function num(v: unknown, what: string, min = -Infinity): number {
   if (typeof v !== "number" || !Number.isFinite(v) || v < min) fail(`${what} must be a number >= ${min}`);
   return v;
+}
+
+function fovDeg(v: unknown, what: string): number {
+  const deg = num(v, what, 20);
+  if (deg > 120) fail(`${what} must be <= 120`);
+  return deg;
 }
 
 export function parseVehicleConfig(data: unknown): VehicleConfig {
@@ -62,6 +69,7 @@ export function parseVehicleConfig(data: unknown): VehicleConfig {
         rangeM: num(c.chase?.range_m, "cameras.chase.range_m", 0),
         pitchRad: num(c.chase?.pitch_deg, "cameras.chase.pitch_deg") * DEG,
         smoothing: num(c.chase?.heading_smoothing, "cameras.chase.heading_smoothing", 0),
+        fovRad: c.chase?.fov_deg === undefined ? null : fovDeg(c.chase.fov_deg, "cameras.chase.fov_deg") * DEG,
       },
       onboardLike: {
         forwardM: num(c.onboard_like?.forward_m, "cameras.onboard_like.forward_m"),

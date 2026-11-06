@@ -20,6 +20,20 @@ describe("parseVehicleConfig", () => {
     expect(() => parseVehicleConfig(bad)).toThrow(/license/);
   });
 
+  it("reads an optional chase field of view and rejects implausible values", () => {
+    const none = clone();
+    delete none.cameras.chase.fov_deg;
+    expect(parseVehicleConfig(none).cameras.chase.fovRad).toBeNull();
+    const wide = clone();
+    wide.cameras.chase.fov_deg = 70;
+    expect(parseVehicleConfig(wide).cameras.chase.fovRad).toBeCloseTo((70 * Math.PI) / 180);
+    for (const bad of [10, 150, "70"]) {
+      const c = clone();
+      c.cameras.chase.fov_deg = bad;
+      expect(() => parseVehicleConfig(c)).toThrow(/fov_deg/);
+    }
+  });
+
   it("requires a SHA-256 for the model file", () => {
     const bad = clone();
     bad.model.files = {};

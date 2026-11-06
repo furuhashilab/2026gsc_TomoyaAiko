@@ -1,0 +1,52 @@
+{
+  "schema": "circuitforge-basemaps",
+  "schema_version": "0.1.0",
+  "checked": "2026-11-05",
+  "sources": {
+    "tile_list": "https://maps.gsi.go.jp/development/ichiran.html",
+    "terms": "https://www.gsi.go.jp/kikakuchousei/kikakuchousei40182.html",
+    "survey_act_procedure": "https://www.gsi.go.jp/LAW/2930-index.html"
+  },
+  "default_basemap": "gsi-seamlessphoto",
+  "default_buildings": "untextured",
+  "basemaps": [
+    {
+      "id": "gsi-std",
+      "name": "地理院標準地図",
+      "url": "https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png",
+      "maximum_level": 18,
+      "attribution": "地理院タイル（標準地図）",
+      "attribution_url": "https://maps.gsi.go.jp/development/ichiran.html",
+      "extra_credits": [
+        "ZL5–8：The bathymetric contours are derived from those contained within the GEBCO Digital Atlas / Shoreline data is derived from: United States. National Imagery and Mapping Agency / 海上保安庁許可第292502号"
+      ],
+      "category": "基本測量成果（ZL9–18）",
+      "use_note": "Web でのリアルタイム表示は出典の明示のみで申請不要。動画などへの利用は測量法の申請が必要になり得るため未使用（#12）。"
+    },
+    {
+      "id": "gsi-seamlessphoto",
+      "name": "シームレス空中写真",
+      "url": "https://cyberjapandata.gsi.go.jp/xyz/seamlessphoto/{z}/{x}/{y}.jpg",
+      "maximum_level": 18,
+      "attribution": "地理院タイル（全国最新写真（シームレス））",
+      "attribution_url": "https://maps.gsi.go.jp/development/ichiran.html",
+      "extra_credits": [
+        "ZL9–13：データソース：Landsat8画像（GSI,TSIC,GEO Grid/AIST）, Landsat8画像（courtesy of the U.S. Geological Survey）, 海底地形（GEBCO）"
+      ],
+      "category": "基本測量成果ではない（出典の明示のみ）",
+      "use_note": "GRUS画像の追加表示が必要な範囲（北緯20度台）は札幌を含まない。札幌の撮影年月は未確認。"
+    },
+    {
+      "id": "none",
+      "name": "背景なし（単色）",
+      "url": null,
+      "base_color": "#8a8f94",
+      "attribution": null,
+      "category": "外部データなし"
+    }
+  ],
+  "buildings": [
+    { "id": "untextured", "name": "PLATEAU 建物（テクスチャなし）" },
+    { "id": "textured", "name": "PLATEAU 建物（中央区 LOD2 テクスチャ付き）" }
+  ]
+}

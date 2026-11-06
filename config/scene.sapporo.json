@@ -2,7 +2,7 @@
   "schema": "circuitforge-scene",
   "schema_version": "0.1.0",
   "aoi_id": "sapporo-center",
-  "retrieved_utc": "2026-11-04T08:08:23+00:00",
+  "retrieved_utc": "2026-11-04T15:11:42+00:00",
   "terrain": {
     "provider": "PLATEAU-Terrain",
     "format": "quantized-mesh-1.0",
@@ -25,7 +25,7 @@
         "metadata",
         "octvertexnormals"
       ],
-      "retrieved_utc": "2026-11-04T08:08:23+00:00"
+      "retrieved_utc": "2026-11-04T15:11:42+00:00"
     }
   },
   "buildings": {
@@ -102,6 +102,24 @@
         "url": "https://assets.cms.plateau.reearth.io/assets/02/d7a24f-76db-4295-844e-c667831fea43/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01105_toyohira-ku_lod1/tileset.json",
         "tileset_json_sha256": "11032637cf3f69b6b462c49729f27cb382fcc7b79ecad904fec1d93e3e199407",
         "tileset_version": null
+      }
+    ],
+    "textured_tilesets": [
+      {
+        "id": "01101_bldg_lod2",
+        "name": "建築物モデル（中央区）",
+        "ward": "中央区",
+        "ward_code": "01101",
+        "year": 2020,
+        "registration_year": 2024,
+        "spec": "4.1",
+        "lod": "2",
+        "texture": true,
+        "crs": "JGD2011",
+        "url": "https://assets.cms.plateau.reearth.io/assets/16/06e56d-a2d4-4fe4-ac91-b2762b96e033/01100_sapporo-shi_city_2020_citygml_7_op_bldg_3dtiles_01101_chuo-ku_lod2/tileset.json",
+        "tileset_json_sha256": "b54f2f009647b897698d22cb43cde79a9543922b8b111a95acb9a4ef11b235a8",
+        "tileset_version": null,
+        "replaces": "01101_bldg_lod2_no_texture"
       }
     ]
   }

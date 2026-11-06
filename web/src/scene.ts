@@ -8,11 +8,13 @@ export interface SceneTileset {
   url: string;
   lod: string;
   year: number;
+  /** Textured tilesets only: id of the untextured tileset (same ward) it replaces. */
+  replaces?: string;
 }
 
 export interface SceneConfig {
   terrain: { url: string; requestVertexNormals: boolean; attribution: string; version: string };
-  buildings: { attribution: string; tilesets: SceneTileset[] };
+  buildings: { attribution: string; tilesets: SceneTileset[]; texturedTilesets: SceneTileset[] };
 }
 
 export const TERRAIN_ATTRIBUTION = "PLATEAU | Mapterhorn | 国土地理院";
@@ -39,6 +41,25 @@ export function parseScene(data: unknown): SceneConfig {
   if (typeof b.attribution !== "string" || b.attribution.length === 0) fail("buildings attribution is required");
   if (!Array.isArray(b.tilesets)) fail("buildings.tilesets must be an array");
   const snapshot = (t.snapshot ?? {}) as { version?: unknown };
+  const tileset = (ts: Record<string, unknown>, i: number, what: string): SceneTileset => ({
+    id: String(ts.id ?? fail(`${what} ${i} has no id`)),
+    name: String(ts.name ?? ts.id),
+    url: httpsUrl(ts.url, `${what} ${i} url`),
+    lod: String(ts.lod ?? ""),
+    year: Number(ts.year),
+  });
+  const tilesets = (b.tilesets as Record<string, unknown>[]).map((ts, i) => tileset(ts, i, "tileset"));
+  const ids = new Set(tilesets.map((ts) => ts.id));
+  const seen = new Set<string>();
+  const texturedTilesets = ((b.textured_tilesets ?? []) as Record<string, unknown>[]).map((ts, i) => {
+    const replaces = String(ts.replaces ?? "");
+    // Each textured tileset must stand in for exactly one configured tileset, otherwise the
+    // same buildings would be drawn twice (or a ward would vanish).
+    if (!ids.has(replaces)) fail(`textured tileset ${i} replaces unknown tileset "${replaces}"`);
+    if (seen.has(replaces)) fail(`tileset ${replaces} is replaced twice`);
+    seen.add(replaces);
+    return { ...tileset(ts, i, "textured tileset"), replaces };
+  });
   return {
     terrain: {
       url: httpsUrl(t.url, "terrain.url"),
@@ -48,13 +69,8 @@ export function parseScene(data: unknown): SceneConfig {
     },
     buildings: {
       attribution: b.attribution,
-      tilesets: (b.tilesets as Record<string, unknown>[]).map((ts, i) => ({
-        id: String(ts.id ?? fail(`tileset ${i} has no id`)),
-        name: String(ts.name ?? ts.id),
-        url: httpsUrl(ts.url, `tileset ${i} url`),
-        lod: String(ts.lod ?? ""),
-        year: Number(ts.year),
-      })),
+      tilesets,
+      texturedTilesets,
     },
   };
 }
