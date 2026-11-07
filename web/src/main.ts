@@ -36,6 +36,7 @@ import { RacePresentation } from "./presentation/layer";
 import { parseScene } from "./scene";
 import { type CameraMode, VehicleAnimation } from "./vehicle/animation";
 import { parseVehicleConfig } from "./vehicle/config";
+import { DEFAULT_LIFT_RAMP_M } from "./vehicle/lift";
 
 const aoi = parseAoi(aoiConfig);
 const scene = parseScene(sceneConfig);
@@ -361,7 +362,7 @@ async function refreshRace(): Promise<void> {
   const cfg = course ? presentations.find((p) => p.courseId === course.id) : undefined;
   if (!raceToggle.checked || !course || !cfg) {
     race.hide();
-    vehicle.setGroundLift(0);
+    vehicle.setGroundLift(null);
     raceNotice.hidden = true;
     if (raceToggle.checked && course) setRaceNotice(null, "レース演出：このコースには演出の設定がありません（config/presentation/）");
     return;
@@ -376,8 +377,9 @@ async function refreshRace(): Promise<void> {
     setRaceNotice(cfg.disclaimer, `レース演出：表示に失敗（${e instanceof Error ? e.message : String(e)}）`);
     return;
   }
-  vehicle.setGroundLift(cfg.road.liftM);
   const { fromS, toS, widthM } = cfg.road;
+  // only over the drawn road (eased just outside it); elsewhere the vehicle keeps its usual height
+  vehicle.setGroundLift({ fromS, toS, liftM: cfg.road.liftM, rampM: DEFAULT_LIFT_RAMP_M });
   setRaceNotice(cfg.disclaimer, `レース演出：s = ${fromS}–${toS} m の約 ${toS - fromS} m のみ／路面の幅 ${widthM} m は表示用の仮の値`);
 }
 raceToggle.addEventListener("change", () => void refreshRace());
