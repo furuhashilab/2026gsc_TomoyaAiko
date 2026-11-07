@@ -21,6 +21,9 @@
       #minimap svg { display: block; }
       #sceneStatus { position: absolute; right: 8px; bottom: 130px; z-index: 1; padding: 4px 8px; white-space: pre;
         font: 12px/1.4 system-ui, sans-serif; color: #fff; background: rgba(0, 0, 0, 0.65); border-radius: 4px; max-width: calc(100% - 32px); overflow: hidden; text-overflow: ellipsis; }
+      #raceNotice { margin: 0 0 6px; padding: 4px 8px; white-space: pre-line; max-width: 560px;
+        background: rgba(60, 45, 0, 0.9); border: 2px solid #ffc400; border-radius: 4px; }
+      #raceNotice b { color: #ffd84d; }
       #coursePanel h2 { margin: 0 0 4px; font-size: 14px; }
       #coursePanel .ok { color: #8f8; }
       #coursePanel .ng { color: #f88; }
@@ -38,6 +41,7 @@
     <div id="minimap" aria-label="コースのミニマップ"></div>
     <div id="sceneStatus"></div>
     <div id="vehiclePanel">
+      <div id="raceNotice" hidden></div>
       <div>
         <button id="vehiclePlay" type="button">▶ 再生</button>
         <button id="vehiclePause" type="button">⏸ 一時停止</button>
@@ -55,6 +59,7 @@
       <div>
         <label>背景 <select id="basemap"></select></label>
         <label>建物 <select id="buildingStyle"></select></label>
+        <label title="架空のレース演出（仮想路面・バリア・フェンス・架空広告）"><input id="racePresentation" type="checkbox" /> レース演出</label>
       </div>
       <div id="vehicleInfo">車両：コースの読み込み待ち</div>
       <small>ルートを見せるためのアニメーションです。物理挙動や実際のレース速度を再現していません。</small>

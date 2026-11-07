@@ -23,6 +23,7 @@ import "cesium/Build/Cesium/Widgets/widgets.css";
 import aoiConfig from "../../config/aoi.sapporo.json";
 import basemapConfig from "../../config/basemaps.json";
 import sceneConfig from "../../config/scene.sapporo.json";
+import presentationConfig from "../../config/presentation/sapporo-demo.json";
 import vehicleConfig from "../../config/vehicle.json";
 import syntheticCourse from "../../contracts/examples/synthetic-loop.course.geojson?raw";
 import { parseAoi } from "./aoi";
@@ -30,9 +31,12 @@ import { type Basemap, type BuildingStyle, basemapCreditHtml, parseBasemaps, pic
 import { arrowSegments, bearingRad, type Course, parseCourse } from "./course";
 import { LatestOnly } from "./latest";
 import { Minimap } from "./minimap";
+import { parsePresentation } from "./presentation/config";
+import { RacePresentation } from "./presentation/layer";
 import { parseScene } from "./scene";
 import { type CameraMode, VehicleAnimation } from "./vehicle/animation";
 import { parseVehicleConfig } from "./vehicle/config";
+import { DEFAULT_LIFT_RAMP_M } from "./vehicle/lift";
 
 const aoi = parseAoi(aoiConfig);
 const scene = parseScene(sceneConfig);
@@ -100,6 +104,11 @@ function disableScene(reason: string): void {
   viewer.scene.globe.depthTestAgainstTerrain = false;
   viewer.creditDisplay.removeStaticCredit(terrainCredit);
   vehicle.useEllipsoidHeights();
+  // the presentation's heights came from the terrain that is now gone
+  if (raceToggle.checked) {
+    raceToggle.checked = false;
+    void refreshRace();
+  }
   resolveTerrain(null);
   setStatus("terrain", `地形：読み込み失敗（${reason}）`);
   setStatus("buildings", "建物：地形がないため非表示（地図とコースのみ表示）");
@@ -333,8 +342,52 @@ document.getElementById("vehicleCamera")?.addEventListener("change", (ev) => {
   vehicle.setCamera((ev.target as HTMLSelectElement).value as CameraMode);
 });
 
+// Race presentation (Street Race Visual PoC, Phase 1): fictional road surface, barriers,
+// catch fence and sponsor boards on a hand-picked part of a course (config/presentation/).
+// Off = the plain GIS view. Kept apart from the GIS layers; it only reads the course.
+const presentations = [parsePresentation(presentationConfig)];
+const race = new RacePresentation(viewer);
+const raceToggle = document.getElementById("racePresentation") as HTMLInputElement;
+const raceNotice = document.getElementById("raceNotice") as HTMLDivElement;
+let currentCourse: Course | null = null;
+raceToggle.checked = params.get("race") === "on";
+
+function setRaceNotice(disclaimer: string | null, line: string): void {
+  raceNotice.hidden = false;
+  raceNotice.innerHTML = `${disclaimer ? `<b>${escapeHtml(disclaimer)}</b>\n` : ""}${escapeHtml(line)}`;
+}
+
+async function refreshRace(): Promise<void> {
+  const course = currentCourse;
+  const cfg = course ? presentations.find((p) => p.courseId === course.id) : undefined;
+  if (!raceToggle.checked || !course || !cfg) {
+    race.hide();
+    vehicle.setGroundLift(null);
+    raceNotice.hidden = true;
+    if (raceToggle.checked && course) setRaceNotice(null, "レース演出：このコースには演出の設定がありません（config/presentation/）");
+    return;
+  }
+  setRaceNotice(cfg.disclaimer, "レース演出：準備中（地形の高さを取得しています）");
+  try {
+    const terrain = await terrainReady;
+    // toggled off or another course picked while waiting
+    if (!raceToggle.checked || currentCourse !== course) return;
+    if (!(await race.show(course, cfg, terrain))) return;
+  } catch (e) {
+    setRaceNotice(cfg.disclaimer, `レース演出：表示に失敗（${e instanceof Error ? e.message : String(e)}）`);
+    return;
+  }
+  const { fromS, toS, widthM } = cfg.road;
+  // only over the drawn road (eased just outside it); elsewhere the vehicle keeps its usual height
+  vehicle.setGroundLift({ fromS, toS, liftM: cfg.road.liftM, rampM: DEFAULT_LIFT_RAMP_M });
+  setRaceNotice(cfg.disclaimer, `レース演出：s = ${fromS}–${toS} m の約 ${toS - fromS} m のみ／路面の幅 ${widthM} m は表示用の仮の値`);
+}
+raceToggle.addEventListener("change", () => void refreshRace());
+
 function showCourse(course: Course, source: string, note = ""): void {
   void loadVehicle(course);
+  currentCourse = course;
+  void refreshRace();
   courseLayer.entities.removeAll();
   const positions = course.coordinates.map(([lon, lat]) => Cartesian3.fromDegrees(lon, lat));
   // Everything is draped on the terrain (not on building roofs). A wider dark line under
@@ -472,4 +525,4 @@ void loadInitialCourse();
 void loadScene();
 
 // Dev builds only: expose the viewer for manual checks in the browser console.
-if (import.meta.env.DEV) (window as unknown as { __cf: unknown }).__cf = { viewer, scene, status, vehicle, vehicleCfg, basemaps, setBasemap, showBuildings, tilesets };
+if (import.meta.env.DEV) (window as unknown as { __cf: unknown }).__cf = { viewer, scene, status, vehicle, vehicleCfg, basemaps, setBasemap, showBuildings, tilesets, race };
