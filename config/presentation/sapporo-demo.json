@@ -1,0 +1,50 @@
+{
+  "schema": "circuitforge-presentation",
+  "schema_version": "0.1.0",
+  "course_id": "sapporo-demo-circuit-001",
+  "name": "Street Race Visual PoC — Phase 1（札幌デモ・代表直線 1 区間）",
+  "disclaimer": "架空のレース演出です。実際の道路幅・安全設備・道路封鎖計画を示すものではありません。",
+  "placement_note": "Placed by hand along the course distance s (m), not by fixed coordinates. Barrier gaps follow the cross streets seen in the 3D view (segment boundaries of the demo course). No automatic building-interference check (Issue #27 / later phase).",
+  "sample_step_m": 2,
+  "heading_window_m": 8,
+  "road": {
+    "from_s": 290,
+    "to_s": 560,
+    "width_m": 9,
+    "width_note": "Virtual display width only; not the real road width.",
+    "lift_m": 0.1,
+    "kerb_width_m": 0.45,
+    "line_width_m": 0.15,
+    "texture_repeat_m": 16
+  },
+  "barriers": {
+    "height_m": 1.0,
+    "thickness_m": 0.6,
+    "gap_from_road_m": 0.5,
+    "fence_height_m": 3.5,
+    "sections": [
+      { "side": "left", "from_s": 293, "to_s": 380 },
+      { "side": "right", "from_s": 293, "to_s": 380 },
+      { "side": "left", "from_s": 452, "to_s": 545 },
+      { "side": "right", "from_s": 452, "to_s": 545 }
+    ]
+  },
+  "ads": {
+    "length_m": 8,
+    "height_m": 0.8,
+    "panels": [
+      { "side": "left", "s": 310, "sponsor": "cfai" },
+      { "side": "right", "s": 345, "sponsor": "forgewatt" },
+      { "side": "left", "s": 470, "sponsor": "loopgrip" },
+      { "side": "right", "s": 505, "sponsor": "gridnode" }
+    ],
+    "sponsors": {
+      "cfai": { "text": "CIRCUITFORGE AI", "bg": "#14213d", "fg": "#fca311" },
+      "forgewatt": { "text": "FORGEWATT ENERGY", "bg": "#f1f1f1", "fg": "#c1121f" },
+      "loopgrip": { "text": "LOOPGRIP TYRES", "bg": "#0b6e4f", "fg": "#ffffff" },
+      "gridnode": { "text": "GRIDNODE DATA", "bg": "#222222", "fg": "#4cc9f0" }
+    },
+    "sub_text": "FICTIONAL SPONSOR",
+    "sponsor_note": "Names and designs invented for CircuitForge AI (no real company, logo or official race graphics). Every panel also prints sub_text."
+  }
+}

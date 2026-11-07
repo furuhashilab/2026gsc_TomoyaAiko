@@ -75,6 +75,8 @@ export class VehicleAnimation {
   // the viewer's own field of view, restored when leaving the chase camera
   private readonly defaultFov: number | null;
   private start = JulianDate.now();
+  // extra height while the race presentation's road surface (lifted above the terrain) is shown
+  private lift = 0;
   terrainInfo: TerrainSampleInfo | null = null;
 
   constructor(
@@ -186,7 +188,7 @@ export class VehicleAnimation {
         const t = time ?? clock.currentTime;
         const s = this.stateAt(t);
         const ahead = this.stateAtDistance(s.distance + forward);
-        return Cartesian3.fromDegrees(ahead.lon, ahead.lat, s.height + this.cfg.groundOffsetM + up);
+        return Cartesian3.fromDegrees(ahead.lon, ahead.lat, s.height + this.groundOffset + up);
       }, false) as never;
     this.fallback = [
       this.viewer.entities.add({
@@ -211,6 +213,15 @@ export class VehicleAnimation {
     const s = this.stateAt(t);
     const hpr = new HeadingPitchRoll(s.heading + this.cfg.headingOffsetRad, s.pitch, 0);
     this.model.modelMatrix = Transforms.headingPitchRollToFixedFrame(this.positionAt(t), hpr);
+  }
+
+  private get groundOffset(): number {
+    return this.cfg.groundOffsetM + this.lift;
+  }
+
+  /** Raise the vehicle by `m` so it rests on a road surface drawn above the terrain. */
+  setGroundLift(m: number): void {
+    this.lift = m;
   }
 
   /** Use ellipsoid heights (called when the terrain is dropped after loading). */
@@ -244,7 +255,7 @@ export class VehicleAnimation {
 
   positionAt(time: JulianDate): Cartesian3 {
     const s = this.stateAt(time);
-    return Cartesian3.fromDegrees(s.lon, s.lat, s.height + this.cfg.groundOffsetM);
+    return Cartesian3.fromDegrees(s.lon, s.lat, s.height + this.groundOffset);
   }
 
   /** The track the vehicle currently follows (shared with the minimap). */
@@ -295,7 +306,7 @@ export class VehicleAnimation {
   private updateCamera(): void {
     if (!this.track || this.camera === "free") return;
     const s = this.stateAt(this.viewer.clock.currentTime);
-    const target = Cartesian3.fromDegrees(s.lon, s.lat, s.height + this.cfg.groundOffsetM + 1);
+    const target = Cartesian3.fromDegrees(s.lon, s.lat, s.height + this.groundOffset + 1);
     const cams = this.cfg.cameras;
     if (this.camera === "chase") {
       // low-pass filter on the camera heading so corners do not jerk the view
